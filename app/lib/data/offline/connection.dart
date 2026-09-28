@@ -22,19 +22,30 @@ class ConnectionMonitor extends Notifier<Reachability> {
     // Optimistic to start: the app has usually just talked to the server to
     // get here, and opening on a red banner would be wrong.
     ref.onDispose(() => _timer?.cancel());
-    _timer = Timer.periodic(const Duration(seconds: 10), (_) => check());
-    scheduleMicrotask(check);
+    _timer = Timer.periodic(const Duration(seconds: 10), (_) {
+      // The timer is cancelled on dispose, but a tick can already be queued
+      // when that happens. Without this guard the tick runs against a dead
+      // provider and throws on the first `ref` use inside check().
+      if (ref.mounted) check();
+    });
+    scheduleMicrotask(() {
+      if (ref.mounted) check();
+    });
     return Reachability.online;
   }
 
   /// Called by the repository the moment a write fails, so the UI turns red
   /// immediately rather than at the next poll.
   void reportFailure() {
+    if (!ref.mounted) return;
     if (state != Reachability.offline) state = Reachability.offline;
-    scheduleMicrotask(check);
+    scheduleMicrotask(() {
+      if (ref.mounted) check();
+    });
   }
 
   void reportSuccess() {
+    if (!ref.mounted) return;
     if (state != Reachability.online) state = Reachability.online;
   }
 
@@ -54,10 +65,24 @@ class ConnectionMonitor extends Notifier<Reachability> {
       await pb
           .send<Map<String, dynamic>>('/api/health')
           .timeout(const Duration(seconds: 4));
+
+      // The health request takes up to four seconds, and the provider can be
+      // disposed while it is in flight — the app closing, or a tablet signing
+      // out and tearing the shell down. Writing `state` after that throws
+      // "Cannot use the Ref of NotifierProvider after it has been disposed",
+      // which surfaces as a crash on the way out rather than as anything the
+      // user did wrong.
+      //
+      // This is a real path, not a theoretical one: the poll runs every ten
+      // seconds, so a sign-out lands mid-request often enough to matter.
+      if (!ref.mounted) return;
       state = Reachability.online;
     } catch (_) {
+      if (!ref.mounted) return;
       state = Reachability.offline;
     } finally {
+      // Safe unconditionally: it only touches this object's own field, not the
+      // provider, so it does not need the mount check above.
       _checking = false;
     }
   }
