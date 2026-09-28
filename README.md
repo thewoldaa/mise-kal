@@ -29,16 +29,18 @@ Because the server runs on-site, the POS continues to take orders when the
 internet goes down. For a restaurant, that matters more than almost any other
 property of the system.
 
-Mise-Kal is a derivative of [Mise](https://github.com/devShakib015/mise),
-developed independently as a long-term project.
+Mise-Kal is a **fork of [Mise](https://github.com/devShakib015/mise)** by
+**K M Shahriar Hossain**, developed independently as a long-term project.
 
 | | |
 |---|---|
-| **License** | MIT |
+| **Upstream** | [devShakib015/mise](https://github.com/devShakib015/mise) |
+| **Forked at** | upstream `main` @ `c56d1c3` |
+| **License** | MIT, upstream copyright preserved |
 | **Platform** | Windows, macOS, Linux, Android, iOS |
 | **Backend** | PocketBase 0.40.1 (single binary) |
 | **Application** | Flutter 3.47.5 |
-| **Tests** | 101 backend checks, 74 Dart tests |
+| **Tests** | 101 backend checks, 76 Dart tests |
 | **Status** | Pre-1.0, active development |
 
 ---
@@ -484,10 +486,16 @@ not a public issue.
 
 ## Acknowledgements
 
-Mise-Kal is built on [Mise](https://github.com/devShakib015/mise) by
+Mise-Kal is a fork of [Mise](https://github.com/devShakib015/mise) by
 **K M Shahriar Hossain**, which established the security posture and design
 decisions this project inherits, in particular the rule that money is only ever
 computed server-side.
+
+Upstream is not a distant ancestor: it is the foundation. The PocketBase schema
+and hooks, the Flutter application structure, the design system, and the test
+suites all began there. What Mise-Kal adds is the development harness, Windows
+support, Indonesian localization, and the site — see
+[the changelog](CHANGELOG.md) for the full list.
 
 The MIT license is retained unchanged and the upstream copyright notice is
 preserved in [LICENSE](LICENSE). Upstream remains configured as a git remote so

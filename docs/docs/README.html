@@ -162,8 +162,8 @@ telemetry.
 <p>Because the server runs on-site, the POS continues to take orders when the
 internet goes down. For a restaurant, that matters more than almost any other
 property of the system.</p>
-<p>Mise-Kal is a derivative of <a href="https://github.com/devShakib015/mise">Mise</a>,
-developed independently as a long-term project.</p>
+<p>Mise-Kal is a <strong>fork of <a href="https://github.com/devShakib015/mise">Mise</a></strong> by
+<strong>K M Shahriar Hossain</strong>, developed independently as a long-term project.</p>
 <table>
 <thead>
 <tr>
@@ -173,8 +173,16 @@ developed independently as a long-term project.</p>
 </thead>
 <tbody>
 <tr>
+<td><strong>Upstream</strong></td>
+<td><a href="https://github.com/devShakib015/mise">devShakib015/mise</a></td>
+</tr>
+<tr>
+<td><strong>Forked at</strong></td>
+<td>upstream <code>main</code> @ <code>c56d1c3</code></td>
+</tr>
+<tr>
 <td><strong>License</strong></td>
-<td>MIT</td>
+<td>MIT, upstream copyright preserved</td>
 </tr>
 <tr>
 <td><strong>Platform</strong></td>
@@ -190,7 +198,7 @@ developed independently as a long-term project.</p>
 </tr>
 <tr>
 <td><strong>Tests</strong></td>
-<td>101 backend checks, 74 Dart tests</td>
+<td>101 backend checks, 76 Dart tests</td>
 </tr>
 <tr>
 <td><strong>Status</strong></td>
@@ -647,10 +655,15 @@ proves each one are in <a href="SECURITY.html">SECURITY.md</a>.</p>
 not a public issue.</p>
 <hr />
 <h2 id="acknowledgements">Acknowledgements</h2>
-<p>Mise-Kal is built on <a href="https://github.com/devShakib015/mise">Mise</a> by
+<p>Mise-Kal is a fork of <a href="https://github.com/devShakib015/mise">Mise</a> by
 <strong>K M Shahriar Hossain</strong>, which established the security posture and design
 decisions this project inherits, in particular the rule that money is only ever
 computed server-side.</p>
+<p>Upstream is not a distant ancestor: it is the foundation. The PocketBase schema
+and hooks, the Flutter application structure, the design system, and the test
+suites all began there. What Mise-Kal adds is the development harness, Windows
+support, Indonesian localization, and the site — see
+<a href="CHANGELOG.html">the changelog</a> for the full list.</p>
 <p>The MIT license is retained unchanged and the upstream copyright notice is
 preserved in <a href="LICENSE">LICENSE</a>. Upstream remains configured as a git remote so
 improvements can be taken deliberately:</p>
