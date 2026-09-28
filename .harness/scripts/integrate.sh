@@ -135,14 +135,19 @@ trap cleanup_trial EXIT
 
 CONFLICTS=0
 for b in "${BRANCHES[@]}"; do
-  # --no-commit --no-ff so the trial leaves nothing behind on success and can be
-  # aborted cleanly on conflict.
-  if git -C "$ROOT" merge --no-commit --no-ff "$b" >/dev/null 2>&1; then
+  # Each merge must be committed before the next one is attempted. Without the
+  # commit, `--no-commit` leaves the index staged and the *following* branch's
+  # merge fails with "you have unmerged files" even though it is perfectly
+  # mergeable — a false conflict, which is the worst kind of bug in a tool whose
+  # entire job is telling you whether merging is safe.
+  if git -C "$ROOT" merge --no-ff --no-edit \
+       -m "trial: ${b}" "$b" >/dev/null 2>&1; then
     printf '  %sno conflict%s  %s\n' "$C_GREEN" "$C_RESET" "$b"
   else
     printf '  %sCONFLICT%s     %s\n' "$C_RED" "$C_RESET" "$b"
     CONFLICTS=$((CONFLICTS + 1))
     git -C "$ROOT" merge --abort 2>/dev/null || true
+    break
   fi
 done
 
@@ -151,11 +156,18 @@ if [ "$CONFLICTS" -gt 0 ]; then
   warn "${CONFLICTS} branch(es) conflict with the current ${INTO}."
   warn "Nothing was merged; ${INTO} is unchanged."
   log ""
-  log "Resolve by bringing ${INTO} into the agent's own worktree and merging"
-  log "there, where the conflict belongs to the agent who caused it:"
+  log "Resolve in the agent's own worktree, where the conflict belongs to"
+  log "whoever caused it, rather than on ${INTO}:"
   for b in "${BRANCHES[@]}"; do
-    dim "  git -C \"\$WORKTREE\" merge ${INTO}"
+    wt="$(find_worktree_for_branch "$b")"
+    if [ -n "$wt" ]; then
+      dim "  git -C \"${wt}\" merge ${INTO}"
+    else
+      dim "  (branch ${b} has no worktree; recreate one to resolve it)"
+    fi
   done
+  log ""
+  dim "Then re-run:  .harness/scripts/wave.sh integrate ${WAVE:-<wave>}"
   exit 2
 fi
 

@@ -375,6 +375,22 @@ worktree_exists() {
   [ -d "$(agent_worktree "$agent")" ]
 }
 
+# Which worktree has this branch checked out, if any? Used to point a conflict
+# at the agent who can actually resolve it, instead of at a placeholder path.
+find_worktree_for_branch() {
+  local want="$1"
+  local dir branch
+  [ -d "$WORKTREES_DIR" ] || return 0
+  for dir in "$WORKTREES_DIR"/*; do
+    [ -d "$dir" ] || continue
+    branch="$(git -C "$dir" rev-parse --abbrev-ref HEAD 2>/dev/null || echo '')"
+    if [ "$branch" = "$want" ]; then
+      printf '%s' "$dir"
+      return 0
+    fi
+  done
+}
+
 # Create (or reuse) an isolated worktree for an agent.
 #
 # Reuse is deliberate: a wave that runs twice, or an agent resuming after a
