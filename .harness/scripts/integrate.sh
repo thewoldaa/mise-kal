@@ -116,30 +116,39 @@ for b in "${BRANCHES[@]}"; do
 done
 
 # --- Conflict detection ------------------------------------------------------
-# A trial merge is run in a scratch clone-free way: merge into a temporary
-# branch, check the result, then delete it. If it conflicts, the temporary
-# branch is aborted and main is never touched.
+# A trial merge runs first so a conflict is detected BEFORE anything lands on
+# the target. The trial happens on a temporary branch; once it is clean, that
+# branch is thrown away and the real merges are performed on the target itself.
+#
+# Getting this the wrong way round is a subtle and expensive bug: merging on the
+# trial branch and then deleting it reports "integrated" while leaving the
+# target completely untouched.
 
 info "Checking for conflicts before merging anything ..."
 
-# Work on a temporary branch so a conflict cannot leave main half-merged.
 TRIAL="integrate-trial/$$"
 git -C "$ROOT" checkout -q -b "$TRIAL" "$INTO"
 
+# On the success path the trial branch is simply deleted: it has served its
+# purpose and the real merges will redo the work on $INTO. On the failure path
+# any half-applied merge is aborted first so the checkout is usable.
+TRIAL_OK="no"
 cleanup_trial() {
   git -C "$ROOT" merge --abort 2>/dev/null || true
-  git -C "$ROOT" checkout -q "$INTO" 2>/dev/null || true
+  if [ "$TRIAL_OK" = "yes" ] || [ "$DRY_RUN" = "yes" ] || [ "$CONFLICTS" -gt 0 ]; then
+    git -C "$ROOT" checkout -q "$INTO" 2>/dev/null || true
+  fi
   git -C "$ROOT" branch -D "$TRIAL" 2>/dev/null || true
 }
 trap cleanup_trial EXIT
 
 CONFLICTS=0
 for b in "${BRANCHES[@]}"; do
-  # Each merge must be committed before the next one is attempted. Without the
-  # commit, `--no-commit` leaves the index staged and the *following* branch's
-  # merge fails with "you have unmerged files" even though it is perfectly
-  # mergeable — a false conflict, which is the worst kind of bug in a tool whose
-  # entire job is telling you whether merging is safe.
+  # Each merge must be committed before the next is attempted. Without the
+  # commit, the index stays staged and the *following* branch fails with
+  # "unmerged files" even though it is perfectly mergeable — a false conflict,
+  # which is the worst kind of bug in a tool whose job is telling you whether
+  # merging is safe.
   if git -C "$ROOT" merge --no-ff --no-edit \
        -m "trial: ${b}" "$b" >/dev/null 2>&1; then
     printf '  %sno conflict%s  %s\n' "$C_GREEN" "$C_RESET" "$b"
@@ -178,11 +187,13 @@ if [ "$DRY_RUN" = "yes" ]; then
 fi
 
 # --- Real merge --------------------------------------------------------------
-# The trial left the index staged with the merge content. Commit it once per
-# branch instead, so each agent's contribution is its own attributable commit.
+# The trial proved the branches merge cleanly. Discard the trial branch and
+# perform the same merges on the target itself, so the resulting commits are
+# actually on $INTO and not on a branch that is about to be deleted.
 
-git -C "$ROOT" merge --abort 2>/dev/null || true
+git -C "$ROOT" checkout -q "$INTO"
 git -C "$ROOT" reset --hard -q "$INTO"
+TRIAL_OK="yes"   # tells the trap it is safe to check out $INTO and drop the trial
 
 if [ "$ASSUME_YES" != "yes" ]; then
   log ""
@@ -208,6 +219,28 @@ for b in "${BRANCHES[@]}"; do
     git -C "$ROOT" merge --abort 2>/dev/null || true
     die "Merge of '${b}' failed despite the trial succeeding. ${INTO} is unchanged.
      This should not happen; report it rather than resolving by hand."
+  fi
+done
+
+# --- Prove the merges actually landed ----------------------------------------
+# An earlier version of this script merged onto a temporary branch and then
+# deleted it, reporting success while leaving the target untouched. The check
+# below is what makes that failure impossible to ship again: it verifies, for
+# every branch, that its tip is now an ancestor of the target. A "merge" that
+# did not happen is caught here rather than at push time.
+
+on_target="$(git -C "$ROOT" rev-parse --abbrev-ref HEAD)"
+if [ "$on_target" != "$INTO" ]; then
+  die "Integrate finished on '${on_target}', not '${INTO}'. The merges did not land
+     where they were supposed to. Nothing further was run."
+fi
+
+for b in "${MERGED[@]}"; do
+  if git -C "$ROOT" merge-base --is-ancestor "$b" "$INTO"; then
+    dim "  verified on ${INTO}: ${b}"
+  else
+    die "Branch '${b}' is NOT an ancestor of ${INTO} after a reported merge.
+     The integration did not take effect. Do not push."
   fi
 done
 
