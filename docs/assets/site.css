@@ -645,12 +645,6 @@ pre::-webkit-scrollbar {
   height: 8px;
 }
 
-/* The demo's server console is a fixed-height scroller and needs a visible
-   thumb more than the page does, because its content changes constantly. */
-.console::-webkit-scrollbar {
-  width: 8px;
-}
-
 /* --- Form controls -------------------------------------------------------- */
 
 /* Every control is styled explicitly rather than left to the browser.
@@ -781,6 +775,29 @@ input[type='radio']:disabled {
 .field-amount {
   width: 96px;
   font-variant-numeric: tabular-nums;
+}
+
+/* --- Selection and touch --------------------------------------------------- */
+
+/* The browser's default selection is its own blue, which is the one colour that
+   does not belong anywhere in this palette. */
+::selection {
+  background: rgba(232, 102, 61, 0.3);
+  color: var(--text);
+}
+
+/* On touch devices the browser paints a grey flash over anything tapped. On a
+   dark surface it reads as a bug rather than as feedback, and the buttons here
+   already have their own pressed states. */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Dragging a link or an image out of the page leaves a ghost of it behind.
+   Neither is useful on a documentation site. */
+a,
+img {
+  -webkit-user-drag: none;
 }
 
 /* --- Utilities ------------------------------------------------------------ */

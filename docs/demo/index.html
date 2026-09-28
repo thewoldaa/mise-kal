@@ -329,6 +329,17 @@
     white-space: pre-wrap;
     word-break: break-word;
   }
+  /* The console is a fixed-height scroller whose content changes constantly,
+     so it needs a visible thumb more than the page does. Styled here rather
+     than in the shared sheet because .console exists only on this page. */
+  .console::-webkit-scrollbar { width: 8px; }
+  .console::-webkit-scrollbar-track { background: transparent; }
+  .console::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 999px;
+  }
+  .console::-webkit-scrollbar-thumb:hover { background: var(--ember-dim); }
+
   .console .ok   { color: var(--status-ready); }
   .console .warn { color: #d4a017; }
   .console .stop { color: var(--status-trouble); }
