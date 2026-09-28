@@ -39,11 +39,15 @@ AGENT=""
 TASK=""
 DESCRIPTION=""
 DRY_RUN="no"
+ASSUME_YES="no"
+SKIP_TESTS="no"
 while [ $# -gt 0 ]; do
   case "$1" in
     --agent) AGENT="$(require_slug 'agent name' "$(slugify "$2")")"; shift 2 ;;
     --task)  TASK="$(require_slug 'task id' "$(slugify "$2")")"; shift 2 ;;
     --dry-run) DRY_RUN="yes"; shift ;;
+    --yes|-y) ASSUME_YES="yes"; shift ;;
+    --skip-tests) SKIP_TESTS="yes"; shift ;;
     -*) die "Unknown argument: $1" ;;
     # A bare positional after the wave id is the wave description, for `open`.
     *) DESCRIPTION="$1"; shift ;;
@@ -90,8 +94,14 @@ case "$COMMAND" in
       info "Dry run: no branch will be merged."
     fi
     # Integration is delegated so the conflict-detection logic lives in exactly
-    # one place and cannot drift between wave.sh and a manual merge.
-    "${HARNESS_SCRIPTS_DIR}/integrate.sh" --wave "$WAVE" $([ "$DRY_RUN" = "yes" ] && printf -- '--dry-run')
+    # one place and cannot drift between wave.sh and a manual merge. The extra
+    # flags are passed through so `wave.sh integrate` and `integrate.sh` behave
+    # identically rather than the wrapper silently dropping options.
+    set -- --wave "$WAVE"
+    [ "$DRY_RUN" = "yes" ] && set -- "$@" --dry-run
+    [ "$ASSUME_YES" = "yes" ] && set -- "$@" --yes
+    [ "$SKIP_TESTS" = "yes" ] && set -- "$@" --skip-tests
+    "${HARNESS_SCRIPTS_DIR}/integrate.sh" "$@"
     ;;
 
   close)
