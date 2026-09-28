@@ -1,0 +1,69 @@
+# Normalise line endings in the repository to LF, and check text out with the
+# platform's native ending only where that is harmless.
+#
+# Why this file exists: on Windows, git's default `core.autocrlf=true` rewrites
+# every `.sh` file to CRLF on checkout. Bash then reads `set -euo pipefail\r`,
+# fails to find a command named `pipefail\r`, and the whole script dies before
+# it does anything. That failure is confusing enough to waste an afternoon, so
+# the ending is pinned here rather than left to each developer's git config.
+#
+# Consequence of changing this: shell scripts must stay LF or they stop running
+# on Linux/macOS and in Git Bash on Windows.
+
+* text=auto
+
+# Shell scripts must be LF everywhere, without exception.
+*.sh        text eol=lf
+*.bash      text eol=lf
+*.zsh       text eol=lf
+
+# Executable shell scripts in this repo are run directly, not sourced.
+.harness/scripts/*  text eol=lf
+
+# Dart and YAML: LF, and git may normalise on commit.
+*.dart      text eol=lf
+*.yaml      text eol=lf
+*.yml       text eol=lf
+*.json      text eol=lf
+*.md        text eol=lf
+*.js        text eol=lf
+*.html      text eol=lf
+*.css       text eol=lf
+
+# Windows-only sources keep CRLF, which is what MSVC expects.
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+*.ps1       text eol=crlf
+
+# Binary assets: never touch, never diff as text.
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.ico       binary
+*.ttf       binary
+*.otf       binary
+*.woff      binary
+*.woff2     binary
+*.zip       binary
+*.dmg       binary
+*.exe       binary
+*.so        binary
+*.dylib     binary
+*.a         binary
+*.pb        binary
+
+# Keep generated files out of diffs and out of merge conflicts. These are
+# produced by tooling, so a conflict in them is noise, not information.
+app/pubspec.lock                -diff merge=ours
+app/ios/Podfile.lock            -diff merge=ours
+app/macos/Podfile.lock          -diff merge=ours
+app/*/flutter/generated_*.cmake -diff
+app/*/flutter/generated_plugin* -diff
+
+# Vendored third-party licences must never be touched by git. The Inter font is
+# bundled under the SIL Open Font License, and normalising the line endings of
+# that notice rewrites a legal document that is not ours to reformat. `-text`
+# tells git to treat it as binary for diff and checkout purposes, so it passes
+# through byte for byte.
+app/assets/fonts/Inter-LICENSE.txt  -text -diff

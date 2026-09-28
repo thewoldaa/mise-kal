@@ -1,0 +1,38 @@
+# =============================================================================
+# .harness/.gitignore — keep runtime state out of the repository
+# =============================================================================
+#
+# WHAT IS COMMITTED FROM .harness/
+#   README.md, scripts/, tasks/, waves/  — the harness itself and the plan.
+#
+# WHAT IS NEVER COMMITTED
+#   Everything below. These are per-machine runtime state: the worktrees
+#   themselves, port reservations, lock files, logs, scratch test databases and
+#   downloaded binaries.
+#
+# WHY THIS FILE EXISTS
+#   Without it, `git add .harness/` commits the worktrees as embedded git
+#   repositories. Git records them as a bare gitlink with no contents, so a
+#   clone gets empty directories, `git status` reports them as modified
+#   constantly, and — worst — an agent's branch name and in-progress state leak
+#   into the public history of a repository that is supposed to be about
+#   product code.
+#
+#   It also keeps the downloaded PocketBase binary (~34 MB) and jq out of git,
+#   matching upstream's decision not to vendor PocketBase into the repo.
+
+# The isolated working trees. These are real git worktrees of this repository,
+# which is exactly why git tries to record them as submodules.
+worktrees/
+
+# Port reservations and locks. Machine-local, meaningless to anyone else.
+locks/
+
+# Per-agent logs, reports and scratch (throwaway test databases live here).
+logs/
+
+# Downloaded tools: PocketBase, jq.
+cache/
+
+# Machine-local tuning. The defaults in lib.sh work without this file.
+harness.conf
