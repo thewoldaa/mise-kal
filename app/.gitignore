@@ -46,3 +46,8 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# l10n codegen intermediate: lists keys missing from a translation. It is a
+# report, not an input — regenerated on every build.
+l10n_untranslated.json
+flutter_*.log

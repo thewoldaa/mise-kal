@@ -1,0 +1,28 @@
+# Localization generation config for Mise-Kal.
+#
+# ARB files live in lib/l10n/. The generated Dart lands in
+# lib/l10n/generated/, which is committed: it means `flutter test` and CI work
+# without a codegen step, and a translation change shows up in review as a diff
+# in the generated file rather than as a silent build-time surprise.
+#
+# Indonesian is the primary market, so `id` is the template. English is the
+# fallback. Adding a language means adding lib/l10n/app_<code>.arb and listing
+# it under `locales` — nothing else.
+
+arb-dir: lib/l10n
+template-arb-file: app_id.arb
+output-localization-file: app_localizations.dart
+output-class: AppStrings
+output-dir: lib/l10n/generated
+
+# Both languages are first-class. The template is Indonesian because that is who
+# this is built for; English exists so the project stays usable for development
+# and for restaurants that need it.
+preferred-supported-locales:
+  - id
+  - en
+
+# Writes any key present in the template but missing from a translation. This is
+# how a half-finished translation becomes visible instead of silently falling
+# back to Indonesian on one screen.
+untranslated-messages-file: l10n_untranslated.json
