@@ -10,7 +10,7 @@ telemetry.
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Release](https://img.shields.io/github/v/release/thewoldaa/mise-kal?label=release&color=blue)](https://github.com/thewoldaa/mise-kal/releases)
-[![Tests](https://img.shields.io/badge/tests-175%20passing-brightgreen.svg)](#testing)
+[![Tests](https://img.shields.io/badge/tests-179%20passing-brightgreen.svg)](#testing)
 [![Flutter](https://img.shields.io/badge/Flutter-3.47.5-02569B.svg)](https://flutter.dev)
 [![PocketBase](https://img.shields.io/badge/PocketBase-0.40.1-000000.svg)](https://pocketbase.io)
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux%20%7C%20Android%20%7C%20iOS-lightgrey.svg)](#installation)
@@ -40,7 +40,7 @@ Mise-Kal is a **fork of [Mise](https://github.com/devShakib015/mise)** by
 | **Platform** | Windows, macOS, Linux, Android, iOS |
 | **Backend** | PocketBase 0.40.1 (single binary) |
 | **Application** | Flutter 3.47.5 |
-| **Tests** | 101 backend checks, 76 Dart tests |
+| **Tests** | 101 backend checks, 78 Dart tests |
 | **Status** | Pre-1.0, active development |
 
 ---
