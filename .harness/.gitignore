@@ -14,25 +14,39 @@
 #   Without it, `git add .harness/` commits the worktrees as embedded git
 #   repositories. Git records them as a bare gitlink with no contents, so a
 #   clone gets empty directories, `git status` reports them as modified
-#   constantly, and — worst — an agent's branch name and in-progress state leak
-#   into the public history of a repository that is supposed to be about
-#   product code.
+#   constantly, and an agent's branch name leaks into the public history of a
+#   repository that is supposed to be about product code.
 #
 #   It also keeps the downloaded PocketBase binary (~34 MB) and jq out of git,
 #   matching upstream's decision not to vendor PocketBase into the repo.
+#
+# WHY EVERY PATTERN IS ANCHORED WITH A LEADING SLASH
+#
+#   This is not cosmetic. An unanchored `worktrees/` matches a directory of
+#   that name at *any* depth, including inside a worktree. That means a file an
+#   agent creates at `.harness/worktrees/<agent>/server/worktrees/notes.md` —
+#   or any path that happens to contain a matching directory component — is
+#   silently ignored by git, and the agent commits work that is not there.
+#
+#   Worse, it is invisible: `git status` shows clean, the commit succeeds, and
+#   the file is simply absent from it. Anchoring every pattern to the harness
+#   root is what keeps an agent's own files always visible to its own git.
+#
+#   Verified by test: a file created inside a worktree at a path containing a
+#   name in this list must appear in that worktree's `git status`.
 
 # The isolated working trees. These are real git worktrees of this repository,
 # which is exactly why git tries to record them as submodules.
-worktrees/
+/worktrees/
 
 # Port reservations and locks. Machine-local, meaningless to anyone else.
-locks/
+/locks/
 
 # Per-agent logs, reports and scratch (throwaway test databases live here).
-logs/
+/logs/
 
 # Downloaded tools: PocketBase, jq.
-cache/
+/cache/
 
 # Machine-local tuning. The defaults in lib.sh work without this file.
-harness.conf
+/harness.conf

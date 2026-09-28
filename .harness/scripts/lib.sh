@@ -405,6 +405,21 @@ create_worktree() {
 
   mkdir -p "$WORKTREES_DIR"
 
+  # A real worktree contains a `.git` *file* pointing at the parent repository's
+  # worktree metadata. A plain directory does not. This distinction matters more
+  # than it looks: if a directory exists without that file, it is not a
+  # worktree, and any git command run inside it silently operates on the parent
+  # repository instead — so an agent would edit main's files believing it was
+  # isolated, and its commits would land on the wrong branch.
+  if [ -d "$dir" ] && [ ! -e "${dir}/.git" ]; then
+    die "Directory '${dir}' exists but is not a git worktree (no .git file).
+     This usually means a previous 'git worktree add' failed after the
+     directory was created, or something else created the path.
+     Refusing to continue, because git commands run there would silently
+     operate on '${ROOT}' instead.
+     Inspect it, then remove it:  rm -rf \"${dir}\""
+  fi
+
   if [ -d "$dir" ]; then
     local current
     current="$(git -C "$dir" rev-parse --abbrev-ref HEAD 2>/dev/null || echo '')"
@@ -429,6 +444,22 @@ create_worktree() {
     git -C "$ROOT" worktree add "$dir" "$branch" >/dev/null
   else
     git -C "$ROOT" worktree add -b "$branch" "$dir" "$base" >/dev/null
+  fi
+
+  # Verify the worktree is real before reporting success. `git worktree add` can
+  # fail in ways that still leave a directory behind, and a create that reports
+  # success while producing a non-worktree is the most dangerous failure this
+  # harness can have: the agent believes it is isolated and it is not.
+  if [ ! -e "${dir}/.git" ]; then
+    die "git worktree add appeared to succeed but '${dir}/.git' is missing.
+     The directory is not an isolated worktree. Do not work in it.
+     Investigate, then remove it:  rm -rf \"${dir}\""
+  fi
+  local resolved
+  resolved="$(git -C "$dir" rev-parse --show-toplevel 2>/dev/null || echo '')"
+  if [ "$resolved" != "$dir" ] && [ "$(cd "$resolved" 2>/dev/null && pwd -P)" != "$(cd "$dir" && pwd -P)" ]; then
+    die "Worktree at '${dir}' resolves to '${resolved}'. Git commands there would
+     operate on the wrong repository. Refusing to continue."
   fi
 
   ok "Created worktree '${agent}' at ${dir} on branch '${branch}'."
