@@ -356,7 +356,9 @@
     user-select: none;
   }
 
-  .toggle input { accent-color: var(--ember); cursor: pointer; }
+  /* The checkbox itself is styled by the shared sheet; only the label layout
+     belongs here. */
+  .toggle input { cursor: pointer; }
 
   .offline-banner {
     display: none;
@@ -428,8 +430,8 @@
       <input type="checkbox" id="offline">
       <span>Simulate network outage</span>
     </label>
-    <button class="btn btn-secondary" id="settle" style="padding:7px 14px;font-size:13px">Settle the bill</button>
-    <button class="btn btn-ghost" id="reset" style="padding:7px 14px;font-size:13px">Reset</button>
+    <button class="btn btn-secondary btn-sm" id="settle">Settle the bill</button>
+    <button class="btn btn-ghost btn-sm" id="reset">Reset</button>
   </div>
 
   <div class="offline-banner" id="offline-banner">
@@ -501,9 +503,9 @@
             what happens.
           </p>
           <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
-            <input id="forge" type="number" value="1" min="0" step="0.01"
-                   style="width:90px;padding:7px 10px;border-radius:6px;border:1px solid var(--border-strong);background:var(--surface-sunken);color:var(--text);font-family:inherit;font-size:13px;font-variant-numeric:tabular-nums">
-            <button class="btn btn-secondary" id="forge-btn" style="padding:7px 14px;font-size:13px">Forge the total</button>
+            <input id="forge" class="field-amount" type="number"
+                   value="1" min="0" step="0.01">
+            <button class="btn btn-secondary btn-sm" id="forge-btn">Forge the total</button>
           </div>
           <p class="hint">
             The request is sent, the server recomputes, and the forged value is
@@ -939,8 +941,8 @@
     });
 
     html += '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">' +
-      '<button class="btn btn-ghost" id="sheet-cancel" style="padding:8px 16px;font-size:13px">Cancel</button>' +
-      '<button class="btn btn-primary" id="sheet-add" style="padding:8px 16px;font-size:13px">Add to bill</button>' +
+      '<button class="btn btn-ghost btn-sm" id="sheet-cancel">Cancel</button>' +
+      '<button class="btn btn-primary btn-sm" id="sheet-add">Add to bill</button>' +
       '</div></div>';
 
     box.innerHTML = html;
@@ -1188,8 +1190,7 @@
   });
 
   var fireBtn = document.createElement('button');
-  fireBtn.className = 'btn btn-primary';
-  fireBtn.style.cssText = 'padding:7px 14px;font-size:13px';
+  fireBtn.className = 'btn btn-primary btn-sm';
   fireBtn.textContent = 'Fire to kitchen';
   fireBtn.onclick = fireToKitchen;
   document.querySelector('.controls').insertBefore(

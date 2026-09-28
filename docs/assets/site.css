@@ -20,6 +20,13 @@
    ========================================================================== */
 
 :root {
+  /* Tells the browser this page is dark, which is what makes every *native*
+     control render dark too: checkbox and radio bodies, number-input spinners,
+     date pickers, and the default scrollbar. Without it the page paints dark
+     while the controls inside it stay light - a white checkbox on a black card.
+     `accent-color` alone does not fix that; it only tints the checked fill. */
+  color-scheme: dark;
+
   /* Surfaces.
      Every neutral here is warm-shifted: red is the highest channel, then green,
      then blue. That ordering is what makes the surface read as charcoal with
@@ -642,6 +649,138 @@ pre::-webkit-scrollbar {
    thumb more than the page does, because its content changes constantly. */
 .console::-webkit-scrollbar {
   width: 8px;
+}
+
+/* --- Form controls -------------------------------------------------------- */
+
+/* Every control is styled explicitly rather than left to the browser.
+   `color-scheme: dark` handles the rendering, but the default dark controls
+   are still the browser's greys and blues, which do not match the palette.
+   These rules are what make a checkbox look like part of the product. */
+
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--text);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius);
+  padding: 7px 10px;
+  transition: border-color 120ms ease;
+}
+
+input:hover,
+select:hover,
+textarea:hover {
+  border-color: var(--text-tertiary);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--ember);
+  box-shadow: 0 0 0 3px rgba(232, 102, 61, 0.14);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+/* Numeric fields: the spinners are the browser's and look foreign on a dark
+   surface. They are kept - removing them costs a keyboard user the ability to
+   nudge a value - but tinted to match. */
+input[type='number'] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Checkboxes and radios.
+   `appearance: none` replaces the native control entirely, so it is only used
+   where the replacement keeps every affordance: the box, the check, the
+   keyboard focus ring, and the disabled state. Where a control cannot be
+   replaced faithfully it is left native and `accent-color` is used instead. */
+
+input[type='checkbox'],
+input[type='radio'] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  flex-shrink: 0;
+  display: inline-grid;
+  place-content: center;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-strong);
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+input[type='checkbox'] {
+  border-radius: 4px;
+}
+
+input[type='radio'] {
+  border-radius: 50%;
+}
+
+input[type='checkbox']:hover,
+input[type='radio']:hover {
+  border-color: var(--ember-dim);
+}
+
+input[type='checkbox']:checked,
+input[type='radio']:checked {
+  background: var(--ember);
+  border-color: var(--ember);
+}
+
+/* The check mark is drawn with a rotated border rather than an image or a
+   glyph, so it inherits the colour and scales with the box. */
+input[type='checkbox']:checked::after {
+  content: '';
+  width: 4px;
+  height: 8px;
+  margin-top: -2px;
+  border: solid var(--on-ember);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+input[type='radio']:checked::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--on-ember);
+}
+
+input[type='checkbox']:focus-visible,
+input[type='radio']:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 2px;
+}
+
+input[type='checkbox']:disabled,
+input[type='radio']:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* A small button, for toolbars where a full-size one would dominate. */
+.btn-sm {
+  padding: 7px 14px;
+  font-size: 13px;
+}
+
+/* A numeric field sized for an amount. Tabular figures so the digits do not
+   shift as the value changes. */
+.field-amount {
+  width: 96px;
+  font-variant-numeric: tabular-nums;
 }
 
 /* --- Utilities ------------------------------------------------------------ */
