@@ -209,8 +209,19 @@ case "$COMMAND" in
     fi
     if command -v flutter >/dev/null 2>&1; then
       printf '  %sok%s    flutter on PATH: %s\n' "$C_GREEN" "$C_RESET" "$(command -v flutter)"
+      printf '        %s\n' "$(flutter --version 2>/dev/null | head -1 || echo '?')"
     else
       printf '  %swarn%s  flutter not on PATH (needed only for app tests/builds)\n' "$C_YELLOW" "$C_RESET"
+      # A Flutter SDK cloned but not exported is the common case on a fresh
+      # machine, and "not on PATH" alone sends people looking for a reinstall
+      # when the fix is one export line.
+      for candidate in "$HOME/flutter/bin" "/c/flutter/bin" "C:/flutter/bin"; do
+        if [ -x "${candidate}/flutter" ] || [ -x "${candidate}/flutter.bat" ]; then
+          dim "        found an SDK at ${candidate} — add it to PATH:"
+          dim "          export PATH=\"${candidate}:\$PATH\""
+          break
+        fi
+      done
     fi
     ;;
 

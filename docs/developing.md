@@ -6,6 +6,47 @@
 - Nothing else. PocketBase is downloaded on demand; there is no database to
   install and no cloud account to create.
 
+## Windows
+
+Mise-Kal is developed on Windows as well as macOS, and the harness makes the
+whole test suite runnable there. What a Windows developer needs:
+
+- **Git for Windows**, which brings Git Bash. Run everything from Git Bash, not
+  PowerShell or cmd — every script in this repository is a POSIX shell script.
+- **Flutter SDK**, on PATH. `flutter --version` should answer before you start.
+  If you cloned the SDK but did not add it to PATH, the harness doctor will tell
+  you where it found it and what to type.
+- **Nothing else.** `jq` and PocketBase are fetched into `.harness/cache/` by
+  `.harness/scripts/setup-tools.sh`. Neither is installed system-wide, which is
+  deliberate: `jq` is not present on a stock Windows machine and there is no
+  package manager guaranteed to be there either.
+
+Check the machine before you start:
+
+```bash
+.harness/scripts/setup-tools.sh
+.harness/scripts/worktree.sh doctor
+```
+
+Three Windows-specific things worth knowing, each of which cost real time to
+diagnose:
+
+**Shell scripts must stay LF.** Git's default `core.autocrlf=true` rewrites
+`.sh` files to CRLF on checkout, and bash then reads `set -euo pipefail\r`,
+fails to find a command named `pipefail\r`, and dies before the script's first
+line. `.gitattributes` pins the line ending in the repository so this cannot
+happen. If you add a shell script and it fails strangely, check its endings
+first.
+
+**Git Bash does not honour `TMPDIR` for a literal `/tmp` path.** A script
+writing to `/tmp/x.json` writes to the real `C:\Users\...\AppData\Local\Temp`,
+not to whatever you set `TMPDIR` to. The harness moves those paths into each
+agent's own scratch directory for exactly this reason.
+
+**`pkill -f` matches command lines as strings, not processes.** Two test runs in
+different directories start PocketBase with identical relative arguments, so one
+run's cleanup kills the other's server mid-suite. The harness kills by PID.
+
 ## Running it
 
 Two terminals.
