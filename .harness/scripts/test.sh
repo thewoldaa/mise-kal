@@ -242,11 +242,16 @@ SUITES="smoke setup kitchen payments staff guest"
 
 # --- Main --------------------------------------------------------------------
 
+# `--suite` narrows to one; `--app` alone means "Dart tests only, no backend
+# suites"; `--all` means everything. Getting this wrong makes `--app` quietly
+# run six backend suites the caller did not ask for.
 if [ -n "$SUITE" ]; then
   SUITES="$SUITE"
+elif [ "$RUN_APP" = "yes" ] && [ "$RUN_ALL" != "yes" ]; then
+  SUITES=""
 fi
 
-if [ -z "$SUITE" ] && [ "$RUN_APP" = "no" ] && [ "$RUN_ALL" = "no" ]; then
+if [ -z "$SUITES" ] && [ "$RUN_APP" = "no" ] && [ "$RUN_ALL" = "no" ]; then
   die "Nothing to do. Pass --suite NAME, --all, or --app."
 fi
 

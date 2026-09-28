@@ -1,3 +1,17 @@
+# =============================================================================
+# Mise-Kal .gitignore
+# =============================================================================
+#
+# This file is aggressive on purpose. Mise-Kal is developed in a private
+# workspace and published to a PUBLIC repository, so the cost of a leaked
+# credential or a leaked personal note is high and the cost of ignoring one
+# extra pattern is zero.
+#
+# The rule when adding a pattern: if it might ever contain a secret, a personal
+# note, an agent instruction or a machine-specific path, ignore it. If it is
+# genuinely needed in the repository, add a template instead (see below).
+
+# --- Upstream's own ignores (kept verbatim; do not remove) -------------------
 # PocketBase binary is fetched, not vendored
 server/bin/
 # Live and throwaway databases
@@ -17,7 +31,166 @@ installer/out/
 
 .DS_Store
 *.log
-.claude/
 
 # Server staged into the app at build time by app/scripts/bundle_server.sh
 app/assets/server/
+
+# NOTE: upstream also ignores `.claude/`. That pattern is kept below with the
+# rest of the private-tooling rules rather than duplicated here.
+
+# =============================================================================
+# SECRETS AND CREDENTIALS
+# =============================================================================
+# Nothing in this section may ever be committed. Real values live on the
+# developer's machine only; the repository carries templates.
+
+# Environment files. `.env.example` is deliberately NOT ignored — it is the
+# documented template that says which variables exist, without their values.
+.env
+.env.*
+!.env.example
+*.env
+!.env.example
+
+# Keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*.jks
+*.mobileprovision
+*.cer
+*.crt
+*.der
+
+# Service account / provider credential files
+*credentials*.json
+*credential*.json
+*service-account*.json
+serviceAccount*.json
+*secret*.json
+*token*.json
+!*example*.json
+
+# PocketBase secrets and local admin state
+pb_superuser*
+*_superuser.json
+
+# Payment provider configuration with real values
+config.local.*
+*.local.json
+*.local.yaml
+*.local.yml
+
+# SSH and GPG material
+.ssh/
+*.pub
+!deploy/*.pub
+
+# =============================================================================
+# PRIVATE AGENT INSTRUCTIONS AND MEMORY
+# =============================================================================
+# The repository carries its own public AGENTS.md, which documents how to work
+# here. Anything personal — an individual's private prompts, memory, notes to
+# themselves, or a local agent configuration — must stay out.
+
+# Agent instruction and memory files that are personal rather than project
+.agents/
+.cursor/
+.codex/
+.claude/
+CLAUDE.local.md
+CLAUDE.md.bak
+*private*.md
+*personal*.md
+*memory*.md
+!README.md
+
+# Specific personal note locations
+notes/
+private/
+.local-notes/
+
+# =============================================================================
+# MACHINE-SPECIFIC CONFIGURATION
+# =============================================================================
+# These differ per developer and are meaningless to anyone else. Committing them
+# causes spurious diffs and, occasionally, leaks a username or an internal path.
+
+# Harness runtime state and local tuning
+.harness/worktrees/
+.harness/locks/
+.harness/logs/
+.harness/cache/
+.harness/harness.conf
+
+# Editor and IDE state
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS metadata
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.Spotlight-V100
+.Trashes
+
+# =============================================================================
+# BUILD AND TEST ARTEFACTS
+# =============================================================================
+# Reproducible output. If it can be regenerated, it does not belong in git.
+
+# Dart / Flutter
+.dart_tool/
+.packages
+build/
+*.g.dart
+*.freezed.dart
+
+# Test and coverage output
+coverage/
+.test_output/
+*.tmp
+*.temp
+
+# Flutter's Windows/macOS/Linux build directories
+app/windows/flutter/ephemeral/
+app/macos/Flutter/ephemeral/
+app/linux/flutter/ephemeral/
+
+# Server runtime
+server/pb_test_data/
+server/pb_guest_test_data/
+server/pb_*_test_data/
+server/pb_data/
+*.db
+*.db-shm
+*.db-wal
+
+# Logs
+logs/
+*.log
+!docs/**/*.log
+
+# Archives produced during packaging
+*.zip
+*.dmg
+*.msi
+*.exe
+!app/windows/runner/resources/*.ico
+
+# =============================================================================
+# WHAT MUST *NOT* BE IGNORED
+# =============================================================================
+# Templates are the whole point of the public/private split: they document what
+# configuration exists without carrying a value. These are explicitly kept:
+#
+#   .env.example
+#   config.example.*
+#   docs/
+#   app/pubspec.lock      (lockfiles are committed so builds are reproducible)
+#   server/pb_migrations/ (the schema IS the source of truth)

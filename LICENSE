@@ -1,6 +1,7 @@
 MIT License
 
 Copyright (c) 2026 K M Shahriar Hossain
+Mise-Kal modifications Copyright (c) 2026 thewoldaa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -19,3 +20,19 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+## Provenance
+
+This project is a derivative work. The original software is **Mise**, by
+K M Shahriar Hossain:
+
+    https://github.com/devShakib015/mise
+
+Mise-Kal forked from upstream `main` at commit `c56d1c3` and continues as an
+independent project under the same MIT terms. The original copyright notice
+above is retained in full, as the licence requires.
+
+A summary of what Mise-Kal changes is in [README.md](README.md); the detailed
+history is in the git log.
