@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentation — Mise-Kal</title>
+<meta name="description" content="Guides for running and developing Mise-Kal.">
+<meta name="theme-color" content="#0b0f10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  /* Documentation pages are a narrower measure than the landing page: body
+     text reads badly past about 75 characters, and these pages are mostly
+     prose. */
+  .doc-layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: var(--space-48);
+    align-items: start;
+    padding: var(--space-32) 0 var(--space-96);
+  }
+  @media (max-width: 900px) {
+    .doc-layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-24); }
+    .doc-nav { position: static !important; }
+  }
+  .doc-nav {
+    position: sticky;
+    top: 84px;
+    font-size: 13px;
+  }
+  .doc-nav p {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin: 0 0 var(--space-12);
+  }
+  .doc-nav ul { list-style: none; margin: 0; padding: 0; }
+  .doc-nav li { margin: 0; }
+  .doc-nav a {
+    display: block;
+    padding: 5px 0;
+    color: var(--text-secondary);
+    border-left: 2px solid transparent;
+    padding-left: 10px;
+    margin-left: -12px;
+  }
+  .doc-nav a:hover { color: var(--text); text-decoration: none; }
+  .doc-nav a[aria-current='page'] {
+    color: var(--text);
+    border-left-color: var(--ember);
+  }
+
+  .doc {
+    max-width: 76ch;
+    min-width: 0;
+  }
+  .doc h1 {
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    margin-bottom: var(--space-24);
+  }
+  .doc h2 {
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+  }
+  .doc h3 { margin-top: var(--space-32); }
+  .doc ul, .doc ol { padding-left: 22px; }
+  .doc li { margin: var(--space-4) 0; }
+  .doc blockquote {
+    margin: var(--space-24) 0;
+    padding: var(--space-4) 0 var(--space-4) var(--space-16);
+    border-left: 3px solid var(--border-strong);
+    color: var(--text-secondary);
+  }
+  .doc blockquote p { margin: 0; }
+  .doc hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: var(--space-48) 0;
+  }
+  .doc table { margin: var(--space-24) 0; }
+  .doc img { margin: var(--space-16) 0; }
+  .doc-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-16);
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span>Mise-Kal</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="../demo/">Demo</a>
+      <a href="./" aria-current='page'>Documentation</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+  <div class="doc-layout">
+    <nav class="doc-nav" aria-label="Documentation">
+      <p>Contents</p>
+      <ul>
+        <li><a href="owner-guide.html">Owner guide</a></li>
+        <li><a href="developing.html">Developer guide</a></li>
+        <li><a href="architecture.html">Architecture</a></li>
+        <li><a href="install-macos.html">Installing on macOS</a></li>
+        <li><a href="install-windows.html">Installing on Windows</a></li>
+        <li><a href="testing.html">Testing</a></li>
+        <li><a href="README.html">Project overview</a></li>
+        <li><a href="CONTRIBUTING.html">Contributing</a></li>
+        <li><a href="SECURITY.html">Security</a></li>
+        <li><a href="CHANGELOG.html">Changelog</a></li>
+        <li><a href="AGENTS.html">Working in this repository</a></li>
+      </ul>
+    </nav>
+    <article class="doc">
+      <p class="eyebrow">Documentation</p>
+      <h1>Everything about Mise-Kal</h1>
+      <p class="lede">
+        Written for two readers: the person running a restaurant, and the person
+        working on the code. Both are kept honest by the same test suites.
+      </p>
+
+      <div class="grid grid-2" style="margin-top: var(--space-32)">
+      <a class="card" href="owner-guide.html" style="display:block">
+        <h3 class="mt-0">Owner guide</h3>
+        <p class="mb-0">Running a service: taking orders, the kitchen display, closing a shift, and what to do when something goes wrong.</p>
+      </a>
+      <a class="card" href="developing.html" style="display:block">
+        <h3 class="mt-0">Developer guide</h3>
+        <p class="mb-0">Setting up a development machine, the four rules the code leans on, and the things that will bite you.</p>
+      </a>
+      <a class="card" href="architecture.html" style="display:block">
+        <h3 class="mt-0">Architecture</h3>
+        <p class="mb-0">How the system is put together, where the seams are, and how each future phase attaches to them.</p>
+      </a>
+      <a class="card" href="install-macos.html" style="display:block">
+        <h3 class="mt-0">Installing on macOS</h3>
+        <p class="mb-0">Building and installing the DMG, and the Gatekeeper warning users will see.</p>
+      </a>
+      <a class="card" href="install-windows.html" style="display:block">
+        <h3 class="mt-0">Installing on Windows</h3>
+        <p class="mb-0">Building the Windows application, and the Developer Mode prerequisite.</p>
+      </a>
+      <a class="card" href="testing.html" style="display:block">
+        <h3 class="mt-0">Testing</h3>
+        <p class="mb-0">The seven suites, what each covers, and why the harness patches upstream&#x27;s tests at run time.</p>
+      </a>
+      <a class="card" href="README.html" style="display:block">
+        <h3 class="mt-0">Project overview</h3>
+        <p class="mb-0">What Mise-Kal is, what it does, and how to run it.</p>
+      </a>
+      <a class="card" href="CONTRIBUTING.html" style="display:block">
+        <h3 class="mt-0">Contributing</h3>
+        <p class="mb-0">The workflow contract: branches, commits, tests, and what not to do.</p>
+      </a>
+      <a class="card" href="SECURITY.html" style="display:block">
+        <h3 class="mt-0">Security</h3>
+        <p class="mb-0">The threat model, the guarantees the code keeps, and how to report a vulnerability.</p>
+      </a>
+      <a class="card" href="CHANGELOG.html" style="display:block">
+        <h3 class="mt-0">Changelog</h3>
+        <p class="mb-0">What changed in each release.</p>
+      </a>
+      <a class="card" href="AGENTS.html" style="display:block">
+        <h3 class="mt-0">Working in this repository</h3>
+        <p class="mb-0">How an AI agent works in this repository without breaking it.</p>
+      </a>
+      </div>
+
+      <h2 style="margin-top: var(--space-64)">Elsewhere</h2>
+      <div class="grid grid-3">
+        <a class="card" href="../demo/" style="display:block">
+          <h3 class="mt-0">Interactive demo</h3>
+          <p class="mb-0">Take an order, fire it to the kitchen, and watch the
+          server recompute a total a client tried to forge.</p>
+        </a>
+        <a class="card" href="https://github.com/thewoldaa/mise-kal" style="display:block">
+          <h3 class="mt-0">Source code</h3>
+          <p class="mb-0">The repository, the issue tracker, and the full commit
+          history.</p>
+        </a>
+        <a class="card" href="https://github.com/thewoldaa/mise-kal/releases" style="display:block">
+          <h3 class="mt-0">Releases</h3>
+          <p class="mb-0">What changed in each version, and what is next.</p>
+        </a>
+      </div>
+      <div class="doc-links">
+        <a href="https://github.com/thewoldaa/mise-kal/blob/main/README.md">View source on GitHub</a>
+        <a href="../demo/">Interactive demo</a>
+        <a href="./">All documentation</a>
+      </div>
+    </article>
+  </div>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <p class="mb-0">
+        Mise-Kal &middot; MIT licensed &middot; A derivative of
+        <a href="https://github.com/devShakib015/mise">Mise</a>
+      </p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../">Home</a>
+      <a href="../demo/">Demo</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+      <a href="https://github.com/thewoldaa/mise-kal/releases">Releases</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

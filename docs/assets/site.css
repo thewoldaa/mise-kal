@@ -1,0 +1,575 @@
+/* ==========================================================================
+   Mise-Kal documentation site
+   ==========================================================================
+
+   Design notes
+   ------------
+   The palette mirrors the application's own design system so the site and the
+   product read as one thing. The app uses warm neutrals rather than cool greys
+   because a screen that sits in a dining room all evening should not read
+   clinical, and Ember is reserved for identity and primary actions.
+
+   Status colours deliberately avoid orange so an order's state can never be
+   mistaken for a button: queued is neutral, preparing is blue, ready is green,
+   and red is kept for trouble. That rule is load-bearing in the product and is
+   followed here too.
+
+   The background grid is drawn with CSS gradients rather than an image: it
+   scales to any viewport, costs nothing to download, and stays crisp on a
+   high-DPI display.
+   ========================================================================== */
+
+:root {
+  /* Surfaces */
+  --bg:            #0b0f10;
+  --bg-grid:       rgba(255, 255, 255, 0.028);
+  --bg-grid-major: rgba(255, 255, 255, 0.045);
+  --surface:       #121819;
+  --surface-raised:#171f21;
+  --surface-sunken:#0e1314;
+
+  /* Borders */
+  --border:        #1e2729;
+  --border-strong: #2b3638;
+
+  /* Text */
+  --text:          #e6edf3;
+  --text-secondary:#93a1a4;
+  --text-tertiary: #5f6c6f;
+
+  /* Brand and status. Ember is identity only; never a status. */
+  --ember:         #e8663d;
+  --ember-dim:     #b84e2c;
+  --on-ember:      #1a0d08;
+
+  --status-queued:  #7d8a8d;
+  --status-cooking: #3b82f6;
+  --status-ready:   #22c55e;
+  --status-trouble: #ef4444;
+
+  /* Type */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+               'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'SF Mono', 'Cascadia Mono', 'JetBrains Mono', Consolas,
+               'Liberation Mono', Menlo, monospace;
+
+  /* Space */
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-96: 96px;
+
+  --radius: 6px;
+  --radius-lg: 10px;
+
+  --max-width: 1120px;
+}
+
+/* --- Reset ---------------------------------------------------------------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  /* The grid: a fine 44px lattice with a slightly stronger line every fifth
+     cell, which gives the surface depth without becoming a distraction behind
+     body text. */
+  background-image:
+    linear-gradient(var(--bg-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px),
+    linear-gradient(var(--bg-grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--bg-grid-major) 1px, transparent 1px);
+  background-size:
+    44px 44px,
+    44px 44px,
+    220px 220px,
+    220px 220px;
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.65;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Money and any column of digits must not shift as values change. */
+.tabular { font-variant-numeric: tabular-nums; }
+
+img { max-width: 100%; height: auto; }
+
+a {
+  color: var(--ember);
+  text-decoration: none;
+  text-underline-offset: 3px;
+}
+a:hover { text-decoration: underline; }
+
+:focus-visible {
+  outline: 2px solid var(--ember);
+  outline-offset: 3px;
+  border-radius: 3px;
+}
+
+/* --- Layout --------------------------------------------------------------- */
+
+.wrap {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 var(--space-24);
+}
+
+main { display: block; }
+
+section { padding: var(--space-64) 0; }
+
+section + section { border-top: 1px solid var(--border); }
+
+/* --- Header --------------------------------------------------------------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(11, 15, 16, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+
+.site-header .wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--space-24);
+  height: 60px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.brand:hover { text-decoration: none; }
+
+.brand-mark {
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
+  background: var(--ember);
+  display: grid;
+  place-items: center;
+  color: var(--on-ember);
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.site-nav a {
+  color: var(--text-secondary);
+  font-size: 14px;
+  padding: 6px 10px;
+  border-radius: var(--radius);
+  white-space: nowrap;
+}
+.site-nav a:hover {
+  color: var(--text);
+  background: var(--surface);
+  text-decoration: none;
+}
+.site-nav a[aria-current='page'] {
+  color: var(--text);
+  background: var(--surface);
+}
+
+.nav-toggle { display: none; }
+
+@media (max-width: 760px) {
+  .site-header .wrap {
+    height: auto;
+    min-height: 60px;
+    flex-wrap: wrap;
+    padding-top: var(--space-12);
+    padding-bottom: var(--space-12);
+  }
+  .site-nav { width: 100%; margin-left: 0; gap: 0; }
+  .site-nav a { padding: 6px 8px; font-size: 13px; }
+}
+
+/* --- Hero ----------------------------------------------------------------- */
+
+.hero {
+  padding: var(--space-96) 0 var(--space-64);
+  border-bottom: 1px solid var(--border);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ember);
+  margin: 0 0 var(--space-16);
+}
+
+h1 {
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  margin: 0 0 var(--space-24);
+  max-width: 20ch;
+}
+
+.lede {
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  color: var(--text-secondary);
+  max-width: 62ch;
+  margin: 0 0 var(--space-32);
+}
+
+h2 {
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  font-weight: 650;
+  margin: 0 0 var(--space-16);
+}
+
+h3 {
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+  margin: var(--space-32) 0 var(--space-8);
+}
+
+h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin: var(--space-24) 0 var(--space-8);
+}
+
+.section-lede {
+  color: var(--text-secondary);
+  max-width: 68ch;
+  margin: 0 0 var(--space-32);
+}
+
+p { margin: 0 0 var(--space-16); }
+p:last-child { margin-bottom: 0; }
+
+/* --- Buttons -------------------------------------------------------------- */
+
+.actions {
+  display: flex;
+  gap: var(--space-12);
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: 11px 20px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 550;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+.btn:hover { text-decoration: none; }
+
+.btn-primary {
+  background: var(--ember);
+  color: var(--on-ember);
+}
+.btn-primary:hover { background: #f07449; }
+
+.btn-secondary {
+  background: var(--surface);
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+.btn-secondary:hover { background: var(--surface-raised); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: transparent;
+}
+.btn-ghost:hover { color: var(--text); background: var(--surface); }
+
+/* --- Cards and grids ------------------------------------------------------ */
+
+.grid {
+  display: grid;
+  gap: var(--space-16);
+}
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-24);
+}
+.card h3 { margin-top: 0; }
+.card p { color: var(--text-secondary); font-size: 0.94rem; }
+.card p:last-child { margin-bottom: 0; }
+
+.card-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  margin: 0 0 var(--space-12);
+}
+
+/* --- Tables --------------------------------------------------------------- */
+
+.table-scroll { overflow-x: auto; margin: var(--space-24) 0; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 10px 16px 10px 0;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+th {
+  color: var(--text-tertiary);
+  font-weight: 500;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+tbody tr:last-child td { border-bottom: none; }
+
+td code { white-space: nowrap; }
+
+/* --- Code ----------------------------------------------------------------- */
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.875em;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--text);
+}
+
+pre {
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-16) var(--space-24);
+  overflow-x: auto;
+  margin: var(--space-16) 0;
+  line-height: 1.6;
+}
+
+pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+/* The one thing worth colouring in a shell block: the comment. */
+pre .c { color: var(--text-tertiary); }
+
+/* --- Diagrams ------------------------------------------------------------- */
+
+/* The architecture diagrams in the README are plain ASCII so they survive
+   being copied into a terminal or an issue. On the site the same diagrams are
+   rendered in a monospace block with the grid showing through, which keeps them
+   legible without pretending to be vector art. */
+.diagram {
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-24);
+  overflow-x: auto;
+  margin: var(--space-24) 0;
+}
+
+.diagram pre {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 700px) {
+  .diagram pre { font-size: 0.66rem; }
+}
+
+/* --- Callouts ------------------------------------------------------------- */
+
+.note {
+  border-left: 3px solid var(--border-strong);
+  padding: var(--space-4) 0 var(--space-4) var(--space-16);
+  margin: var(--space-24) 0;
+  color: var(--text-secondary);
+  font-size: 0.94rem;
+}
+
+.note-warn { border-left-color: var(--ember); }
+.note-stop { border-left-color: var(--status-trouble); }
+
+.note strong { color: var(--text); font-weight: 600; }
+
+/* --- Badges --------------------------------------------------------------- */
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  margin: var(--space-24) 0;
+}
+.badges img { height: 20px; display: block; }
+
+/* --- Status pills --------------------------------------------------------- */
+
+/* Follows the product's own rule: status is never carried by orange. */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border-strong);
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+.pill::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.pill-queued  { color: var(--status-queued); }
+.pill-cooking { color: var(--status-cooking); }
+.pill-ready   { color: var(--status-ready); }
+.pill-trouble { color: var(--status-trouble); }
+.pill-ember   { color: var(--ember); }
+
+/* --- Footer --------------------------------------------------------------- */
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: var(--space-48) 0;
+  color: var(--text-tertiary);
+  font-size: 0.875rem;
+}
+
+.site-footer .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-24);
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-16);
+}
+.footer-links a { color: var(--text-secondary); }
+
+/* --- Utilities ------------------------------------------------------------ */
+
+.mono { font-family: var(--font-mono); font-size: 0.875em; }
+.muted { color: var(--text-secondary); }
+.dim { color: var(--text-tertiary); }
+.nowrap { white-space: nowrap; }
+.mt-0 { margin-top: 0; }
+.mb-0 { margin-bottom: 0; }
+.center { text-align: center; }
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--ember);
+  color: var(--on-ember);
+  padding: 10px 16px;
+  z-index: 100;
+  border-radius: 0 0 var(--radius) 0;
+}
+.skip-link:focus { left: 0; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --- Print ---------------------------------------------------------------- */
+
+@media print {
+  body { background: #fff; color: #000; }
+  .site-header, .site-footer, .actions { display: none; }
+  a { color: #000; text-decoration: underline; }
+  .card, .diagram, pre { border-color: #ccc; background: #fafafa; }
+}

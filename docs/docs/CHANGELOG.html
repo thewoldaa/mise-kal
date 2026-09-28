@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Changelog — Mise-Kal</title>
+<meta name="description" content="What changed in each release.">
+<meta name="theme-color" content="#0b0f10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  /* Documentation pages are a narrower measure than the landing page: body
+     text reads badly past about 75 characters, and these pages are mostly
+     prose. */
+  .doc-layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: var(--space-48);
+    align-items: start;
+    padding: var(--space-32) 0 var(--space-96);
+  }
+  @media (max-width: 900px) {
+    .doc-layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-24); }
+    .doc-nav { position: static !important; }
+  }
+  .doc-nav {
+    position: sticky;
+    top: 84px;
+    font-size: 13px;
+  }
+  .doc-nav p {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin: 0 0 var(--space-12);
+  }
+  .doc-nav ul { list-style: none; margin: 0; padding: 0; }
+  .doc-nav li { margin: 0; }
+  .doc-nav a {
+    display: block;
+    padding: 5px 0;
+    color: var(--text-secondary);
+    border-left: 2px solid transparent;
+    padding-left: 10px;
+    margin-left: -12px;
+  }
+  .doc-nav a:hover { color: var(--text); text-decoration: none; }
+  .doc-nav a[aria-current='page'] {
+    color: var(--text);
+    border-left-color: var(--ember);
+  }
+
+  .doc {
+    max-width: 76ch;
+    min-width: 0;
+  }
+  .doc h1 {
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    margin-bottom: var(--space-24);
+  }
+  .doc h2 {
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+  }
+  .doc h3 { margin-top: var(--space-32); }
+  .doc ul, .doc ol { padding-left: 22px; }
+  .doc li { margin: var(--space-4) 0; }
+  .doc blockquote {
+    margin: var(--space-24) 0;
+    padding: var(--space-4) 0 var(--space-4) var(--space-16);
+    border-left: 3px solid var(--border-strong);
+    color: var(--text-secondary);
+  }
+  .doc blockquote p { margin: 0; }
+  .doc hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: var(--space-48) 0;
+  }
+  .doc table { margin: var(--space-24) 0; }
+  .doc img { margin: var(--space-16) 0; }
+  .doc-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-16);
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span>Mise-Kal</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="../demo/">Demo</a>
+      <a href="./" aria-current='page'>Documentation</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+  <div class="doc-layout">
+    <nav class="doc-nav" aria-label="Documentation">
+      <p>Contents</p>
+      <ul>
+        <li><a href="owner-guide.html">Owner guide</a></li>
+        <li><a href="developing.html">Developer guide</a></li>
+        <li><a href="architecture.html">Architecture</a></li>
+        <li><a href="install-macos.html">Installing on macOS</a></li>
+        <li><a href="install-windows.html">Installing on Windows</a></li>
+        <li><a href="testing.html">Testing</a></li>
+        <li><a href="README.html">Project overview</a></li>
+        <li><a href="CONTRIBUTING.html">Contributing</a></li>
+        <li><a href="SECURITY.html">Security</a></li>
+        <li><a href="CHANGELOG.html" aria-current='page'>Changelog</a></li>
+        <li><a href="AGENTS.html">Working in this repository</a></li>
+      </ul>
+    </nav>
+    <article class="doc">
+<p>All notable changes to Mise-Kal are documented here.</p>
+<p>The format follows <a href="https://keepachangelog.com/en/1.1.0/">Keep a Changelog</a>,
+and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<p>Mise-Kal forked from <a href="https://github.com/devShakib015/mise">Mise</a> at upstream
+<code>main</code> commit <code>c56d1c3</code>. Versions before <code>0.1.0</code> are upstream's; Mise-Kal's own
+history starts at <code>0.1.0</code>.</p>
+<h2 id="unreleased"><a href="https://github.com/thewoldaa/mise-kal/compare/v0.1.0...HEAD">Unreleased</a></h2>
+<h3 id="planned">Planned</h3>
+<ul>
+<li>Indonesian localization across the POS, KDS, and Manager shells (Phase 2)</li>
+<li>Windows installer (Phase 1)</li>
+<li>CI running both suites on every push</li>
+</ul>
+<h2 id="010-2026-09-28"><a href="https://github.com/thewoldaa/mise-kal/releases/tag/v0.1.0">0.1.0</a> - 2026-09-28</h2>
+<p>The first Mise-Kal release. Everything here is infrastructure and correctness:
+no product features were added, because stabilising the existing system and
+making it testable comes before building on top of it.</p>
+<h3 id="added">Added</h3>
+<p><strong>Multi-agent worktree harness</strong> (<code>.harness/</code>)</p>
+<p>An isolated git worktree, branch, reserved port block, and scratch directory per
+agent, so several can work in parallel without touching each other's files.
+Includes a wave lifecycle with controlled integration: a trial merge detects
+conflicts before anything lands on <code>main</code>, each branch merges as its own
+attributable commit, the full suite runs on the merged result, and each branch
+is verified to be an ancestor of <code>main</code> afterwards.</p>
+<ul>
+<li><code>worktree.sh</code> - create, list, status, claim, run, report, reset, remove, doctor</li>
+<li><code>test.sh</code> - runs all suites with per-agent isolation</li>
+<li><code>wave.sh</code>, <code>integrate.sh</code> - wave lifecycle and controlled merging</li>
+<li><code>cleanup.sh</code> - prunes merged worktrees, stale locks, orphaned port reservations</li>
+<li><code>setup-tools.sh</code> - fetches PocketBase and jq into a git-ignored cache</li>
+<li><code>security-check.sh</code> - fails the build if a credential or private file is tracked</li>
+</ul>
+<p><strong>Documentation</strong></p>
+<ul>
+<li><code>CONTRIBUTING.md</code> - the workflow contract</li>
+<li><code>SECURITY.md</code> - threat model and the guarantees the code is built to keep</li>
+<li><code>AGENTS.md</code> - how an AI agent works in this repository</li>
+<li><code>docs/architecture.md</code> - system structure and where future work attaches</li>
+<li><code>.env.example</code> - configuration template with no values</li>
+<li>Task definitions in <code>.harness/tasks/</code> covering the first three phases</li>
+</ul>
+<p><strong>Indonesian localization infrastructure</strong></p>
+<p>Flutter <code>gen-l10n</code> with Indonesian as the template locale and English as the
+fallback, 204 keys, and the connect and sign-in screens translated. The
+generated Dart is committed so tests and CI need no codegen step.</p>
+<p><strong>Windows build script</strong> (<code>installer/windows/build_windows.sh</code>)</p>
+<p>Produces a runnable Windows build with PocketBase staged in. Checks for
+Developer Mode first and explains the fix, because Flutter's own failure for
+that prerequisite does not name it.</p>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li>
+<p><strong>Connection monitor could write to a disposed provider.</strong> The health poll
+  runs every ten seconds and takes up to four to answer, so the provider can be
+  disposed while a request is in flight: the app closing, or a tablet signing
+  out. Writing <code>state</code> after that threw <code>Cannot use the Ref of
+  NotifierProvider after it has been disposed</code>. Three paths needed guarding:
+  <code>check()</code> after its await, the periodic timer whose tick can already be
+  queued, and <code>reportFailure</code>/<code>reportSuccess</code>.</p>
+</li>
+<li>
+<p><strong>Shell scripts were checked out with CRLF on Windows.</strong> Git's default
+  <code>core.autocrlf=true</code> rewrites every <code>.sh</code> file, and bash then reads
+  <code>set -euo pipefail\r</code>, fails to find a command named <code>pipefail\r</code>, and dies
+  before the first line. Line endings are now pinned in <code>.gitattributes</code>.</p>
+</li>
+<li>
+<p><strong>The vendored Inter font license was being reformatted.</strong> A <code>.gitattributes</code>
+  rule normalised the line endings of a third-party legal notice. It is now
+  excluded from all git text processing.</p>
+</li>
+</ul>
+<h3 id="changed">Changed</h3>
+<ul>
+<li>
+<p>Test suites run on Windows. Three things in upstream's suites break under
+  concurrency, all confirmed by reading them: hardcoded ports 8091-8098, shared
+  literal <code>/tmp</code> scratch files (Git Bash does not honour <code>TMPDIR</code> for a literal
+  <code>/tmp</code> path), and <code>pkill -f</code> cleanup that matches command lines as strings and
+  therefore kills a sibling agent's server. The harness patches a copy at run
+  time with an absolute server path, a per-agent port and data directory, and
+  PID-based cleanup, leaving the originals untouched so upstream stays
+  mergeable.</p>
+</li>
+<li>
+<p>The repository carries project instructions and templates only. Personal
+  agent instructions, memory, credentials, and machine-specific configuration
+  are git-ignored, with a scanner that fails the build if any of it is tracked.</p>
+</li>
+</ul>
+<h3 id="tests">Tests</h3>
+<p>101 backend checks across six suites, 74 Dart tests. The offline queue's
+<code>flush()</code> gained 11 tests, having had none despite being the feature the product
+leans on.</p>
+<h3 id="notes">Notes</h3>
+<p>Mise-Kal is a derivative work. The MIT license is retained unchanged and the
+upstream copyright notice is preserved in <code>LICENSE</code>.</p>
+      <div class="doc-links">
+        <a href="https://github.com/thewoldaa/mise-kal/blob/main/CHANGELOG.md">View source on GitHub</a>
+        <a href="../demo/">Interactive demo</a>
+        <a href="./">All documentation</a>
+      </div>
+    </article>
+  </div>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <p class="mb-0">
+        Mise-Kal &middot; MIT licensed &middot; A derivative of
+        <a href="https://github.com/devShakib015/mise">Mise</a>
+      </p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../">Home</a>
+      <a href="../demo/">Demo</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+      <a href="https://github.com/thewoldaa/mise-kal/releases">Releases</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

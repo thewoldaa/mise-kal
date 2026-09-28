@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Testing — Mise-Kal</title>
+<meta name="description" content="The seven suites, what each covers, and why the harness patches upstream&#x27;s tests at run time.">
+<meta name="theme-color" content="#0b0f10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  /* Documentation pages are a narrower measure than the landing page: body
+     text reads badly past about 75 characters, and these pages are mostly
+     prose. */
+  .doc-layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: var(--space-48);
+    align-items: start;
+    padding: var(--space-32) 0 var(--space-96);
+  }
+  @media (max-width: 900px) {
+    .doc-layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-24); }
+    .doc-nav { position: static !important; }
+  }
+  .doc-nav {
+    position: sticky;
+    top: 84px;
+    font-size: 13px;
+  }
+  .doc-nav p {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin: 0 0 var(--space-12);
+  }
+  .doc-nav ul { list-style: none; margin: 0; padding: 0; }
+  .doc-nav li { margin: 0; }
+  .doc-nav a {
+    display: block;
+    padding: 5px 0;
+    color: var(--text-secondary);
+    border-left: 2px solid transparent;
+    padding-left: 10px;
+    margin-left: -12px;
+  }
+  .doc-nav a:hover { color: var(--text); text-decoration: none; }
+  .doc-nav a[aria-current='page'] {
+    color: var(--text);
+    border-left-color: var(--ember);
+  }
+
+  .doc {
+    max-width: 76ch;
+    min-width: 0;
+  }
+  .doc h1 {
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    margin-bottom: var(--space-24);
+  }
+  .doc h2 {
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+  }
+  .doc h3 { margin-top: var(--space-32); }
+  .doc ul, .doc ol { padding-left: 22px; }
+  .doc li { margin: var(--space-4) 0; }
+  .doc blockquote {
+    margin: var(--space-24) 0;
+    padding: var(--space-4) 0 var(--space-4) var(--space-16);
+    border-left: 3px solid var(--border-strong);
+    color: var(--text-secondary);
+  }
+  .doc blockquote p { margin: 0; }
+  .doc hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: var(--space-48) 0;
+  }
+  .doc table { margin: var(--space-24) 0; }
+  .doc img { margin: var(--space-16) 0; }
+  .doc-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-16);
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span>Mise-Kal</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="../demo/">Demo</a>
+      <a href="./" aria-current='page'>Documentation</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+  <div class="doc-layout">
+    <nav class="doc-nav" aria-label="Documentation">
+      <p>Contents</p>
+      <ul>
+        <li><a href="owner-guide.html">Owner guide</a></li>
+        <li><a href="developing.html">Developer guide</a></li>
+        <li><a href="architecture.html">Architecture</a></li>
+        <li><a href="install-macos.html">Installing on macOS</a></li>
+        <li><a href="install-windows.html">Installing on Windows</a></li>
+        <li><a href="testing.html" aria-current='page'>Testing</a></li>
+        <li><a href="README.html">Project overview</a></li>
+        <li><a href="CONTRIBUTING.html">Contributing</a></li>
+        <li><a href="SECURITY.html">Security</a></li>
+        <li><a href="CHANGELOG.html">Changelog</a></li>
+        <li><a href="AGENTS.html">Working in this repository</a></li>
+      </ul>
+    </nav>
+    <article class="doc">
+<p>Seven suites. Six exercise the server, one exercises the Dart application. All
+of them run with a single command, and each backend suite spins up a throwaway
+database on its own port and tears it down afterwards. None of them touch real
+data.</p>
+<pre><code class="language-bash">.harness/scripts/test.sh --agent local --all
+</code></pre>
+<h2 id="what-each-suite-covers">What each suite covers</h2>
+<table>
+<thead>
+<tr>
+<th>Suite</th>
+<th>Covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>smoke</code></td>
+<td>Order numbering, modifier pricing, tax and service charge, voids, table release, and that a forged total is overwritten</td>
+</tr>
+<tr>
+<td><code>setup</code></td>
+<td>The first-run endpoints, and that bootstrap can never run twice</td>
+</tr>
+<tr>
+<td><code>kitchen</code></td>
+<td>A bill's status following its lines, and the guards that stop it touching bills which are not in service</td>
+</tr>
+<tr>
+<td><code>payments</code></td>
+<td>Part payments, settlement, discounts, and refusing money against a cancelled bill</td>
+</tr>
+<tr>
+<td><code>staff</code></td>
+<td>Resetting a forgotten PIN, and the guards that stop a manager seizing an owner's account or the venue losing its last owner</td>
+</tr>
+<tr>
+<td><code>guest</code></td>
+<td>Table-side ordering: that a guest sees only the menu, that no price comes from the request, and that a stranger on the wi-fi cannot put food on the pass</td>
+</tr>
+<tr>
+<td><code>app</code></td>
+<td>Dart: printing, reporting, the offline queue, and localization</td>
+</tr>
+</tbody>
+</table>
+<p>Running one suite:</p>
+<pre><code class="language-bash">.harness/scripts/test.sh --agent local --suite smoke
+.harness/scripts/test.sh --agent local --app
+</code></pre>
+<h2 id="why-the-harness-patches-the-suites">Why the harness patches the suites</h2>
+<p>The harness does not run upstream's suites directly. It generates a patched copy
+of each one, outside the repository, and runs that. The originals are never
+modified, so <code>git status</code> stays clean and upstream stays mergeable.</p>
+<p>Three things in the upstream suites break the moment two agents run at once. All
+three were confirmed by reading the scripts, not assumed:</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>What happens</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hardcoded ports 8091–8098</td>
+<td>Two agents on the same suite fight over a port; one gets a connection refused that looks like a product bug</td>
+<td>Each agent gets a reserved block from <code>harness.conf</code></td>
+</tr>
+<tr>
+<td>Literal <code>/tmp/g.json</code>, <code>/tmp/p.json</code></td>
+<td>Git Bash does <strong>not</strong> honour <code>TMPDIR</code> for a literal <code>/tmp</code> path (verified by experiment), so agents overwrite each other's responses</td>
+<td>Scratch paths are rewritten to the agent's own directory</td>
+</tr>
+<tr>
+<td><code>pkill -f "pocketbase serve --dir=./pb_test_data"</code></td>
+<td><code>pkill -f</code> matches the command line as a string. Every agent's server has the <em>same</em> relative arguments, so agent A's cleanup kills agent B's server mid-suite</td>
+<td>The server's PID is captured and only that process is killed</td>
+</tr>
+</tbody>
+</table>
+<p>The third one is the worst, because it produces a failure in a test that had
+already passed, which reads as a product bug rather than a harness bug.</p>
+<h3 id="the-patcher-asserts">The patcher asserts</h3>
+<p>Every substitution is checked. If upstream renames a variable or restructures a
+suite, <code>test.sh</code> fails loudly with the missing marker rather than silently
+running an unisolated suite. A silent failure here would be blamed on the
+product code, which is exactly the confusion the harness exists to prevent.</p>
+<h2 id="the-dart-side">The Dart side</h2>
+<pre><code class="language-bash">cd app &amp;&amp; flutter test
+</code></pre>
+<h3 id="a-fake-server-on-a-real-socket">A fake server on a real socket</h3>
+<p>The offline queue tests use a fake PocketBase speaking HTTP on a loopback socket
+rather than a mock object. That is deliberate: what matters is that a real
+<code>ClientException</code> with <code>statusCode == 0</code> comes back out of the SDK, because that
+is what <code>isNetworkFailure</code> keys on to decide between keeping a write for retry
+and dropping it as refused.</p>
+<p>A mock would let a test assert that <code>create()</code> was called. It would not prove
+that a dropped connection is distinguishable from a rejection, which is the
+thing that actually decides whether a waiter's order survives.</p>
+<p>The printer tests take the same approach, with a fake thermal printer on a real
+socket.</p>
+<h3 id="one-trap-worth-knowing">One trap worth knowing</h3>
+<p><code>TestWidgetsFlutterBinding</code> installs a mock <code>HttpClient</code> that answers every
+request with 400 and never opens a socket. Any test that needs real HTTP must
+not call <code>ensureInitialized()</code>. This cost an afternoon to diagnose, so it is
+written down here and in a comment at the top of the affected test file.</p>
+<h2 id="writing-a-test">Writing a test</h2>
+<p>A change without a test is not finished.</p>
+<table>
+<thead>
+<tr>
+<th>You changed</th>
+<th>Minimum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Money math, order state, or anything in <code>pb_hooks/lib_money.js</code></td>
+<td><code>smoke</code> and <code>payments</code></td>
+</tr>
+<tr>
+<td>The guest routes</td>
+<td><code>guest</code></td>
+</tr>
+<tr>
+<td>Staff roles or guards</td>
+<td><code>staff</code></td>
+</tr>
+<tr>
+<td>Kitchen state</td>
+<td><code>kitchen</code></td>
+</tr>
+<tr>
+<td>Flutter code</td>
+<td><code>flutter test</code>, plus a test for the new behaviour</td>
+</tr>
+<tr>
+<td>Schema</td>
+<td><code>smoke</code> and <code>payments</code>, plus a new migration</td>
+</tr>
+</tbody>
+</table>
+<p>Two rules that matter more than coverage:</p>
+<p><strong>Never weaken a test to make it pass.</strong> If a test is wrong, fix it and say so in
+the commit body. If it is right, your change is wrong.</p>
+<p><strong>A flaky test is a bug.</strong> Report it rather than re-running until it passes.</p>
+<h2 id="proving-a-fix-is-load-bearing">Proving a fix is load-bearing</h2>
+<p>When a test is written for a bug fix, revert the fix and confirm the test fails.
+A test that passes with and without the fix proves nothing and will not catch the
+bug coming back.</p>
+<p>This is not a formality. While writing the first tests for the offline queue, a
+test was written for a suspected ordering bug that turned out not to exist. The
+trace showed the queue kept its order correctly. The honest outcome was to delete
+the test rather than keep a green assertion that guarded nothing.</p>
+      <div class="doc-links">
+        <a href="https://github.com/thewoldaa/mise-kal/blob/main/docs/testing.md">View source on GitHub</a>
+        <a href="../demo/">Interactive demo</a>
+        <a href="./">All documentation</a>
+      </div>
+    </article>
+  </div>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <p class="mb-0">
+        Mise-Kal &middot; MIT licensed &middot; A derivative of
+        <a href="https://github.com/devShakib015/mise">Mise</a>
+      </p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../">Home</a>
+      <a href="../demo/">Demo</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+      <a href="https://github.com/thewoldaa/mise-kal/releases">Releases</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

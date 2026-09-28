@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architecture — Mise-Kal</title>
+<meta name="description" content="How the system is put together, where the seams are, and how each future phase attaches to them.">
+<meta name="theme-color" content="#0b0f10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  /* Documentation pages are a narrower measure than the landing page: body
+     text reads badly past about 75 characters, and these pages are mostly
+     prose. */
+  .doc-layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: var(--space-48);
+    align-items: start;
+    padding: var(--space-32) 0 var(--space-96);
+  }
+  @media (max-width: 900px) {
+    .doc-layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-24); }
+    .doc-nav { position: static !important; }
+  }
+  .doc-nav {
+    position: sticky;
+    top: 84px;
+    font-size: 13px;
+  }
+  .doc-nav p {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin: 0 0 var(--space-12);
+  }
+  .doc-nav ul { list-style: none; margin: 0; padding: 0; }
+  .doc-nav li { margin: 0; }
+  .doc-nav a {
+    display: block;
+    padding: 5px 0;
+    color: var(--text-secondary);
+    border-left: 2px solid transparent;
+    padding-left: 10px;
+    margin-left: -12px;
+  }
+  .doc-nav a:hover { color: var(--text); text-decoration: none; }
+  .doc-nav a[aria-current='page'] {
+    color: var(--text);
+    border-left-color: var(--ember);
+  }
+
+  .doc {
+    max-width: 76ch;
+    min-width: 0;
+  }
+  .doc h1 {
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    margin-bottom: var(--space-24);
+  }
+  .doc h2 {
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+  }
+  .doc h3 { margin-top: var(--space-32); }
+  .doc ul, .doc ol { padding-left: 22px; }
+  .doc li { margin: var(--space-4) 0; }
+  .doc blockquote {
+    margin: var(--space-24) 0;
+    padding: var(--space-4) 0 var(--space-4) var(--space-16);
+    border-left: 3px solid var(--border-strong);
+    color: var(--text-secondary);
+  }
+  .doc blockquote p { margin: 0; }
+  .doc hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: var(--space-48) 0;
+  }
+  .doc table { margin: var(--space-24) 0; }
+  .doc img { margin: var(--space-16) 0; }
+  .doc-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-16);
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span>Mise-Kal</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="../demo/">Demo</a>
+      <a href="./" aria-current='page'>Documentation</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+  <div class="doc-layout">
+    <nav class="doc-nav" aria-label="Documentation">
+      <p>Contents</p>
+      <ul>
+        <li><a href="owner-guide.html">Owner guide</a></li>
+        <li><a href="developing.html">Developer guide</a></li>
+        <li><a href="architecture.html" aria-current='page'>Architecture</a></li>
+        <li><a href="install-macos.html">Installing on macOS</a></li>
+        <li><a href="install-windows.html">Installing on Windows</a></li>
+        <li><a href="testing.html">Testing</a></li>
+        <li><a href="README.html">Project overview</a></li>
+        <li><a href="CONTRIBUTING.html">Contributing</a></li>
+        <li><a href="SECURITY.html">Security</a></li>
+        <li><a href="CHANGELOG.html">Changelog</a></li>
+        <li><a href="AGENTS.html">Working in this repository</a></li>
+      </ul>
+    </nav>
+    <article class="doc">
+<p>How the system is put together, why it is put together that way, and where the
+seams are for future development.</p>
+<p>This is the document to read before making a structural change. The four rules
+in §3 are not style preferences — they are what the tests are protecting, and
+breaking one silently is how a POS starts losing money.</p>
+<hr />
+<h2 id="1-repository-layout">1. Repository layout</h2>
+<pre><code>mise-kal/
+├── PLAN.md                  upstream's design contract (still authoritative)
+├── README.md                what this project is, and how it differs from upstream
+├── CONTRIBUTING.md          the workflow contract
+├── SECURITY.md              threat model and the guarantees the code keeps
+├── AGENTS.md                how an AI agent works in this repository
+├── LICENSE                  MIT, with upstream's copyright preserved
+├── .gitattributes           line endings, pinned (Windows correctness)
+├── .gitignore               aggressive; see §8
+├── .env.example             configuration template — no values, ever
+│
+├── .harness/                multi-agent development harness (Mise-Kal addition)
+│   ├── README.md
+│   ├── scripts/             worktree, wave, test, integrate, cleanup, security
+│   ├── tasks/               task definitions with front matter
+│   └── waves/               wave manifests
+│
+├── server/                  PocketBase: schema + all business rules
+│   ├── VERSION              pinned PocketBase version
+│   ├── pb_migrations/       the schema, version-controlled
+│   ├── pb_hooks/            rules that cannot live on a client
+│   ├── pb_public/           the guest-facing page
+│   ├── scripts/             dev server + six test suites
+│   └── fetch_pocketbase.sh  downloads the pinned binary (not vendored)
+│
+├── app/                     Flutter: one binary, three role-based shells
+│   ├── lib/core/            design system, router, discovery, printing, reporting
+│   ├── lib/data/            models, repositories, offline queue
+│   ├── lib/features/        setup, auth, pos, kds, manager
+│   └── test/                Dart tests
+│
+├── installer/               packaging (macOS today, Windows planned)
+└── docs/                    owner guide, developer guide, install guides
+</code></pre>
+<h2 id="2-the-shape-of-the-system">2. The shape of the system</h2>
+<pre><code>                    ┌─────────────────────────────────────┐
+                    │  PocketBase (one binary, on-site)   │
+                    │  ┌───────────────┐ ┌─────────────┐  │
+   Flutter app ────▶│  │  migrations   │ │   hooks     │  │
+   (POS/KDS/Manager)│  │  the schema   │ │ order no's  │  │
+        │           │  │               │ │ ALL MONEY   │  │
+        │           │  └───────────────┘ │ guards      │  │
+        │           │        SQLite       │ audit       │  │
+        │           │                     └─────────────┘  │
+        │           │  realtime subscriptions              │
+        │           └─────────────────────────────────────┘
+        │                          ▲
+        │                          │ HTTP (LAN only)
+   ESC/POS over TCP 9100           │
+   (thermal printers)      guest phone (QR, browser)
+</code></pre>
+<p><strong>One server, one binary.</strong> PocketBase contains the database, authentication,
+realtime subscriptions, file storage and an admin UI. There is no cloud service,
+no account, no credit card. This is what makes the offline guarantee possible:
+the server is a machine in the restaurant, so losing the internet does not lose
+the POS.</p>
+<p><strong>One app, three shells.</strong> Not three downloads. The signed-in staff member's
+role decides which shell they get. One codebase, one installer, one thing to
+explain to a restaurant.</p>
+<p><strong>The server owns every rule that involves money.</strong> The client displays totals;
+it never computes them.</p>
+<h2 id="3-the-four-rules">3. The four rules</h2>
+<p>These are load-bearing. Each is enforced in code and covered by a test. Breaking
+one silently is how a restaurant loses money, so they are stated here in full.</p>
+<h3 id="money-is-only-ever-computed-on-the-server">Money is only ever computed on the server</h3>
+<p><code>server/pb_hooks/lib_money.js</code> recomputes every order's totals on write. A
+client that PATCHes a forged <code>total</code> has it overwritten. The client displays
+numbers; it does not add them up.</p>
+<p><em>Why:</em> a POS must never let a tampered client decide what a bill costs. The
+tablet is on the restaurant's wi-fi and could be anything.</p>
+<p><em>Test:</em> <code>smoke</code> — "Client cannot forge a total".</p>
+<h3 id="menu-names-and-prices-are-snapshotted-onto-order-lines">Menu names and prices are snapshotted onto order lines</h3>
+<p>When an item is added to an order, its name and unit price are copied onto the
+line. The line does not reference the menu item for pricing.</p>
+<p><em>Why:</em> editing tomorrow's menu must never rewrite yesterday's bill.</p>
+<p><em>Test:</em> <code>smoke</code> — line totals are asserted against snapshot values.</p>
+<h3 id="takings-are-counted-by-when-a-bill-closed">Takings are counted by when a bill closed</h3>
+<p>Reports and shifts key on <code>closed_at</code>, not <code>created_at</code>.</p>
+<p><em>Why:</em> a table seated before a shift began and settled during it is that
+shift's takings. Keying on creation credits the money to the wrong session and
+leaves the drawer looking short.</p>
+<p><em>Test:</em> <code>payments</code> — settlement and shift figures.</p>
+<h3 id="ageing-and-status-use-separate-colour-channels">Ageing and status use separate colour channels</h3>
+<p>On the kitchen display, a ticket's <strong>border and timer</strong> carry how long it has
+been waiting. Its <strong>dots and chips</strong> carry what state each item is in.</p>
+<p><em>Why:</em> merging them makes a late ticket full of cooking items unreadable — the
+two meanings fight each other. Red frame plus blue dots reads correctly at a
+glance.</p>
+<p><em>Test:</em> visual; documented in <code>docs/developing.md</code>.</p>
+<h2 id="4-data-model">4. Data model</h2>
+<p>PocketBase collections, defined as JS migrations so the schema is
+version-controlled and reproducible on a fresh install.</p>
+<table>
+<thead>
+<tr>
+<th>Collection</th>
+<th>Holds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>restaurant</code></td>
+<td>Name, logo, address, phone, currency, tax rate, service charge</td>
+</tr>
+<tr>
+<td><code>staff</code></td>
+<td>Auth collection — name, PIN, role, active</td>
+</tr>
+<tr>
+<td><code>categories</code></td>
+<td>Name, sort order, image, active</td>
+</tr>
+<tr>
+<td><code>menu_items</code></td>
+<td>Category, name, description, price, image, prep time, active</td>
+</tr>
+<tr>
+<td><code>modifier_groups</code></td>
+<td>Name, min/max selectable, required</td>
+</tr>
+<tr>
+<td><code>modifiers</code></td>
+<td>Group, name, price delta</td>
+</tr>
+<tr>
+<td><code>menu_item_modifiers</code></td>
+<td>Which groups apply to which items</td>
+</tr>
+<tr>
+<td><code>tables</code></td>
+<td>Label, seats, zone, current status</td>
+</tr>
+<tr>
+<td><code>orders</code></td>
+<td>Number, type, table, staff, status, money columns, timestamps</td>
+</tr>
+<tr>
+<td><code>order_items</code></td>
+<td>Order, item, qty, unit price snapshot, modifiers, notes, status</td>
+</tr>
+<tr>
+<td><code>payments</code></td>
+<td>Order, method, amount, reference, staff</td>
+</tr>
+<tr>
+<td><code>shifts</code></td>
+<td>Staff, open/close times, opening and closing cash, variance</td>
+</tr>
+<tr>
+<td><code>printers</code></td>
+<td>Name, IP, port, role, paper width</td>
+</tr>
+<tr>
+<td><code>audit_log</code></td>
+<td>Who changed what, when — voids and discounts especially</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Schema changes are additive migrations.</strong> Never edit an applied migration: a
+machine that already ran it would end up with a different schema from a fresh
+install, and that difference is invisible until it corrupts something.</p>
+<h2 id="5-layers">5. Layers</h2>
+<pre><code>app/lib/features/     role shells: setup, auth, pos, kds, manager
+        │             depends on ▼
+app/lib/data/         models, repositories, offline queue, live queries
+        │             depends on ▼
+app/lib/core/         theme, printing, reporting, discovery, widgets
+                      depends on nothing above it
+</code></pre>
+<p>The dependency direction is one-way. <code>core/</code> never imports from <code>features/</code>. A
+feature that needs something from another feature is a sign the shared part
+belongs in <code>data/</code> or <code>core/</code>.</p>
+<p><strong>Printing</strong> lives in <code>core/printing/</code> with an IO implementation and a stub, so
+the web build compiles and can say plainly that a browser cannot open a raw
+socket, rather than failing strangely.</p>
+<p><strong>Offline</strong> lives in <code>data/offline/</code>. Adding to a bill works offline and queues
+to disk. Firing to the kitchen and settling a bill deliberately do <em>not</em>: the
+kitchen screen is the thing being written to, and a total only the server
+computes cannot honestly be guessed at on a tablet.</p>
+<h2 id="6-where-the-seams-are-for-new-work">6. Where the seams are for new work</h2>
+<p>This is the map for the Mise-Kal roadmap. Each later phase attaches at a
+specific place, and knowing which one keeps a feature from being woven through
+everything.</p>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Attaches at</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Indonesian localization</td>
+<td><code>app/lib/core/</code> + all of <code>features/</code></td>
+<td>First task that touches every user-facing string; establishes the pattern</td>
+</tr>
+<tr>
+<td>QRIS payments</td>
+<td><code>server/pb_hooks/</code> + <code>data/</code></td>
+<td>Adds a <strong>payment method</strong>, not a second ledger. Must not weaken §3</td>
+</tr>
+<tr>
+<td>WhatsApp notifications</td>
+<td><code>server/pb_hooks/</code></td>
+<td>Outbound, triggered by existing order events</td>
+</tr>
+<tr>
+<td>Inventory</td>
+<td><code>server/pb_migrations/</code> + <code>pb_hooks/</code></td>
+<td>Schema change; recipe/depletion logic belongs server-side</td>
+</tr>
+<tr>
+<td>Multi-branch</td>
+<td>Everywhere</td>
+<td>The largest change. Needs a design task before code</td>
+</tr>
+<tr>
+<td>Owner dashboard</td>
+<td><code>features/</code></td>
+<td>Depends on multi-branch for anything cross-venue</td>
+</tr>
+<tr>
+<td>Backup/sync</td>
+<td><code>server/</code></td>
+<td>Depends on multi-branch</td>
+</tr>
+<tr>
+<td>Analytics</td>
+<td><code>core/reporting/</code></td>
+<td>Depends on reporting data being trustworthy</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The rule for adding a feature:</strong> it must consider security, data integrity,
+offline behaviour, migration, backward compatibility, testing, maintainability
+and deployment. A feature request is not a reason to break the architecture.</p>
+<h2 id="7-testing">7. Testing</h2>
+<p>Seven suites, all runnable with one command:</p>
+<pre><code class="language-bash">.harness/scripts/test.sh --agent &lt;you&gt; --all
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Suite</th>
+<th>Covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>smoke</code></td>
+<td>Order numbering, modifier pricing, tax/service, voids, table release, forged totals</td>
+</tr>
+<tr>
+<td><code>setup</code></td>
+<td>First-run endpoints, bootstrap can never run twice</td>
+</tr>
+<tr>
+<td><code>kitchen</code></td>
+<td>Bill status follows its lines; guards against touching bills not in service</td>
+</tr>
+<tr>
+<td><code>payments</code></td>
+<td>Part payments, settlement, discounts, refusing money against a cancelled bill</td>
+</tr>
+<tr>
+<td><code>staff</code></td>
+<td>PIN reset, privilege guards, the venue cannot lose its last owner</td>
+</tr>
+<tr>
+<td><code>guest</code></td>
+<td>Table-side ordering: menu visibility, server-side pricing, route isolation</td>
+</tr>
+<tr>
+<td><code>app</code></td>
+<td>Dart: printing, reporting, offline queue</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Why the harness patches the suites rather than running them directly.</strong>
+Upstream's suites hardcode ports, share literal <code>/tmp</code> files, and clean up with
+<code>pkill -f</code> — all three break the moment two agents run at once. The harness
+generates a patched copy with an absolute server path, a per-agent port, a
+per-agent data directory and PID-based cleanup, leaving the originals untouched
+so upstream stays mergeable. It asserts on every substitution, so an upstream
+restructure fails loudly instead of silently running an unisolated suite.</p>
+<h2 id="8-security-and-the-publicprivate-split">8. Security and the public/private split</h2>
+<p>The repository is public. The development workspace is private. The separation
+is enforced, not assumed:</p>
+<ul>
+<li><code>.gitignore</code> covers secrets, personal agent material and machine-specific
+  configuration.</li>
+<li><code>.env.example</code> documents configuration without carrying values.</li>
+<li><code>.harness/scripts/security-check.sh</code> fails the build if anything forbidden is
+  tracked, and runs in CI on every push.</li>
+</ul>
+<p>The full threat model — tampered client, guest on the wi-fi, staff overstepping,
+data at rest — is in <a href="https://github.com/thewoldaa/mise-kal/blob/main/../SECURITY.md">SECURITY.md</a>, together with the table of
+guarantees and the test that proves each one.</p>
+<h2 id="9-development-model">9. Development model</h2>
+<p>Work happens in <strong>waves</strong>. A wave is a set of agents working in parallel on
+independent tasks, followed by one controlled integration into <code>main</code>.</p>
+<pre><code>Wave 1   alpha: task A     beta: task B     gamma: task C
+              \                |                 /
+               +---- integrate into main ------+
+Wave 2   delta: reads Wave 1's result, builds on it
+</code></pre>
+<p>Each agent works in its own git worktree, on its own branch, with its own
+reserved port block and scratch directory. Nothing is shared except git's object
+store, which git already makes safe for concurrent use.</p>
+<p>Integration is a single controlled step that: refuses to start from a dirty
+<code>main</code>; runs a trial merge to detect conflicts <em>before</em> anything lands; merges
+each branch as its own attributable commit; runs the full suite on the merged
+result; and verifies that each branch is genuinely an ancestor of <code>main</code>
+afterwards. That last check exists because an earlier version of the script
+merged onto a temporary branch and reported success while leaving <code>main</code>
+untouched.</p>
+<p>See <a href="https://github.com/thewoldaa/mise-kal/blob/main/../.harness/README.md"><code>.harness/README.md</code></a> for the operating manual.</p>
+<h2 id="10-porting">10. Porting</h2>
+<p>The architecture is deliberately modular so the system can be ported beyond
+Windows. The pieces that would need attention:</p>
+<ul>
+<li><strong>Installer</strong> — <code>installer/</code> is per-platform by design; macOS exists, Windows
+  is planned.</li>
+<li><strong>Server hosting</strong> — <code>app/lib/core/server/server_host.dart</code> already has IO and
+  stub implementations, so a platform that cannot host the server degrades
+  cleanly rather than failing.</li>
+<li><strong>Printing</strong> — <code>core/printing/</code> has the same IO/stub split. A platform without
+  raw sockets reports that it cannot print.</li>
+<li><strong>Discovery</strong> — <code>core/discovery/</code> uses mDNS with a typing-the-address fallback
+  that never goes away, because multicast is blocked on plenty of networks.</li>
+</ul>
+<p>The pattern to follow: an IO implementation plus a stub, so the app compiles and
+tells the truth on a platform that cannot do the thing.</p>
+      <div class="doc-links">
+        <a href="https://github.com/thewoldaa/mise-kal/blob/main/docs/architecture.md">View source on GitHub</a>
+        <a href="../demo/">Interactive demo</a>
+        <a href="./">All documentation</a>
+      </div>
+    </article>
+  </div>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <p class="mb-0">
+        Mise-Kal &middot; MIT licensed &middot; A derivative of
+        <a href="https://github.com/devShakib015/mise">Mise</a>
+      </p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../">Home</a>
+      <a href="../demo/">Demo</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+      <a href="https://github.com/thewoldaa/mise-kal/releases">Releases</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

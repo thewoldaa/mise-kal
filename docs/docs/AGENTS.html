@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Working in this repository — Mise-Kal</title>
+<meta name="description" content="How an AI agent works in this repository without breaking it.">
+<meta name="theme-color" content="#0b0f10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  /* Documentation pages are a narrower measure than the landing page: body
+     text reads badly past about 75 characters, and these pages are mostly
+     prose. */
+  .doc-layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: var(--space-48);
+    align-items: start;
+    padding: var(--space-32) 0 var(--space-96);
+  }
+  @media (max-width: 900px) {
+    .doc-layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-24); }
+    .doc-nav { position: static !important; }
+  }
+  .doc-nav {
+    position: sticky;
+    top: 84px;
+    font-size: 13px;
+  }
+  .doc-nav p {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin: 0 0 var(--space-12);
+  }
+  .doc-nav ul { list-style: none; margin: 0; padding: 0; }
+  .doc-nav li { margin: 0; }
+  .doc-nav a {
+    display: block;
+    padding: 5px 0;
+    color: var(--text-secondary);
+    border-left: 2px solid transparent;
+    padding-left: 10px;
+    margin-left: -12px;
+  }
+  .doc-nav a:hover { color: var(--text); text-decoration: none; }
+  .doc-nav a[aria-current='page'] {
+    color: var(--text);
+    border-left-color: var(--ember);
+  }
+
+  .doc {
+    max-width: 76ch;
+    min-width: 0;
+  }
+  .doc h1 {
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    margin-bottom: var(--space-24);
+  }
+  .doc h2 {
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+  }
+  .doc h3 { margin-top: var(--space-32); }
+  .doc ul, .doc ol { padding-left: 22px; }
+  .doc li { margin: var(--space-4) 0; }
+  .doc blockquote {
+    margin: var(--space-24) 0;
+    padding: var(--space-4) 0 var(--space-4) var(--space-16);
+    border-left: 3px solid var(--border-strong);
+    color: var(--text-secondary);
+  }
+  .doc blockquote p { margin: 0; }
+  .doc hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: var(--space-48) 0;
+  }
+  .doc table { margin: var(--space-24) 0; }
+  .doc img { margin: var(--space-16) 0; }
+  .doc-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-16);
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span>Mise-Kal</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="../demo/">Demo</a>
+      <a href="./" aria-current='page'>Documentation</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+  <div class="doc-layout">
+    <nav class="doc-nav" aria-label="Documentation">
+      <p>Contents</p>
+      <ul>
+        <li><a href="owner-guide.html">Owner guide</a></li>
+        <li><a href="developing.html">Developer guide</a></li>
+        <li><a href="architecture.html">Architecture</a></li>
+        <li><a href="install-macos.html">Installing on macOS</a></li>
+        <li><a href="install-windows.html">Installing on Windows</a></li>
+        <li><a href="testing.html">Testing</a></li>
+        <li><a href="README.html">Project overview</a></li>
+        <li><a href="CONTRIBUTING.html">Contributing</a></li>
+        <li><a href="SECURITY.html">Security</a></li>
+        <li><a href="CHANGELOG.html">Changelog</a></li>
+        <li><a href="AGENTS.html" aria-current='page'>Working in this repository</a></li>
+      </ul>
+    </nav>
+    <article class="doc">
+<p>This file is for any AI agent working in this repository. It is <strong>public and
+project-facing</strong>: it documents how to work here, not who is working here.</p>
+<blockquote>
+<p><strong>Keep private material out.</strong> Personal prompts, individual memory files,
+local agent configuration and credentials do not belong in this repository.
+They are git-ignored on purpose. If you need them, they live on the
+developer's machine, not here. See <a href="SECURITY.html">SECURITY.md</a>.</p>
+</blockquote>
+<hr />
+<h2 id="read-this-first">Read this first</h2>
+<p>Before changing anything, read:</p>
+<ol>
+<li><a href="https://github.com/thewoldaa/mise-kal/blob/main/PLAN.md"><code>PLAN.md</code></a> — the design contract. <strong>If code and <code>PLAN.md</code> disagree,
+   <code>PLAN.md</code> wins</strong> until it is deliberately updated.</li>
+<li><a href="developing.html"><code>docs/developing.md</code></a> — architecture and the four rules.</li>
+<li><a href="CONTRIBUTING.html"><code>CONTRIBUTING.md</code></a> — the workflow contract.</li>
+<li><a href="https://github.com/thewoldaa/mise-kal/blob/main/.harness/README.md"><code>.harness/README.md</code></a> — the worktree harness.</li>
+<li>The task file you are working on, <strong>in full</strong>.</li>
+</ol>
+<h2 id="the-one-paragraph-version">The one-paragraph version</h2>
+<p>Work in an isolated git worktree, on your own branch, never on <code>main</code>. Inspect
+and plan before implementing. Run the test suites before committing. Commit in
+conventional-commit form, explaining why. Write a report that says plainly what
+you did not finish. Do not commit secrets. Do not delete working upstream
+features to make something simpler.</p>
+<h2 id="setup">Setup</h2>
+<pre><code class="language-bash">.harness/scripts/setup-tools.sh          # PocketBase + jq into .harness/cache/
+.harness/scripts/worktree.sh doctor      # verify the machine can run anything
+</code></pre>
+<h2 id="your-loop">Your loop</h2>
+<pre><code class="language-bash">.harness/scripts/worktree.sh create --agent &lt;you&gt; --task &lt;task-id&gt;
+.harness/scripts/worktree.sh claim  --agent &lt;you&gt; --task &lt;task-id&gt;
+cd .harness/worktrees/&lt;you&gt;
+# ... inspect, plan, implement ...
+.harness/scripts/test.sh --agent &lt;you&gt; --all
+git commit -m &quot;feat(scope): why this change&quot;
+.harness/scripts/worktree.sh report --agent &lt;you&gt; --task &lt;task-id&gt; --summary &quot;...&quot;
+</code></pre>
+<h2 id="hard-rules">Hard rules</h2>
+<p><strong>Never break these. They are not style preferences.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Why it exists</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Never commit to <code>main</code>.</strong></td>
+<td><code>main</code> is the integration point; other agents branch from it.</td>
+</tr>
+<tr>
+<td><strong>Money is only ever computed server-side.</strong></td>
+<td>A POS must never let a client decide what a bill costs.</td>
+</tr>
+<tr>
+<td><strong>Never edit an applied migration.</strong> Add a new one.</td>
+<td>An edited migration produces a different schema on a machine that already ran it.</td>
+</tr>
+<tr>
+<td><strong>Never weaken a test to make it pass.</strong></td>
+<td>If the test is right, your change is wrong.</td>
+</tr>
+<tr>
+<td><strong>Never commit a secret.</strong></td>
+<td>The repository is public and history is forever.</td>
+</tr>
+<tr>
+<td><strong>Never touch a sibling agent's worktree.</strong></td>
+<td>Their uncommitted work is unrecoverable if you do.</td>
+</tr>
+<tr>
+<td><strong>Never delete a working upstream feature</strong> to simplify an implementation.</td>
+<td>Changes must be incremental and backward-aware.</td>
+</tr>
+<tr>
+<td><strong>Never widen your task's scope silently.</strong></td>
+<td>Report it instead; the orchestrator decides.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="test-requirements-by-area">Test requirements by area</h2>
+<table>
+<thead>
+<tr>
+<th>Changed</th>
+<th>Run at minimum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Money, order state, <code>lib_money.js</code></td>
+<td><code>--suite smoke</code> and <code>--suite payments</code></td>
+</tr>
+<tr>
+<td>Guest routes</td>
+<td><code>--suite guest</code></td>
+</tr>
+<tr>
+<td>Staff roles or guards</td>
+<td><code>--suite staff</code></td>
+</tr>
+<tr>
+<td>Kitchen state</td>
+<td><code>--suite kitchen</code></td>
+</tr>
+<tr>
+<td>Flutter code</td>
+<td><code>--app</code></td>
+</tr>
+<tr>
+<td>Anything</td>
+<td><code>--all</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="things-that-will-bite-you">Things that will bite you</h2>
+<p>From <code>docs/developing.md</code>, plus what the harness learned:</p>
+<ul>
+<li><strong>PocketBase hooks run in their own runtime.</strong> A function declared at the top
+  of a <code>.pb.js</code> is not defined inside the handler. Put shared code in <code>lib_*.js</code>
+  and <code>require</code> it <em>inside</em> each handler.</li>
+<li><strong>PocketBase zero values are truthy objects.</strong> An empty date is a zero
+  <code>DateTime</code>, so <code>!record.get("closed_at")</code> never fires. Use <code>getString()</code> and
+  compare to <code>""</code>. A <code>json</code> field is a byte array that passes <code>Array.isArray</code> —
+  decode with <code>.string()</code> first.</li>
+<li><strong>Filters bind client-side.</strong> <code>pb.filter("x = {:v}", {...})</code>, not a <code>query</code>
+  map.</li>
+<li><strong>On Windows, bash scripts need LF.</strong> <code>.gitattributes</code> pins this. A stray
+  <code>\r</code> makes bash look for a command named <code>pipefail\r</code>.</li>
+<li><strong>In bash, <code>local a="$1" b="$a"</code> does not work.</strong> All words expand before any
+  assignment, so <code>$a</code> is unset. Use separate <code>local</code> lines. Under <code>set -u</code> the
+  failure is an "unbound variable" abort.</li>
+<li><strong><code>pkill -f</code> matches command lines as strings.</strong> Two agents running the same
+  suite have identical command lines, so one agent's cleanup kills the other's
+  server. Kill by PID.</li>
+<li><strong>Git Bash does not honour <code>TMPDIR</code> for a literal <code>/tmp</code> path.</strong> Shared
+  scratch files genuinely collide.</li>
+</ul>
+<h2 id="if-something-is-wrong-with-the-harness">If something is wrong with the harness</h2>
+<p><code>.harness/scripts/worktree.sh doctor</code> first. Then read the relevant script —
+they are commented with the reasoning, not just the mechanics. If a suite fails,
+the log is at <code>.harness/logs/&lt;agent&gt;/&lt;suite&gt;.log</code>.</p>
+<p>Do not work around a harness bug by editing upstream's test scripts in place.
+The harness patches a copy at run time precisely so upstream stays mergeable.
+Fix the harness, or report it.</p>
+      <div class="doc-links">
+        <a href="https://github.com/thewoldaa/mise-kal/blob/main/AGENTS.md">View source on GitHub</a>
+        <a href="../demo/">Interactive demo</a>
+        <a href="./">All documentation</a>
+      </div>
+    </article>
+  </div>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <p class="mb-0">
+        Mise-Kal &middot; MIT licensed &middot; A derivative of
+        <a href="https://github.com/devShakib015/mise">Mise</a>
+      </p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../">Home</a>
+      <a href="../demo/">Demo</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+      <a href="https://github.com/thewoldaa/mise-kal/releases">Releases</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

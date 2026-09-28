@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contributing — Mise-Kal</title>
+<meta name="description" content="The workflow contract: branches, commits, tests, and what not to do.">
+<meta name="theme-color" content="#0b0f10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  /* Documentation pages are a narrower measure than the landing page: body
+     text reads badly past about 75 characters, and these pages are mostly
+     prose. */
+  .doc-layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: var(--space-48);
+    align-items: start;
+    padding: var(--space-32) 0 var(--space-96);
+  }
+  @media (max-width: 900px) {
+    .doc-layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-24); }
+    .doc-nav { position: static !important; }
+  }
+  .doc-nav {
+    position: sticky;
+    top: 84px;
+    font-size: 13px;
+  }
+  .doc-nav p {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin: 0 0 var(--space-12);
+  }
+  .doc-nav ul { list-style: none; margin: 0; padding: 0; }
+  .doc-nav li { margin: 0; }
+  .doc-nav a {
+    display: block;
+    padding: 5px 0;
+    color: var(--text-secondary);
+    border-left: 2px solid transparent;
+    padding-left: 10px;
+    margin-left: -12px;
+  }
+  .doc-nav a:hover { color: var(--text); text-decoration: none; }
+  .doc-nav a[aria-current='page'] {
+    color: var(--text);
+    border-left-color: var(--ember);
+  }
+
+  .doc {
+    max-width: 76ch;
+    min-width: 0;
+  }
+  .doc h1 {
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    margin-bottom: var(--space-24);
+  }
+  .doc h2 {
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+  }
+  .doc h3 { margin-top: var(--space-32); }
+  .doc ul, .doc ol { padding-left: 22px; }
+  .doc li { margin: var(--space-4) 0; }
+  .doc blockquote {
+    margin: var(--space-24) 0;
+    padding: var(--space-4) 0 var(--space-4) var(--space-16);
+    border-left: 3px solid var(--border-strong);
+    color: var(--text-secondary);
+  }
+  .doc blockquote p { margin: 0; }
+  .doc hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: var(--space-48) 0;
+  }
+  .doc table { margin: var(--space-24) 0; }
+  .doc img { margin: var(--space-16) 0; }
+  .doc-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-16);
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span>Mise-Kal</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="../demo/">Demo</a>
+      <a href="./" aria-current='page'>Documentation</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+  <div class="doc-layout">
+    <nav class="doc-nav" aria-label="Documentation">
+      <p>Contents</p>
+      <ul>
+        <li><a href="owner-guide.html">Owner guide</a></li>
+        <li><a href="developing.html">Developer guide</a></li>
+        <li><a href="architecture.html">Architecture</a></li>
+        <li><a href="install-macos.html">Installing on macOS</a></li>
+        <li><a href="install-windows.html">Installing on Windows</a></li>
+        <li><a href="testing.html">Testing</a></li>
+        <li><a href="README.html">Project overview</a></li>
+        <li><a href="CONTRIBUTING.html" aria-current='page'>Contributing</a></li>
+        <li><a href="SECURITY.html">Security</a></li>
+        <li><a href="CHANGELOG.html">Changelog</a></li>
+        <li><a href="AGENTS.html">Working in this repository</a></li>
+      </ul>
+    </nav>
+    <article class="doc">
+<p>Mise-Kal is developed by parallel sub-agents working in isolated git worktrees.
+This document is the contract that keeps that from becoming chaos.</p>
+<p>If you are an agent reading this: follow it exactly. If you are a human: the
+same rules apply, for the same reasons.</p>
+<hr />
+<h2 id="1-before-you-touch-anything">1. Before you touch anything</h2>
+<p><strong>Read the architecture first.</strong> A change made without understanding the
+existing design is how a codebase becomes something nobody can safely change.</p>
+<p>Minimum reading, in order:</p>
+<ol>
+<li><a href="developing.html"><code>docs/developing.md</code></a> — how it fits together, and the
+   four rules the code leans on.</li>
+<li><a href="https://github.com/thewoldaa/mise-kal/blob/main/PLAN.md"><code>PLAN.md</code></a> — the design contract. <strong>If the code and <code>PLAN.md</code>
+   disagree, <code>PLAN.md</code> wins</strong> until it is deliberately updated.</li>
+<li><a href="https://github.com/thewoldaa/mise-kal/blob/main/.harness/README.md"><code>.harness/README.md</code></a> — the harness you will work in.</li>
+<li>The task file you are about to work on, in full.</li>
+</ol>
+<p>The four rules from <code>developing.md</code>, which you must not break:</p>
+<ul>
+<li><strong>Money is only ever computed on the server.</strong> The app displays totals; it
+  never adds them up.</li>
+<li><strong>Menu names and prices are snapshotted onto order lines.</strong> Editing tomorrow's
+  menu must never rewrite yesterday's bill.</li>
+<li><strong>Takings are counted by when a bill closed</strong>, not when it opened.</li>
+<li><strong>Ageing and status use separate colour channels</strong> on the kitchen display.</li>
+</ul>
+<h2 id="2-your-workflow">2. Your workflow</h2>
+<p>Every task follows the same six steps. Do not skip one because the change looks
+small.</p>
+<pre><code>inspect → plan → implement → test → commit → report
+</code></pre>
+<pre><code class="language-bash"># 1. Inspect and plan — read the task, read the code it touches.
+#    Say out loud what you are going to change and why. If you cannot, you do
+#    not understand it well enough yet.
+
+# 2. Create your isolated worktree
+.harness/scripts/worktree.sh create --agent &lt;yourname&gt; --task &lt;task-id&gt;
+
+# 3. Claim the task so nobody else takes it
+.harness/scripts/worktree.sh claim --agent &lt;yourname&gt; --task &lt;task-id&gt;
+
+# 4. Work inside your worktree
+cd .harness/worktrees/&lt;yourname&gt;
+
+# 5. Test — mandatory, and before the commit, not after
+.harness/scripts/test.sh --agent &lt;yourname&gt; --all
+
+# 6. Commit on your own branch
+git commit -m &quot;feat(scope): what changed&quot;
+
+# 7. Report
+.harness/scripts/worktree.sh report --agent &lt;yourname&gt; --task &lt;task-id&gt; \
+  --summary &quot;What changed, what you verified, what is left.&quot;
+</code></pre>
+<h2 id="3-branch-rules">3. Branch rules</h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Never commit to <code>main</code>.</strong></td>
+<td><code>main</code> is the integration point. An agent committing directly to it bypasses review and can break every other agent's base.</td>
+</tr>
+<tr>
+<td>Your branch is <code>agent/&lt;name&gt;/&lt;task&gt;</code>.</td>
+<td>Created for you by <code>worktree.sh</code>. It names who and what, which is what makes a merge attributable.</td>
+</tr>
+<tr>
+<td>One task per branch.</td>
+<td>Two tasks on one branch cannot be reviewed or reverted separately.</td>
+</tr>
+<tr>
+<td>Rebase or merge from <code>main</code> when it moves.</td>
+<td>Do it in your own worktree, so the conflict is yours to resolve and never lands on <code>main</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-commit-rules">4. Commit rules</h2>
+<ul>
+<li><strong>Conventional commits</strong>, with the area in the scope:
+  <code>feat(pos):</code>, <code>fix(kitchen):</code>, <code>docs:</code>, <code>test(harness):</code>, <code>ci:</code>, <code>refactor:</code>.</li>
+<li><strong>The subject is imperative and specific.</strong> <code>fix(pos): keep the table
+  occupied until the bill is settled</code> — not <code>fixed bug</code>.</li>
+<li><strong>The body explains why, not what.</strong> The diff already shows what changed.
+  A body that restates the diff is noise; a body that says "without this, a
+  table seated before a shift change is credited to the wrong shift" is worth
+  having.</li>
+<li><strong>One logical change per commit.</strong> If the message needs an "and", it is
+  probably two commits.</li>
+<li><strong>Never commit:</strong> generated files, downloaded binaries, scratch data, <code>.env</code>,
+  credentials, or anything from <code>.harness/cache/</code> or <code>.harness/logs/</code>.</li>
+</ul>
+<p><code>.harness/scripts/security-check.sh</code> runs on every push in CI and fails if any
+of that gets tracked. Run it yourself before pushing.</p>
+<h2 id="5-test-rules">5. Test rules</h2>
+<p>A change without a test is not finished.</p>
+<table>
+<thead>
+<tr>
+<th>You changed</th>
+<th>Minimum</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Money math, order state, or anything in <code>pb_hooks/lib_money.js</code></td>
+<td><code>smoke</code> and <code>payments</code></td>
+</tr>
+<tr>
+<td>The guest routes</td>
+<td><code>guest</code></td>
+</tr>
+<tr>
+<td>Staff roles or guards</td>
+<td><code>staff</code></td>
+</tr>
+<tr>
+<td>Kitchen state</td>
+<td><code>kitchen</code></td>
+</tr>
+<tr>
+<td>Flutter code</td>
+<td><code>flutter test</code>, plus a test for the new behaviour</td>
+</tr>
+<tr>
+<td>Schema</td>
+<td><code>smoke</code> and <code>payments</code>, plus a new migration</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Never edit an applied migration.</strong> Add a new one. An edited migration
+  produces a different schema on a machine that already ran it, which is a
+  data-corruption class of bug.</li>
+<li><strong>Never weaken a test to make it pass.</strong> If a test is wrong, fix it and say so
+  in the commit body. If it is right, your change is wrong.</li>
+<li><strong>A flaky test is a bug.</strong> Report it rather than re-running until it passes.</li>
+</ul>
+<h2 id="6-the-wave-model">6. The wave model</h2>
+<p>Work is organised into waves. A wave is a set of agents working in parallel on
+tasks that do not depend on each other, followed by one controlled integration.</p>
+<pre><code>Wave 1   alpha: task A     beta: task B     gamma: task C
+              \                |                 /
+               +---- integrate into main ------+
+Wave 2   delta: reads Wave 1's result
+</code></pre>
+<pre><code class="language-bash">.harness/scripts/wave.sh open  wave-1 &quot;Phase 1 stabilisation&quot;
+.harness/scripts/wave.sh add   wave-1 --agent alpha --task t-001-windows-paths
+.harness/scripts/wave.sh status wave-1
+.harness/scripts/wave.sh integrate wave-1 --dry-run   # conflict check
+.harness/scripts/wave.sh integrate wave-1             # real merge + suites
+.harness/scripts/wave.sh close wave-1
+</code></pre>
+<p>Rules:</p>
+<ul>
+<li>Agents in one wave must not depend on each other. If B needs A's output, B
+  belongs in the next wave.</li>
+<li>Integration is done by the orchestrator, once per wave, and only after every
+  agent has committed and reported.</li>
+<li>Integration runs the full suite on the merged result. Green on a branch is not
+  green on <code>main</code>; only the merged run proves it.</li>
+</ul>
+<h2 id="7-security-rules">7. Security rules</h2>
+<p><strong>This repository is public.</strong> Read <a href="SECURITY.html">SECURITY.md</a> before you commit
+anything that feels personal.</p>
+<ul>
+<li><strong>Never commit a secret.</strong> No API keys, tokens, passwords, private keys or
+  connection strings — not even a fake-looking one that happens to be real.</li>
+<li><strong>Never commit personal agent material.</strong> Private prompts, memory files,
+  personal notes and local agent configuration are git-ignored on purpose. Do
+  not add them back with <code>git add -f</code>.</li>
+<li><strong>Never commit a real credential into a test fixture.</strong> Use obvious fakes like
+  <code>test-key-not-real</code>.</li>
+<li><strong>Configuration goes in a template.</strong> If a new setting is needed, add it to
+  <code>.env.example</code> with an empty value and document it. The real value goes in
+  <code>.env</code>, which is never committed.</li>
+<li><strong>If you commit a secret by accident</strong>, say so immediately. Rotating the
+  credential is the fix; deleting the commit is not, because the value is
+  already in history and may already have been fetched.</li>
+</ul>
+<h2 id="8-what-not-to-do">8. What not to do</h2>
+<ul>
+<li><strong>Do not delete a working upstream feature to make an implementation
+  simpler.</strong> Changes must be incremental and backward-aware. If a feature is
+  genuinely wrong, that is a task with a rationale, not a quiet removal.</li>
+<li><strong>Do not widen a task's scope silently.</strong> If the work genuinely requires
+  touching files outside your task's allowed areas, say so in the report and let
+  the orchestrator decide.</li>
+<li><strong>Do not rewrite the schema in place.</strong> Migrations only.</li>
+<li><strong>Do not reformat files you are not changing.</strong> It buries the real diff.</li>
+<li><strong>Do not leave your worktree dirty.</strong> Commit, or say in your report that you
+  did not and why.</li>
+</ul>
+<h2 id="9-getting-help">9. Getting help</h2>
+<ul>
+<li>The harness is misbehaving: <code>.harness/scripts/worktree.sh doctor</code></li>
+<li>A suite is failing: <code>.harness/scripts/test.sh --agent &lt;you&gt; --suite &lt;name&gt;</code>,
+  then read <code>.harness/logs/&lt;you&gt;/&lt;suite&gt;.log</code></li>
+<li>Unsure whether something is private: <code>.harness/scripts/security-check.sh --all</code></li>
+<li>The task is ambiguous: <strong>stop and ask.</strong> A wrong assumption implemented
+  confidently costs far more than a question.</li>
+</ul>
+      <div class="doc-links">
+        <a href="https://github.com/thewoldaa/mise-kal/blob/main/CONTRIBUTING.md">View source on GitHub</a>
+        <a href="../demo/">Interactive demo</a>
+        <a href="./">All documentation</a>
+      </div>
+    </article>
+  </div>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <p class="mb-0">
+        Mise-Kal &middot; MIT licensed &middot; A derivative of
+        <a href="https://github.com/devShakib015/mise">Mise</a>
+      </p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../">Home</a>
+      <a href="../demo/">Demo</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+      <a href="https://github.com/thewoldaa/mise-kal/releases">Releases</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Installing on Windows — Mise-Kal</title>
+<meta name="description" content="Building the Windows application, and the Developer Mode prerequisite.">
+<meta name="theme-color" content="#0b0f10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  /* Documentation pages are a narrower measure than the landing page: body
+     text reads badly past about 75 characters, and these pages are mostly
+     prose. */
+  .doc-layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: var(--space-48);
+    align-items: start;
+    padding: var(--space-32) 0 var(--space-96);
+  }
+  @media (max-width: 900px) {
+    .doc-layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-24); }
+    .doc-nav { position: static !important; }
+  }
+  .doc-nav {
+    position: sticky;
+    top: 84px;
+    font-size: 13px;
+  }
+  .doc-nav p {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin: 0 0 var(--space-12);
+  }
+  .doc-nav ul { list-style: none; margin: 0; padding: 0; }
+  .doc-nav li { margin: 0; }
+  .doc-nav a {
+    display: block;
+    padding: 5px 0;
+    color: var(--text-secondary);
+    border-left: 2px solid transparent;
+    padding-left: 10px;
+    margin-left: -12px;
+  }
+  .doc-nav a:hover { color: var(--text); text-decoration: none; }
+  .doc-nav a[aria-current='page'] {
+    color: var(--text);
+    border-left-color: var(--ember);
+  }
+
+  .doc {
+    max-width: 76ch;
+    min-width: 0;
+  }
+  .doc h1 {
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    margin-bottom: var(--space-24);
+  }
+  .doc h2 {
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+  }
+  .doc h3 { margin-top: var(--space-32); }
+  .doc ul, .doc ol { padding-left: 22px; }
+  .doc li { margin: var(--space-4) 0; }
+  .doc blockquote {
+    margin: var(--space-24) 0;
+    padding: var(--space-4) 0 var(--space-4) var(--space-16);
+    border-left: 3px solid var(--border-strong);
+    color: var(--text-secondary);
+  }
+  .doc blockquote p { margin: 0; }
+  .doc hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: var(--space-48) 0;
+  }
+  .doc table { margin: var(--space-24) 0; }
+  .doc img { margin: var(--space-16) 0; }
+  .doc-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-16);
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span>Mise-Kal</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="../demo/">Demo</a>
+      <a href="./" aria-current='page'>Documentation</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+  <div class="doc-layout">
+    <nav class="doc-nav" aria-label="Documentation">
+      <p>Contents</p>
+      <ul>
+        <li><a href="owner-guide.html">Owner guide</a></li>
+        <li><a href="developing.html">Developer guide</a></li>
+        <li><a href="architecture.html">Architecture</a></li>
+        <li><a href="install-macos.html">Installing on macOS</a></li>
+        <li><a href="install-windows.html" aria-current='page'>Installing on Windows</a></li>
+        <li><a href="testing.html">Testing</a></li>
+        <li><a href="README.html">Project overview</a></li>
+        <li><a href="CONTRIBUTING.html">Contributing</a></li>
+        <li><a href="SECURITY.html">Security</a></li>
+        <li><a href="CHANGELOG.html">Changelog</a></li>
+        <li><a href="AGENTS.html">Working in this repository</a></li>
+      </ul>
+    </nav>
+    <article class="doc">
+<p>Two paths: run it from source, or build an application a restaurant can install.</p>
+<h2 id="running-from-source">Running from source</h2>
+<p>Requirements:</p>
+<ul>
+<li><strong>Flutter 3.47 or later</strong>, on <code>PATH</code>. <code>flutter --version</code> should answer before
+  you start.</li>
+<li><strong>Git for Windows</strong>, which brings Git Bash. Run everything from Git Bash, not
+  PowerShell or cmd: every script in this repository is a POSIX shell script.</li>
+<li><strong>Nothing else.</strong> PocketBase is downloaded on demand into <code>server/bin/</code>.</li>
+</ul>
+<pre><code class="language-bash">git clone https://github.com/thewoldaa/mise-kal.git
+cd mise-kal
+
+# Terminal 1 - the server
+./server/scripts/dev.sh
+
+# Terminal 2 - the application
+cd app &amp;&amp; flutter run -d windows
+</code></pre>
+<p>The first run fetches the pinned PocketBase and applies the schema migrations.
+The admin interface is then at <code>http://127.0.0.1:8090/_/</code>. On first launch, point
+the application at <code>127.0.0.1:8090</code>.</p>
+<h2 id="building-the-application">Building the application</h2>
+<pre><code class="language-bash">installer/windows/build_windows.sh
+</code></pre>
+<p>This produces a runnable build at
+<code>app/build/windows/x64/runner/Release/Mise.exe</code>, with PocketBase staged into it
+so the application starts its own server on first run.</p>
+<h3 id="developer-mode-is-required">Developer Mode is required</h3>
+<p>Flutter creates symlinks under <code>windows/flutter/ephemeral/.plugin_symlinks</code> for
+every native plugin. Windows refuses to create symlinks without Developer Mode,
+and Flutter's own failure message does not name the prerequisite:</p>
+<pre><code>Building with plugins requires symlink support.
+</code></pre>
+<p>This project has five Windows plugins — <code>bonsoir_windows</code>, <code>jni</code>,
+<code>path_provider_windows</code>, <code>shared_preferences_windows</code>, and
+<code>windows_file_picker</code> — so the requirement cannot be avoided by dropping a
+dependency.</p>
+<p>Enable it once, as an administrator:</p>
+<pre><code>start ms-settings:developers
+</code></pre>
+<p>Or from an elevated PowerShell:</p>
+<pre><code class="language-powershell">New-Item -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock' -Force
+Set-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\AppModelUnlock' `
+  -Name AllowDevelopmentWithoutDevLicense -Value 1 -Type DWord
+</code></pre>
+<p><code>build_windows.sh</code> checks for this before doing anything and explains the fix,
+rather than letting the build fail halfway through.</p>
+<h2 id="an-installer">An installer</h2>
+<p>Not built yet. <code>build_windows.sh</code> produces a runnable build; wrapping it in an
+installer needs Inno Setup or NSIS, which is a decision that has not been made.</p>
+<p>A half-built installer that silently produces a broken artifact is worse than
+none, so the runnable build is the thing being verified first.</p>
+<h2 id="the-smartscreen-warning">The SmartScreen warning</h2>
+<p>A built <code>Mise.exe</code> is unsigned. Windows will show a SmartScreen warning the first
+time it runs:</p>
+<blockquote>
+<p>Windows protected your PC</p>
+</blockquote>
+<p>Choose <strong>More info</strong>, then <strong>Run anyway</strong>. You only do this once.</p>
+<p>This is a cosmetic-trust problem, not a functional one. Removing it needs a
+code-signing certificate, which costs a few hundred dollars a year. The project
+ships unsigned deliberately and documents the workaround until signing is worth
+paying for.</p>
+<h2 id="things-that-will-bite-you">Things that will bite you</h2>
+<p>These cost real time to diagnose, and each one is Windows-specific.</p>
+<p><strong>Shell scripts must stay LF.</strong> Git's default <code>core.autocrlf=true</code> rewrites
+<code>.sh</code> files to CRLF on checkout, and bash then reads <code>set -euo pipefail\r</code>,
+fails to find a command named <code>pipefail\r</code>, and dies before the script's first
+line. <code>.gitattributes</code> pins the line ending in the repository so this cannot
+happen. If you add a shell script and it fails strangely, check its endings
+first.</p>
+<p><strong>Git Bash does not honour <code>TMPDIR</code> for a literal <code>/tmp</code> path.</strong> A script writing
+to <code>/tmp/x.json</code> writes to the real
+<code>C:\Users\&lt;you&gt;\AppData\Local\Temp</code>, not to whatever you set <code>TMPDIR</code> to. The
+harness moves those paths into each agent's own scratch directory for exactly
+this reason.</p>
+<p><strong><code>pkill -f</code> matches command lines as strings, not processes.</strong> Two test runs in
+different directories start PocketBase with identical relative arguments, so one
+run's cleanup kills the other's server mid-suite. The harness kills by PID.</p>
+<p><strong>A missing git identity does not stop you editing, only committing.</strong> If
+<code>git config user.name</code> is empty, the first commit fails with <code>Committer identity
+unknown</code>, and in a merge that reads like a conflict. Set it once:</p>
+<pre><code class="language-bash">git config user.name &quot;Your Name&quot;
+git config user.email &quot;you@example.com&quot;
+</code></pre>
+<p><code>worktree.sh doctor</code> checks for this along with everything else.</p>
+<h2 id="checking-your-machine">Checking your machine</h2>
+<pre><code class="language-bash">.harness/scripts/setup-tools.sh
+.harness/scripts/worktree.sh doctor
+</code></pre>
+<p><code>doctor</code> reports what is present, what is missing, and where it found a Flutter
+SDK that is not on <code>PATH</code>.</p>
+      <div class="doc-links">
+        <a href="https://github.com/thewoldaa/mise-kal/blob/main/docs/install-windows.md">View source on GitHub</a>
+        <a href="../demo/">Interactive demo</a>
+        <a href="./">All documentation</a>
+      </div>
+    </article>
+  </div>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <p class="mb-0">
+        Mise-Kal &middot; MIT licensed &middot; A derivative of
+        <a href="https://github.com/devShakib015/mise">Mise</a>
+      </p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../">Home</a>
+      <a href="../demo/">Demo</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+      <a href="https://github.com/thewoldaa/mise-kal/releases">Releases</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

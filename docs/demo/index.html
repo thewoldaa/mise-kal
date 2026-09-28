@@ -1,0 +1,1192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Demo — Mise-Kal</title>
+<meta name="description" content="An interactive demonstration of Mise-Kal: order taking, server-side money, the kitchen display, and offline behaviour.">
+<meta name="theme-color" content="#0b0f10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  /* ---------------------------------------------------------------------
+     Demo-specific layout. Kept in this file rather than the shared sheet
+     because nothing else on the site uses it.
+     --------------------------------------------------------------------- */
+
+  .demo-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: var(--space-16);
+    align-items: start;
+    padding: var(--space-24) 0 var(--space-64);
+  }
+
+  @media (max-width: 980px) {
+    .demo-shell { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .panel-head {
+    display: flex;
+    align-items: center;
+    gap: var(--space-12);
+    padding: var(--space-12) var(--space-16);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-raised);
+  }
+
+  .panel-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+
+  .panel-body { padding: var(--space-16); }
+
+  /* --- Tabs ----------------------------------------------------------- */
+
+  .tabs {
+    display: flex;
+    gap: var(--space-4);
+    margin-left: auto;
+  }
+
+  .tab {
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .tab:hover { color: var(--text); background: var(--surface); }
+  .tab[aria-selected='true'] {
+    color: var(--text);
+    background: var(--surface);
+    border-color: var(--border-strong);
+  }
+
+  /* --- Menu ----------------------------------------------------------- */
+
+  .cat-bar {
+    display: flex;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-16);
+  }
+
+  .cat {
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .cat:hover { border-color: var(--border-strong); color: var(--text); }
+  .cat[aria-pressed='true'] {
+    background: var(--surface-sunken);
+    border-color: var(--ember);
+    color: var(--text);
+  }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: var(--space-8);
+  }
+
+  .item {
+    text-align: left;
+    padding: var(--space-12);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface-sunken);
+    color: var(--text);
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-height: 76px;
+    transition: border-color 100ms ease;
+  }
+  .item:hover:not(:disabled) { border-color: var(--border-strong); }
+  .item:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .item-name { font-size: 13px; font-weight: 550; line-height: 1.3; }
+  .item-price {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+    margin-top: auto;
+  }
+  .item-sold-out {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--status-trouble);
+  }
+
+  /* --- Bill ----------------------------------------------------------- */
+
+  .line {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-8);
+    padding: var(--space-8) 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .line:last-child { border-bottom: none; }
+
+  .line-name { font-weight: 500; }
+
+  .line-mods {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    margin-top: 2px;
+  }
+
+  .line-right {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .qty {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: var(--space-4);
+  }
+
+  .qty button {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-sunken);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 12px;
+    line-height: 1;
+    font-family: inherit;
+    display: grid;
+    place-items: center;
+  }
+  .qty button:hover { color: var(--text); border-color: var(--text-tertiary); }
+
+  .qty span {
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    min-width: 14px;
+    text-align: center;
+  }
+
+  /* --- Totals --------------------------------------------------------- */
+
+  .totals { margin-top: var(--space-16); }
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    padding: 4px 0;
+    color: var(--text-secondary);
+  }
+  .total-row span:last-child {
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+  }
+
+  .total-row.grand {
+    border-top: 1px solid var(--border-strong);
+    margin-top: var(--space-8);
+    padding-top: var(--space-12);
+    font-size: 16px;
+    font-weight: 650;
+    color: var(--text);
+  }
+  .total-row.grand span:last-child { color: var(--text); }
+
+  /* --- Kitchen -------------------------------------------------------- */
+
+  .pass {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: var(--space-12);
+    min-height: 120px;
+  }
+
+  .ticket {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--surface-sunken);
+    padding: var(--space-12);
+    /* Ageing is carried by the border colour, never by the status dots.
+       That separation is the point: a late ticket full of cooking items has to
+       stay readable. */
+    border-left-width: 3px;
+  }
+  .ticket.age-fresh { border-left-color: var(--status-queued); }
+  .ticket.age-mid   { border-left-color: #d4a017; }
+  .ticket.age-late  { border-left-color: var(--status-trouble); }
+
+  .ticket-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: var(--space-8);
+  }
+
+  .ticket-no {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .ticket-timer {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-tertiary);
+  }
+  .age-mid .ticket-timer  { color: #d4a017; }
+  .age-late .ticket-timer { color: var(--status-trouble); }
+
+  .ticket-line {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-8);
+    font-size: 12px;
+    padding: 3px 0;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--text);
+    font-family: inherit;
+    text-align: left;
+    width: 100%;
+  }
+  .ticket-line:hover { color: var(--ember); }
+
+  .dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  .dot-queued  { background: var(--status-queued); }
+  .dot-cooking { background: var(--status-cooking); }
+  .dot-ready   { background: var(--status-ready); }
+
+  .empty {
+    color: var(--text-tertiary);
+    font-size: 13px;
+    text-align: center;
+    padding: var(--space-32) 0;
+  }
+
+  /* --- Server console ------------------------------------------------- */
+
+  .console {
+    background: var(--surface-sunken);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: var(--space-12);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    line-height: 1.6;
+    max-height: 220px;
+    overflow-y: auto;
+    margin: 0;
+    color: var(--text-tertiary);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .console .ok   { color: var(--status-ready); }
+  .console .warn { color: #d4a017; }
+  .console .stop { color: var(--status-trouble); }
+  .console .req  { color: var(--status-cooking); }
+
+  /* --- Controls ------------------------------------------------------- */
+
+  .controls {
+    display: flex;
+    gap: var(--space-8);
+    flex-wrap: wrap;
+    align-items: center;
+    padding: var(--space-12) 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: var(--space-24);
+  }
+
+  .toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-8);
+    font-size: 13px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .toggle input { accent-color: var(--ember); cursor: pointer; }
+
+  .offline-banner {
+    display: none;
+    align-items: center;
+    gap: var(--space-8);
+    font-size: 13px;
+    padding: var(--space-8) var(--space-16);
+    border-radius: var(--radius);
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: var(--status-trouble);
+    margin-bottom: var(--space-16);
+  }
+  .offline-banner.show { display: flex; }
+
+  .queued-badge {
+    font-size: 10px;
+    font-family: var(--font-mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #d4a017;
+    border: 1px solid rgba(212, 160, 23, 0.4);
+    border-radius: 3px;
+    padding: 1px 5px;
+    margin-left: var(--space-8);
+  }
+
+  .hint {
+    font-size: 12px;
+    color: var(--text-tertiary);
+    margin-top: var(--space-8);
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span>Mise-Kal</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="./" aria-current="page">Demo</a>
+      <a href="../docs/">Documentation</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+
+  <section style="padding-bottom: var(--space-16)">
+    <p class="eyebrow">Interactive demonstration</p>
+    <h2 class="mt-0">Try the till, the pass, and the money rules</h2>
+    <p class="section-lede">
+      This is a faithful reimplementation of the product's logic running in the
+      browser. It is not a video and not a mockup: the order taking, the
+      server-side total recomputation, the kitchen state machine, and the
+      offline queue all behave the way the real system does.
+    </p>
+  </section>
+
+  <div class="controls">
+    <label class="toggle">
+      <input type="checkbox" id="offline">
+      <span>Simulate network outage</span>
+    </label>
+    <button class="btn btn-secondary" id="settle" style="padding:7px 14px;font-size:13px">Settle the bill</button>
+    <button class="btn btn-ghost" id="reset" style="padding:7px 14px;font-size:13px">Reset</button>
+  </div>
+
+  <div class="offline-banner" id="offline-banner">
+    <span class="mono">OFFLINE</span>
+    <span>Adding to the bill is queued to disk. Firing to the kitchen and settling are refused, by design.</span>
+  </div>
+
+  <div class="demo-shell">
+
+    <!-- ================================================ Left column === -->
+    <div>
+
+      <!-- Menu -->
+      <div class="panel">
+        <div class="panel-head">
+          <span class="panel-title">Menu</span>
+          <span class="dim mono" style="font-size:11px" id="menu-count"></span>
+        </div>
+        <div class="panel-body">
+          <div class="cat-bar" id="cats"></div>
+          <div class="menu-grid" id="menu"></div>
+        </div>
+      </div>
+
+      <!-- Kitchen display -->
+      <div class="panel" style="margin-top: var(--space-16)">
+        <div class="panel-head">
+          <span class="panel-title">Kitchen display</span>
+          <span class="dim" style="font-size:11px">Tap an item to advance it</span>
+        </div>
+        <div class="panel-body">
+          <div class="pass" id="pass"></div>
+        </div>
+      </div>
+
+      <!-- Server console -->
+      <div class="panel" style="margin-top: var(--space-16)">
+        <div class="panel-head">
+          <span class="panel-title">Server</span>
+          <span class="dim" style="font-size:11px">Every money operation happens here, not in the till</span>
+        </div>
+        <div class="panel-body">
+          <pre class="console" id="console" aria-live="polite"></pre>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- =============================================== Right column === -->
+    <div>
+      <div class="panel">
+        <div class="panel-head">
+          <span class="panel-title">Bill</span>
+          <span class="dim mono" style="font-size:11px" id="bill-no">#001</span>
+        </div>
+        <div class="panel-body">
+          <div id="bill"></div>
+          <div class="totals" id="totals"></div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top: var(--space-16)">
+        <div class="panel-head">
+          <span class="panel-title">The invariant</span>
+        </div>
+        <div class="panel-body">
+          <p class="muted" style="font-size:13px">
+            The server recomputes every total on write. Try to forge one and see
+            what happens.
+          </p>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:12px">
+            <input id="forge" type="number" value="1" min="0" step="0.01"
+                   style="width:90px;padding:7px 10px;border-radius:6px;border:1px solid var(--border-strong);background:var(--surface-sunken);color:var(--text);font-family:inherit;font-size:13px;font-variant-numeric:tabular-nums">
+            <button class="btn btn-secondary" id="forge-btn" style="padding:7px 14px;font-size:13px">Forge the total</button>
+          </div>
+          <p class="hint">
+            The request is sent, the server recomputes, and the forged value is
+            discarded. The console records both.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <p class="mb-0">
+        Mise-Kal &middot; MIT licensed &middot; A derivative of
+        <a href="https://github.com/devShakib015/mise">Mise</a>
+      </p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../">Home</a>
+      <a href="../docs/">Documentation</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+      <a href="https://github.com/thewoldaa/mise-kal/releases">Releases</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+/* ===========================================================================
+   Mise-Kal interactive demo
+   ===========================================================================
+
+   Why this exists
+   ---------------
+   The four rules the product is built on are easy to state and hard to believe
+   from a README. This page lets someone watch them happen: the server recomputes
+   a total that a client tried to forge, the kitchen display refuses to settle a
+   bill while the network is down, the queue holds a line and drains in order.
+
+   How faithful it is
+   ------------------
+   The money maths is the same arithmetic as server/pb_hooks/lib_money.js,
+   including the order of operations (discount, then service, then tax) and the
+   tax-inclusive branch. The kitchen state machine follows the same
+   queued -> cooking -> ready transition and the same derived bill status.
+
+   What it is not
+   --------------
+   There is no database and no network. The "server" is a function. What is
+   being demonstrated is the contract between the till and the server, not
+   PocketBase's internals.
+   =========================================================================== */
+
+(function () {
+  'use strict';
+
+  // --- Money -----------------------------------------------------------------
+  // Same rounding as the server hook: two decimal places, half away from zero.
+  // Doing this in one place matters, because a demo that rounds differently from
+  // the server would quietly prove the wrong thing.
+  function round2(n) {
+    return Math.round((Number(n) || 0) * 100) / 100;
+  }
+
+  function money(n) {
+    return 'Rp' + round2(n).toLocaleString('id-ID', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  // --- Venue settings --------------------------------------------------------
+  // Tax added on top, not included, and a service charge. This is the common
+  // Indonesian restaurant configuration.
+  var VENUE = {
+    name: 'Warung Ember',
+    currencyCode: 'IDR',
+    currencySymbol: 'Rp',
+    taxRate: 11,          // PPN
+    taxInclusive: false,
+    serviceChargeRate: 5
+  };
+
+  // --- Menu ------------------------------------------------------------------
+  var CATEGORIES = [
+    { id: 'mains',    name: 'Mains' },
+    { id: 'starters', name: 'Starters' },
+    { id: 'drinks',   name: 'Drinks' }
+  ];
+
+  var MODIFIER_GROUPS = {
+    spice: {
+      id: 'spice', name: 'Spice level', required: true, maxSelect: 1,
+      options: [
+        { name: 'Mild',     priceDelta: 0 },
+        { name: 'Medium',   priceDelta: 0 },
+        { name: 'Extra hot', priceDelta: 0 }
+      ]
+    },
+    extras: {
+      id: 'extras', name: 'Extras', required: false, maxSelect: 3,
+      options: [
+        { name: 'Extra rice',    priceDelta: 15000 },
+        { name: 'Fried egg',     priceDelta: 10000 },
+        { name: 'Extra sambal',  priceDelta: 5000 }
+      ]
+    }
+  };
+
+  var MENU = [
+    { id: 'm1', cat: 'mains',    name: 'Nasi Goreng Special', price: 45000, available: true,  groups: ['spice', 'extras'] },
+    { id: 'm2', cat: 'mains',    name: 'Mie Goreng Jawa',     price: 40000, available: true,  groups: ['spice', 'extras'] },
+    { id: 'm3', cat: 'mains',    name: 'Ayam Bakar Taliwang', price: 65000, available: true,  groups: ['spice'] },
+    { id: 'm4', cat: 'mains',    name: 'Rendang Padang',      price: 70000, available: false, groups: ['extras'] },
+    { id: 'm5', cat: 'starters', name: 'Sate Ayam (5)',       price: 35000, available: true,  groups: ['spice'] },
+    { id: 'm6', cat: 'starters', name: 'Gado-Gado',           price: 30000, available: true,  groups: [] },
+    { id: 'm7', cat: 'drinks',   name: 'Es Teh Manis',        price: 12000, available: true,  groups: [] },
+    { id: 'm8', cat: 'drinks',   name: 'Kopi Susu',           price: 25000, available: true,  groups: [] },
+    { id: 'm9', cat: 'drinks',   name: 'Es Jeruk',            price: 18000, available: true,  groups: [] }
+  ];
+
+  // --- Server state ----------------------------------------------------------
+  // Everything the server owns. The till holds a copy for display only; it never
+  // decides a number that ends up here.
+  var server = {
+    order: {
+      id: 'o1',
+      number: '001',
+      status: 'open',
+      discountAmount: 0,
+      subtotal: 0,
+      serviceAmount: 0,
+      taxAmount: 0,
+      total: 0,
+      paid: false
+    },
+    lines: [],
+    nextLineId: 1
+  };
+
+  // --- Till state ------------------------------------------------------------
+  var till = {
+    activeCat: 'mains',
+    offline: false,
+    queue: [],            // writes that could not reach the server
+    selectedGroups: {},   // modifier selection for the item being added
+    pendingItem: null
+  };
+
+  var consoleEl = document.getElementById('console');
+
+  // --- Console ---------------------------------------------------------------
+  // The point of showing this is that the recomputation is visible. A demo that
+  // only showed the corrected number would be asking to be taken on faith.
+  function log(kind, message) {
+    var stamp = new Date().toLocaleTimeString('en-GB', { hour12: false });
+    var line = document.createElement('div');
+    var cls = { ok: 'ok', warn: 'warn', stop: 'stop', req: 'req' }[kind] || '';
+    line.innerHTML = '<span class="' + cls + '">' +
+      '[' + stamp + '] ' + escapeHtml(message) + '</span>';
+    consoleEl.appendChild(line);
+    consoleEl.scrollTop = consoleEl.scrollHeight;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  // --- Server: money ---------------------------------------------------------
+  // Mirrors applyLineTotals() and applyOrderTotals() in lib_money.js.
+
+  function lineTotal(line) {
+    if (line.status === 'void') return 0;
+    var mods = line.modifiers.reduce(function (s, m) { return s + m.priceDelta; }, 0);
+    return round2((line.unitPrice + mods) * line.qty);
+  }
+
+  function recomputeOrder() {
+    var subtotal = 0;
+    server.lines.forEach(function (l) { subtotal += lineTotal(l); });
+    subtotal = round2(subtotal);
+
+    // Discount first, then service, then tax. The order matters: applying the
+    // service charge to an undiscounted base would overcharge the guest.
+    var discount = round2(Math.min(server.order.discountAmount, subtotal));
+    var base = round2(subtotal - discount);
+    var service = round2(base * VENUE.serviceChargeRate / 100);
+    var preTax = round2(base + service);
+
+    var tax = VENUE.taxInclusive
+      ? round2(preTax * VENUE.taxRate / (100 + VENUE.taxRate))
+      : round2(preTax * VENUE.taxRate / 100);
+
+    var total = VENUE.taxInclusive ? preTax : round2(preTax + tax);
+
+    server.order.subtotal = subtotal;
+    server.order.discountAmount = discount;
+    server.order.serviceAmount = service;
+    server.order.taxAmount = tax;
+    server.order.total = total;
+    server.order.paid = total > 0 && server.order.status === 'paid';
+
+    return server.order;
+  }
+
+  // --- The queue -------------------------------------------------------------
+  // Only addLine survives offline, matching the product: opening a bill needs a
+  // number the server assigns, and settling needs a total only the server
+  // computes.
+
+  function enqueue(write) {
+    till.queue.push(write);
+    log('warn', 'queued  ' + write.describe + '  (offline)');
+    render();
+  }
+
+  function flushQueue() {
+    if (!till.queue.length) return;
+    log('req', 'flush   draining ' + till.queue.length + ' queued write(s)');
+    var pending = till.queue.slice();
+    till.queue = [];
+
+    pending.forEach(function (w) {
+      // A real flush stops at the first network failure to preserve ordering.
+      // Here the network is back, so everything drains oldest first.
+      createLine(w.body, w.describe, true);
+    });
+
+    log('ok', 'flush   ' + pending.length + ' write(s) landed, order ' +
+        till.queue.length + ' remaining');
+  }
+
+  // --- Server: writes --------------------------------------------------------
+
+  function createLine(body, describe, fromQueue) {
+    var line = {
+      id: 'l' + (server.nextLineId++),
+      name: body.name_snapshot,
+      qty: body.qty,
+      unitPrice: body.unit_price,
+      modifiers: body.modifiers || [],
+      note: body.note || '',
+      status: 'queued',
+      firedAt: null,
+      sent: false
+    };
+    server.lines.push(line);
+    recomputeOrder();
+    log('ok', 'POST    order_items  ' + describe + '  -> line ' + line.id);
+    return line;
+  }
+
+  function addToBill(item, modifiers, note) {
+    var describe = item.name + (modifiers.length ? ' (' +
+      modifiers.map(function (m) { return m.name; }).join(', ') + ')' : '');
+
+    var body = {
+      menu_item: item.id,
+      name_snapshot: item.name,   // snapshotted: editing the menu tomorrow
+      unit_price: item.price,     // must never rewrite this bill
+      qty: 1,
+      modifiers: modifiers,
+      note: note || '',
+      status: 'queued'
+    };
+
+    if (till.offline) {
+      enqueue({ kind: 'addLine', body: body, describe: describe });
+      return;
+    }
+
+    createLine(body, describe);
+    render();
+  }
+
+  function fireToKitchen() {
+    if (till.offline) {
+      log('stop', 'REFUSED fire_to_kitchen  the kitchen screen is the thing being written to');
+      render();
+      return;
+    }
+    var unsent = server.lines.filter(function (l) { return !l.sent; });
+    if (!unsent.length) {
+      log('warn', 'noop    nothing to fire');
+      return;
+    }
+    unsent.forEach(function (l) {
+      l.sent = true;
+      l.firedAt = Date.now();
+    });
+    log('ok', 'PATCH   fire  ' + unsent.length + ' line(s) -> kitchen');
+    render();
+  }
+
+  function settle() {
+    if (till.offline) {
+      log('stop', 'REFUSED settle  a total only the server computes cannot be guessed at');
+      render();
+      return;
+    }
+    if (server.order.total <= 0) {
+      log('warn', 'noop    nothing to settle');
+      return;
+    }
+    recomputeOrder();
+    server.order.status = 'paid';
+    server.order.paid = true;
+    log('ok', 'PATCH   orders  status=paid  total=' + money(server.order.total) +
+        '  (recomputed server-side before the write)');
+    render();
+  }
+
+  function forgeTotal(value) {
+    log('req', 'PATCH   orders  { total: ' + value + ' }   <- a tampered client');
+    // The hook recomputes on write and overwrites whatever arrived. This is the
+    // whole invariant, and the reason the console shows both numbers.
+    var before = server.order.total;
+    recomputeOrder();
+    var after = server.order.total;
+
+    if (before === after) {
+      log('stop', 'total held at ' + money(after) + '; the forged ' + value + ' was discarded');
+    } else {
+      log('ok', 'recomputed to ' + money(after));
+    }
+    render();
+  }
+
+  // --- Kitchen state machine -------------------------------------------------
+  // queued -> cooking -> ready, and the bill's status is derived from its lines
+  // rather than set directly, so every terminal agrees.
+
+  function advanceLine(line) {
+    if (!line.sent) return;
+    if (line.status === 'queued')       line.status = 'cooking';
+    else if (line.status === 'cooking') line.status = 'ready';
+    log('ok', 'PATCH   order_items ' + line.id + ' -> ' + line.status);
+    render();
+  }
+
+  function derivedOrderStatus() {
+    var fired = server.lines.filter(function (l) { return l.sent && l.status !== 'void'; });
+    if (!fired.length) return 'open';
+    if (fired.every(function (l) { return l.status === 'ready'; })) return 'ready';
+    if (fired.some(function (l) { return l.status === 'cooking'; })) return 'cooking';
+    return 'queued';
+  }
+
+  // --- Render: menu ----------------------------------------------------------
+
+  function renderCats() {
+    var el = document.getElementById('cats');
+    el.innerHTML = '';
+    CATEGORIES.forEach(function (c) {
+      var b = document.createElement('button');
+      b.className = 'cat';
+      b.textContent = c.name;
+      b.setAttribute('aria-pressed', String(c.id === till.activeCat));
+      b.onclick = function () { till.activeCat = c.id; render(); };
+      el.appendChild(b);
+    });
+  }
+
+  function renderMenu() {
+    var el = document.getElementById('menu');
+    el.innerHTML = '';
+    var items = MENU.filter(function (m) { return m.cat === till.activeCat; });
+    document.getElementById('menu-count').textContent = items.length + ' items';
+
+    items.forEach(function (m) {
+      var b = document.createElement('button');
+      b.className = 'item';
+      b.disabled = !m.available;
+      b.innerHTML =
+        '<span class="item-name">' + escapeHtml(m.name) + '</span>' +
+        (m.available ? '' : '<span class="item-sold-out">Sold out</span>') +
+        '<span class="item-price">' + money(m.price) + '</span>';
+      b.onclick = function () { openModifierSheet(m); };
+      el.appendChild(b);
+    });
+  }
+
+  // --- Modifiers -------------------------------------------------------------
+  // A real restaurant requires a choice on some groups, so the sheet blocks the
+  // add until it is answered rather than silently defaulting.
+
+  function openModifierSheet(item) {
+    var groups = (item.groups || []).map(function (id) { return MODIFIER_GROUPS[id]; });
+    if (!groups.length) {
+      addToBill(item, [], '');
+      return;
+    }
+
+    till.pendingItem = item;
+    till.selectedGroups = {};
+
+    var overlay = document.createElement('div');
+    overlay.style.cssText =
+      'position:fixed;inset:0;background:rgba(0,0,0,.7);display:grid;' +
+      'place-items:center;padding:24px;z-index:200';
+
+    var box = document.createElement('div');
+    box.className = 'panel';
+    box.style.cssText = 'max-width:440px;width:100%;max-height:80vh;overflow-y:auto';
+
+    var html = '<div class="panel-head"><span class="panel-title">' +
+      escapeHtml(item.name) + '</span>' +
+      '<span class="dim mono" style="font-size:11px">' + money(item.price) + '</span></div>' +
+      '<div class="panel-body">';
+
+    groups.forEach(function (g) {
+      html += '<div style="margin-bottom:16px">' +
+        '<p class="card-label" style="margin-bottom:8px">' + escapeHtml(g.name) +
+        (g.required ? ' <span style="color:var(--status-trouble)">required</span>' : '') +
+        '</p>';
+      g.options.forEach(function (o, i) {
+        var id = 'g_' + g.id + '_' + i;
+        html += '<label style="display:flex;gap:10px;align-items:center;' +
+          'padding:6px 0;font-size:13px;cursor:pointer">' +
+          '<input type="' + (g.maxSelect === 1 ? 'radio' : 'checkbox') + '" ' +
+          'name="' + g.id + '" value="' + i + '" data-group="' + g.id + '">' +
+          '<span style="flex:1">' + escapeHtml(o.name) + '</span>' +
+          (o.priceDelta ? '<span class="dim mono" style="font-size:11px">+' +
+            money(o.priceDelta) + '</span>' : '') +
+          '</label>';
+      });
+      html += '</div>';
+    });
+
+    html += '<div style="display:flex;gap:8px;justify-content:flex-end;margin-top:8px">' +
+      '<button class="btn btn-ghost" id="sheet-cancel" style="padding:8px 16px;font-size:13px">Cancel</button>' +
+      '<button class="btn btn-primary" id="sheet-add" style="padding:8px 16px;font-size:13px">Add to bill</button>' +
+      '</div></div>';
+
+    box.innerHTML = html;
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    function close() { document.body.removeChild(overlay); }
+
+    box.querySelectorAll('input[data-group]').forEach(function (input) {
+      input.addEventListener('change', function () {
+        var gid = input.dataset.group;
+        var group = MODIFIER_GROUPS[gid];
+        if (group.maxSelect === 1) {
+          till.selectedGroups[gid] = [group.options[Number(input.value)]];
+        } else {
+          var picked = [];
+          box.querySelectorAll('input[data-group="' + gid + '"]:checked')
+            .forEach(function (c) { picked.push(group.options[Number(c.value)]); });
+          till.selectedGroups[gid] = picked;
+        }
+      });
+    });
+
+    box.querySelector('#sheet-cancel').onclick = close;
+    box.querySelector('#sheet-add').onclick = function () {
+      // Required groups must be answered. A missing choice is refused rather
+      // than defaulted, because defaulting is how the kitchen gets an order it
+      // cannot cook.
+      var missing = groups.filter(function (g) {
+        return g.required && !(till.selectedGroups[g.id] || []).length;
+      });
+      if (missing.length) {
+        log('stop', 'REFUSED order_items  ' + missing[0].name + ' must be answered');
+        return;
+      }
+      var mods = [];
+      Object.keys(till.selectedGroups).forEach(function (k) {
+        mods = mods.concat(till.selectedGroups[k] || []);
+      });
+      close();
+      addToBill(item, mods, '');
+    };
+
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) close();
+    });
+  }
+
+  // --- Render: bill ----------------------------------------------------------
+
+  function renderBill() {
+    var el = document.getElementById('bill');
+    el.innerHTML = '';
+
+    var queued = till.queue.map(function (w) {
+      return {
+        id: 'pending', name: w.body.name_snapshot, qty: w.body.qty,
+        unitPrice: w.body.unit_price, modifiers: w.body.modifiers || [],
+        status: 'queued', sent: false, provisional: true
+      };
+    });
+
+    var all = server.lines.concat(queued);
+
+    if (!all.length) {
+      el.innerHTML = '<p class="empty">Nothing on this bill yet</p>';
+    } else {
+      all.forEach(function (l) {
+        var row = document.createElement('div');
+        row.className = 'line';
+        var mods = l.modifiers.map(function (m) { return m.name; }).join(', ');
+        row.innerHTML =
+          '<div>' +
+            '<div class="line-name">' + escapeHtml(l.name) +
+              (l.provisional ? '<span class="queued-badge">queued</span>' : '') +
+            '</div>' +
+            (mods ? '<div class="line-mods">' + escapeHtml(mods) + '</div>' : '') +
+            (l.provisional ? '' :
+              '<div class="qty">' +
+                '<button data-dec="' + l.id + '" aria-label="Decrease">&minus;</button>' +
+                '<span>' + l.qty + '</span>' +
+                '<button data-inc="' + l.id + '" aria-label="Increase">+</button>' +
+              '</div>') +
+          '</div>' +
+          '<div class="line-right">' + money(lineTotal(l)) + '</div>';
+        el.appendChild(row);
+      });
+    }
+
+    el.querySelectorAll('[data-inc]').forEach(function (b) {
+      b.onclick = function () { changeQty(b.dataset.inc, 1); };
+    });
+    el.querySelectorAll('[data-dec]').forEach(function (b) {
+      b.onclick = function () { changeQty(b.dataset.dec, -1); };
+    });
+
+    renderTotals();
+  }
+
+  function changeQty(lineId, delta) {
+    if (till.offline) {
+      log('stop', 'REFUSED update_line  only adding to a bill works offline');
+      return;
+    }
+    var line = server.lines.find(function (l) { return l.id === lineId; });
+    if (!line) return;
+    line.qty = Math.max(1, line.qty + delta);
+    recomputeOrder();
+    log('ok', 'PATCH   order_items ' + line.id + ' qty=' + line.qty +
+        '  -> total ' + money(server.order.total));
+    render();
+  }
+
+  function renderTotals() {
+    var el = document.getElementById('totals');
+    var o = server.order;
+
+    // While offline the displayed total is the last one the server confirmed,
+    // which is honest: it is not a guess. The queued lines are shown but their
+    // money is not added, because only the server may do that.
+    el.innerHTML =
+      '<div class="total-row"><span>Subtotal</span><span>' + money(o.subtotal) + '</span></div>' +
+      (o.discountAmount ? '<div class="total-row"><span>Discount</span><span>&minus;' +
+        money(o.discountAmount) + '</span></div>' : '') +
+      '<div class="total-row"><span>Service charge ' + VENUE.serviceChargeRate +
+        '%</span><span>' + money(o.serviceAmount) + '</span></div>' +
+      '<div class="total-row"><span>PPN ' + VENUE.taxRate + '%</span><span>' +
+        money(o.taxAmount) + '</span></div>' +
+      '<div class="total-row grand"><span>Total</span><span>' + money(o.total) + '</span></div>';
+
+    if (o.paid) {
+      el.innerHTML += '<p class="hint" style="color:var(--status-ready)">Paid</p>';
+    }
+    if (till.queue.length) {
+      el.innerHTML += '<p class="hint">' + till.queue.length +
+        ' line(s) queued and not yet priced by the server.</p>';
+    }
+  }
+
+  // --- Render: kitchen -------------------------------------------------------
+
+  function renderPass() {
+    var el = document.getElementById('pass');
+    el.innerHTML = '';
+
+    var fired = server.lines.filter(function (l) { return l.sent; });
+
+    if (!fired.length) {
+      el.innerHTML = '<p class="empty">Nothing on the pass</p>' +
+        '<p class="hint center">Add items, then fire them to the kitchen.</p>';
+      return;
+    }
+
+    // One ticket per firing, which is how the product groups them.
+    var ticket = document.createElement('div');
+    var age = 0;
+    var oldest = Math.min.apply(null, fired.map(function (l) { return l.firedAt || Date.now(); }));
+    age = Math.floor((Date.now() - oldest) / 1000);
+
+    // Ageing on the border, status on the dots. Never merged.
+    var ageClass = age < 60 ? 'age-fresh' : (age < 300 ? 'age-mid' : 'age-late');
+
+    ticket.className = 'ticket ' + ageClass;
+    ticket.innerHTML =
+      '<div class="ticket-head">' +
+        '<span class="ticket-no">#' + server.order.number + '</span>' +
+        '<span class="ticket-timer">' + Math.floor(age / 60) + ':' +
+          String(age % 60).padStart(2, '0') + '</span>' +
+      '</div>';
+
+    fired.forEach(function (l) {
+      var btn = document.createElement('button');
+      btn.className = 'ticket-line';
+      btn.innerHTML = '<span class="dot dot-' + l.status + '"></span>' +
+        '<span>' + l.qty + '&times; ' + escapeHtml(l.name) + '</span>';
+      btn.onclick = function () { advanceLine(l); };
+      ticket.appendChild(btn);
+    });
+
+    el.appendChild(ticket);
+  }
+
+  // --- Render: everything ----------------------------------------------------
+
+  function render() {
+    renderCats();
+    renderMenu();
+    renderBill();
+    renderPass();
+
+    document.getElementById('bill-no').textContent = '#' + server.order.number;
+    document.getElementById('offline-banner').classList.toggle('show', till.offline);
+  }
+
+  // --- Wiring ----------------------------------------------------------------
+
+  document.getElementById('offline').addEventListener('change', function (e) {
+    till.offline = e.target.checked;
+    if (till.offline) {
+      log('warn', 'network DOWN  writes to the server will fail');
+    } else {
+      log('ok', 'network UP');
+      flushQueue();
+    }
+    render();
+  });
+
+  document.getElementById('settle').onclick = settle;
+  document.getElementById('forge-btn').onclick = function () {
+    var v = Number(document.getElementById('forge').value) || 0;
+    forgeTotal(v);
+  };
+
+  document.getElementById('reset').onclick = function () {
+    server.order = {
+      id: 'o1', number: '001', status: 'open', discountAmount: 0,
+      subtotal: 0, serviceAmount: 0, taxAmount: 0, total: 0, paid: false
+    };
+    server.lines = [];
+    server.nextLineId = 1;
+    till.queue = [];
+    till.offline = false;
+    document.getElementById('offline').checked = false;
+    consoleEl.innerHTML = '';
+    log('ok', 'reset   new bill #001');
+    render();
+  };
+
+  // --- Boot ------------------------------------------------------------------
+  log('ok', 'Mise-Kal demo  venue=' + VENUE.name + '  PPN=' + VENUE.taxRate +
+      '%  service=' + VENUE.serviceChargeRate + '%');
+  log('ok', 'money is computed server-side; the till only displays it');
+  render();
+
+  // The pass ages, so the timer and border colour move without any interaction.
+  setInterval(renderPass, 1000);
+
+  // Firing is a separate action from adding, which is the product's behaviour:
+  // a bill can hold unsent lines for as long as the waiter needs.
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'f' && !e.metaKey && !e.ctrlKey &&
+        document.activeElement.tagName !== 'INPUT') {
+      fireToKitchen();
+    }
+  });
+
+  var fireBtn = document.createElement('button');
+  fireBtn.className = 'btn btn-primary';
+  fireBtn.style.cssText = 'padding:7px 14px;font-size:13px';
+  fireBtn.textContent = 'Fire to kitchen';
+  fireBtn.onclick = fireToKitchen;
+  document.querySelector('.controls').insertBefore(
+    fireBtn, document.getElementById('settle'));
+})();
+</script>
+
+</body>
+</html>

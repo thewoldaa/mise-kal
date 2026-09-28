@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Owner guide — Mise-Kal</title>
+<meta name="description" content="Running a service: taking orders, the kitchen display, closing a shift, and what to do when something goes wrong.">
+<meta name="theme-color" content="#0b0f10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  /* Documentation pages are a narrower measure than the landing page: body
+     text reads badly past about 75 characters, and these pages are mostly
+     prose. */
+  .doc-layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: var(--space-48);
+    align-items: start;
+    padding: var(--space-32) 0 var(--space-96);
+  }
+  @media (max-width: 900px) {
+    .doc-layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-24); }
+    .doc-nav { position: static !important; }
+  }
+  .doc-nav {
+    position: sticky;
+    top: 84px;
+    font-size: 13px;
+  }
+  .doc-nav p {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin: 0 0 var(--space-12);
+  }
+  .doc-nav ul { list-style: none; margin: 0; padding: 0; }
+  .doc-nav li { margin: 0; }
+  .doc-nav a {
+    display: block;
+    padding: 5px 0;
+    color: var(--text-secondary);
+    border-left: 2px solid transparent;
+    padding-left: 10px;
+    margin-left: -12px;
+  }
+  .doc-nav a:hover { color: var(--text); text-decoration: none; }
+  .doc-nav a[aria-current='page'] {
+    color: var(--text);
+    border-left-color: var(--ember);
+  }
+
+  .doc {
+    max-width: 76ch;
+    min-width: 0;
+  }
+  .doc h1 {
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    margin-bottom: var(--space-24);
+  }
+  .doc h2 {
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+  }
+  .doc h3 { margin-top: var(--space-32); }
+  .doc ul, .doc ol { padding-left: 22px; }
+  .doc li { margin: var(--space-4) 0; }
+  .doc blockquote {
+    margin: var(--space-24) 0;
+    padding: var(--space-4) 0 var(--space-4) var(--space-16);
+    border-left: 3px solid var(--border-strong);
+    color: var(--text-secondary);
+  }
+  .doc blockquote p { margin: 0; }
+  .doc hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: var(--space-48) 0;
+  }
+  .doc table { margin: var(--space-24) 0; }
+  .doc img { margin: var(--space-16) 0; }
+  .doc-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-16);
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span>Mise-Kal</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="../demo/">Demo</a>
+      <a href="./" aria-current='page'>Documentation</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+  <div class="doc-layout">
+    <nav class="doc-nav" aria-label="Documentation">
+      <p>Contents</p>
+      <ul>
+        <li><a href="owner-guide.html" aria-current='page'>Owner guide</a></li>
+        <li><a href="developing.html">Developer guide</a></li>
+        <li><a href="architecture.html">Architecture</a></li>
+        <li><a href="install-macos.html">Installing on macOS</a></li>
+        <li><a href="install-windows.html">Installing on Windows</a></li>
+        <li><a href="testing.html">Testing</a></li>
+        <li><a href="README.html">Project overview</a></li>
+        <li><a href="CONTRIBUTING.html">Contributing</a></li>
+        <li><a href="SECURITY.html">Security</a></li>
+        <li><a href="CHANGELOG.html">Changelog</a></li>
+        <li><a href="AGENTS.html">Working in this repository</a></li>
+      </ul>
+    </nav>
+    <article class="doc">
+<p>A short guide for the person who owns the place, not the person who set up the
+computer.</p>
+<h2 id="the-three-screens">The three screens</h2>
+<p>Mise is one app that shows you a different thing depending on who signs in.</p>
+<p><strong>Till</strong> — the floor. Tables, orders, and taking money.
+<strong>Kitchen</strong> — the pass. Tickets appear the moment the till sends them.
+<strong>Manage</strong> — the office. Menu, staff, settings and the numbers.</p>
+<p>If you are the owner or a manager you can switch between all three from the top
+right. Everyone else lands in the one their job needs.</p>
+<h2 id="before-your-first-service">Before your first service</h2>
+<p><strong>Build the menu.</strong> Manage → Categories first (Starters, Mains, Drinks), then
+Manage → Items. An item needs a name, a price and a category; everything else is
+optional.</p>
+<p><strong>Add your tables.</strong> Manage → Tables. Group them into zones if the room has
+sections.</p>
+<p><strong>Add your staff.</strong> Manage → Staff. Each person gets a username and a PIN they
+type at the till. Give people the smallest role that lets them do their job — a
+waiter cannot change your prices.</p>
+<p><strong>Set up a printer</strong> (optional). Manage → Settings → Printers. You need the
+address from the printer's own self-test page. Press <strong>Test</strong> and paper should
+come out.</p>
+<h2 id="during-service">During service</h2>
+<p><strong>Seat a table</strong>: Till → tap the table → how many guests → Open bill.</p>
+<p><strong>Take an order</strong>: tap items. If an item asks a question — size, extras — the
+till asks it. Add a note for the kitchen where it matters; allergy notes show up
+in a box the kitchen cannot miss.</p>
+<p><strong>Send it</strong>: press <strong>Send to the kitchen</strong>. It appears on the pass instantly.</p>
+<p><strong>In the kitchen</strong>: tap an item to move it queued → cooking → ready. Press <strong>All
+ready</strong> when the whole ticket is plated, then <strong>Clear from the pass</strong> once it has
+gone out. Tickets turn amber then red as they age.</p>
+<p><strong>Run out of something</strong>: Manage → Items → switch <strong>In stock</strong> off. It shows as
+<strong>86</strong> on the till and cannot be ordered.</p>
+<p><strong>Settle</strong>: press <strong>Settle bill</strong>. Choose how they are paying. For cash, type
+what they handed you and Mise works out the change. Part payments are fine —
+the bill closes itself when it is covered.</p>
+<p><strong>A discount</strong>: the % button on the bill. You have to give a reason, and it is
+recorded against your name.</p>
+<h2 id="at-the-end-of-the-day">At the end of the day</h2>
+<p><strong>Close your shift</strong>: Till → the green button at the top → count the drawer and
+type the total. Mise tells you what should be there and whether you are short.
+Then it shows what the shift came to.</p>
+<p><strong>The numbers</strong>: Manage → Reports. Takings, what sold, who served it, and the
+shape of the day by hour. <strong>Export CSV</strong> hands it to a bookkeeper.</p>
+<h2 id="what-mise-will-not-let-you-do">What Mise will not let you do</h2>
+<p>Some things are refused on purpose:</p>
+<ul>
+<li>The bill total cannot be edited. It is worked out on the server from the
+  items, your tax and your service charge.</li>
+<li>A discount larger than the bill.</li>
+<li>Removing your last owner account, or switching it off.</li>
+<li>A manager resetting an <em>owner's</em> PIN.</li>
+<li>Taking money against a cancelled bill.</li>
+</ul>
+<h2 id="prices-and-history">Prices and history</h2>
+<p>Changing a price today never changes a bill from yesterday. Every order keeps
+its own copy of what things were called and what they cost.</p>
+      <div class="doc-links">
+        <a href="https://github.com/thewoldaa/mise-kal/blob/main/docs/owner-guide.md">View source on GitHub</a>
+        <a href="../demo/">Interactive demo</a>
+        <a href="./">All documentation</a>
+      </div>
+    </article>
+  </div>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <p class="mb-0">
+        Mise-Kal &middot; MIT licensed &middot; A derivative of
+        <a href="https://github.com/devShakib015/mise">Mise</a>
+      </p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../">Home</a>
+      <a href="../demo/">Demo</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+      <a href="https://github.com/thewoldaa/mise-kal/releases">Releases</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

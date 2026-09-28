@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Developer guide — Mise-Kal</title>
+<meta name="description" content="Setting up a development machine, the four rules the code leans on, and the things that will bite you.">
+<meta name="theme-color" content="#0b0f10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  /* Documentation pages are a narrower measure than the landing page: body
+     text reads badly past about 75 characters, and these pages are mostly
+     prose. */
+  .doc-layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: var(--space-48);
+    align-items: start;
+    padding: var(--space-32) 0 var(--space-96);
+  }
+  @media (max-width: 900px) {
+    .doc-layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-24); }
+    .doc-nav { position: static !important; }
+  }
+  .doc-nav {
+    position: sticky;
+    top: 84px;
+    font-size: 13px;
+  }
+  .doc-nav p {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin: 0 0 var(--space-12);
+  }
+  .doc-nav ul { list-style: none; margin: 0; padding: 0; }
+  .doc-nav li { margin: 0; }
+  .doc-nav a {
+    display: block;
+    padding: 5px 0;
+    color: var(--text-secondary);
+    border-left: 2px solid transparent;
+    padding-left: 10px;
+    margin-left: -12px;
+  }
+  .doc-nav a:hover { color: var(--text); text-decoration: none; }
+  .doc-nav a[aria-current='page'] {
+    color: var(--text);
+    border-left-color: var(--ember);
+  }
+
+  .doc {
+    max-width: 76ch;
+    min-width: 0;
+  }
+  .doc h1 {
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    margin-bottom: var(--space-24);
+  }
+  .doc h2 {
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+  }
+  .doc h3 { margin-top: var(--space-32); }
+  .doc ul, .doc ol { padding-left: 22px; }
+  .doc li { margin: var(--space-4) 0; }
+  .doc blockquote {
+    margin: var(--space-24) 0;
+    padding: var(--space-4) 0 var(--space-4) var(--space-16);
+    border-left: 3px solid var(--border-strong);
+    color: var(--text-secondary);
+  }
+  .doc blockquote p { margin: 0; }
+  .doc hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: var(--space-48) 0;
+  }
+  .doc table { margin: var(--space-24) 0; }
+  .doc img { margin: var(--space-16) 0; }
+  .doc-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-16);
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span>Mise-Kal</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="../demo/">Demo</a>
+      <a href="./" aria-current='page'>Documentation</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+  <div class="doc-layout">
+    <nav class="doc-nav" aria-label="Documentation">
+      <p>Contents</p>
+      <ul>
+        <li><a href="owner-guide.html">Owner guide</a></li>
+        <li><a href="developing.html" aria-current='page'>Developer guide</a></li>
+        <li><a href="architecture.html">Architecture</a></li>
+        <li><a href="install-macos.html">Installing on macOS</a></li>
+        <li><a href="install-windows.html">Installing on Windows</a></li>
+        <li><a href="testing.html">Testing</a></li>
+        <li><a href="README.html">Project overview</a></li>
+        <li><a href="CONTRIBUTING.html">Contributing</a></li>
+        <li><a href="SECURITY.html">Security</a></li>
+        <li><a href="CHANGELOG.html">Changelog</a></li>
+        <li><a href="AGENTS.html">Working in this repository</a></li>
+      </ul>
+    </nav>
+    <article class="doc">
+<h2 id="what-you-need">What you need</h2>
+<ul>
+<li>Flutter (stable). Built against 3.47 / Dart 3.13.</li>
+<li>Nothing else. PocketBase is downloaded on demand; there is no database to
+  install and no cloud account to create.</li>
+</ul>
+<h2 id="windows">Windows</h2>
+<p>Mise-Kal is developed on Windows as well as macOS, and the harness makes the
+whole test suite runnable there. What a Windows developer needs:</p>
+<ul>
+<li><strong>Git for Windows</strong>, which brings Git Bash. Run everything from Git Bash, not
+  PowerShell or cmd — every script in this repository is a POSIX shell script.</li>
+<li><strong>Flutter SDK</strong>, on PATH. <code>flutter --version</code> should answer before you start.
+  If you cloned the SDK but did not add it to PATH, the harness doctor will tell
+  you where it found it and what to type.</li>
+<li><strong>Nothing else.</strong> <code>jq</code> and PocketBase are fetched into <code>.harness/cache/</code> by
+  <code>.harness/scripts/setup-tools.sh</code>. Neither is installed system-wide, which is
+  deliberate: <code>jq</code> is not present on a stock Windows machine and there is no
+  package manager guaranteed to be there either.</li>
+</ul>
+<p>Check the machine before you start:</p>
+<pre><code class="language-bash">.harness/scripts/setup-tools.sh
+.harness/scripts/worktree.sh doctor
+</code></pre>
+<p>Three Windows-specific things worth knowing, each of which cost real time to
+diagnose:</p>
+<p><strong>Shell scripts must stay LF.</strong> Git's default <code>core.autocrlf=true</code> rewrites
+<code>.sh</code> files to CRLF on checkout, and bash then reads <code>set -euo pipefail\r</code>,
+fails to find a command named <code>pipefail\r</code>, and dies before the script's first
+line. <code>.gitattributes</code> pins the line ending in the repository so this cannot
+happen. If you add a shell script and it fails strangely, check its endings
+first.</p>
+<p><strong>Git Bash does not honour <code>TMPDIR</code> for a literal <code>/tmp</code> path.</strong> A script
+writing to <code>/tmp/x.json</code> writes to the real <code>C:\Users\...\AppData\Local\Temp</code>,
+not to whatever you set <code>TMPDIR</code> to. The harness moves those paths into each
+agent's own scratch directory for exactly this reason.</p>
+<p><strong><code>pkill -f</code> matches command lines as strings, not processes.</strong> Two test runs in
+different directories start PocketBase with identical relative arguments, so one
+run's cleanup kills the other's server mid-suite. The harness kills by PID.</p>
+<h2 id="running-it">Running it</h2>
+<p>Two terminals.</p>
+<pre><code class="language-bash">./server/scripts/dev.sh
+</code></pre>
+<p>First run fetches the pinned PocketBase into <code>server/bin/</code> and applies the
+migrations. Its admin UI is at http://127.0.0.1:8090/_/.</p>
+<pre><code class="language-bash">cd app &amp;&amp; flutter run -d macos
+</code></pre>
+<p><code>-d chrome</code>, <code>-d windows</code> and <code>-d linux</code> work too. On first launch, point the app
+at <code>127.0.0.1:8090</code>.</p>
+<h2 id="tests">Tests</h2>
+<p>Five backend suites. Each spins up a throwaway database on its own port and
+tears it down; none touch your data.</p>
+<pre><code class="language-bash">for s in smoke setup kitchen payments staff; do ./server/scripts/${s}_test.sh; done
+cd app &amp;&amp; flutter test
+</code></pre>
+<h2 id="how-it-fits-together">How it fits together</h2>
+<pre><code>server/pb_migrations/   the schema, in version control
+server/pb_hooks/        the rules that cannot live on a client
+app/lib/core/           design system, printing, reporting, server hosting
+app/lib/data/           models, repositories, live queries
+app/lib/features/       setup, auth, pos, kds, manager
+</code></pre>
+<h3 id="four-rules-the-code-leans-on">Four rules the code leans on</h3>
+<p><strong>Money is only ever computed on the server.</strong> The app displays totals; it never
+adds them up. A client that PATCHes a forged total has it recomputed and
+overwritten, and there is a test for exactly that.</p>
+<p><strong>Menu names and prices are snapshotted onto order lines.</strong> Editing tomorrow's
+menu must never rewrite yesterday's bill.</p>
+<p><strong>Takings are counted by when a bill closed</strong>, not when it opened. A table seated
+before a shift began and settled during it is that shift's takings.</p>
+<p><strong>Ageing and status use separate colour channels.</strong> On the kitchen display, a
+ticket's border and timer say how long; dots and chips say what state. Never
+merge them, or a late ticket full of cooking items becomes unreadable.</p>
+<h3 id="things-that-will-bite-you">Things that will bite you</h3>
+<p><strong>PocketBase hooks run in their own runtime.</strong> A function declared at the top of
+a <code>.pb.js</code> file is not defined inside the handler. Put shared code in a
+<code>lib_*.js</code> and <code>require</code> it <em>inside</em> each handler.</p>
+<p><strong>PocketBase zero values are truthy objects.</strong> An empty date is a zero
+<code>DateTime</code>, so <code>!record.get("closed_at")</code> never fires. Use <code>getString()</code> and
+compare to <code>""</code>. A <code>json</code> field is a byte array that passes <code>Array.isArray</code> —
+decode with <code>.string()</code> first.</p>
+<p><strong>Filters bind client-side.</strong> <code>pb.filter("x = {:v}", {...})</code>, not a <code>query</code> map.
+The server-side API is the one that binds parameters; the Dart SDK does not.</p>
+<p><strong>The macOS app is not sandboxed, deliberately.</strong> The sandbox quarantines every
+file a sandboxed app writes, and a quarantined binary cannot be executed — so
+the bundled server would never start. See the comment in
+<code>macos/Runner/Release.entitlements</code>.</p>
+<p><strong>iOS needs two keys to reach a LAN server</strong> over plain HTTP:
+<code>NSAppTransportSecurity</code> → <code>NSAllowsLocalNetworking</code>, and
+<code>NSLocalNetworkUsageDescription</code>. Without either, an iPad till silently cannot
+connect.</p>
+<h2 id="building-a-release">Building a release</h2>
+<pre><code class="language-bash">./installer/macos/build_dmg.sh
+</code></pre>
+<p>Stages the server into the app, builds release, and produces
+<code>installer/out/Mise-&lt;version&gt;-macos.dmg</code>. Set <code>CODESIGN_IDENTITY</code> to sign it;
+without that it is unsigned and users open it from the right-click menu once.</p>
+<h2 id="changing-the-schema">Changing the schema</h2>
+<p>Add a migration to <code>server/pb_migrations/</code> — never edit an applied one. Then run
+the suites; <code>smoke</code> and <code>payments</code> cover most of what schema changes break.</p>
+      <div class="doc-links">
+        <a href="https://github.com/thewoldaa/mise-kal/blob/main/docs/developing.md">View source on GitHub</a>
+        <a href="../demo/">Interactive demo</a>
+        <a href="./">All documentation</a>
+      </div>
+    </article>
+  </div>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <p class="mb-0">
+        Mise-Kal &middot; MIT licensed &middot; A derivative of
+        <a href="https://github.com/devShakib015/mise">Mise</a>
+      </p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../">Home</a>
+      <a href="../demo/">Demo</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+      <a href="https://github.com/thewoldaa/mise-kal/releases">Releases</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

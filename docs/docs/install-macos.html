@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Installing on macOS — Mise-Kal</title>
+<meta name="description" content="Building and installing the DMG, and the Gatekeeper warning users will see.">
+<meta name="theme-color" content="#0b0f10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  /* Documentation pages are a narrower measure than the landing page: body
+     text reads badly past about 75 characters, and these pages are mostly
+     prose. */
+  .doc-layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: var(--space-48);
+    align-items: start;
+    padding: var(--space-32) 0 var(--space-96);
+  }
+  @media (max-width: 900px) {
+    .doc-layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-24); }
+    .doc-nav { position: static !important; }
+  }
+  .doc-nav {
+    position: sticky;
+    top: 84px;
+    font-size: 13px;
+  }
+  .doc-nav p {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin: 0 0 var(--space-12);
+  }
+  .doc-nav ul { list-style: none; margin: 0; padding: 0; }
+  .doc-nav li { margin: 0; }
+  .doc-nav a {
+    display: block;
+    padding: 5px 0;
+    color: var(--text-secondary);
+    border-left: 2px solid transparent;
+    padding-left: 10px;
+    margin-left: -12px;
+  }
+  .doc-nav a:hover { color: var(--text); text-decoration: none; }
+  .doc-nav a[aria-current='page'] {
+    color: var(--text);
+    border-left-color: var(--ember);
+  }
+
+  .doc {
+    max-width: 76ch;
+    min-width: 0;
+  }
+  .doc h1 {
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    margin-bottom: var(--space-24);
+  }
+  .doc h2 {
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+  }
+  .doc h3 { margin-top: var(--space-32); }
+  .doc ul, .doc ol { padding-left: 22px; }
+  .doc li { margin: var(--space-4) 0; }
+  .doc blockquote {
+    margin: var(--space-24) 0;
+    padding: var(--space-4) 0 var(--space-4) var(--space-16);
+    border-left: 3px solid var(--border-strong);
+    color: var(--text-secondary);
+  }
+  .doc blockquote p { margin: 0; }
+  .doc hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: var(--space-48) 0;
+  }
+  .doc table { margin: var(--space-24) 0; }
+  .doc img { margin: var(--space-16) 0; }
+  .doc-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-16);
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span>Mise-Kal</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="../demo/">Demo</a>
+      <a href="./" aria-current='page'>Documentation</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+  <div class="doc-layout">
+    <nav class="doc-nav" aria-label="Documentation">
+      <p>Contents</p>
+      <ul>
+        <li><a href="owner-guide.html">Owner guide</a></li>
+        <li><a href="developing.html">Developer guide</a></li>
+        <li><a href="architecture.html">Architecture</a></li>
+        <li><a href="install-macos.html" aria-current='page'>Installing on macOS</a></li>
+        <li><a href="install-windows.html">Installing on Windows</a></li>
+        <li><a href="testing.html">Testing</a></li>
+        <li><a href="README.html">Project overview</a></li>
+        <li><a href="CONTRIBUTING.html">Contributing</a></li>
+        <li><a href="SECURITY.html">Security</a></li>
+        <li><a href="CHANGELOG.html">Changelog</a></li>
+        <li><a href="AGENTS.html">Working in this repository</a></li>
+      </ul>
+    </nav>
+    <article class="doc">
+<h2 id="1-install-it">1. Install it</h2>
+<p>Open the <code>.dmg</code> you downloaded and drag <strong>Mise</strong> onto the Applications folder
+next to it. Eject the disk image.</p>
+<h2 id="2-open-it-the-first-time">2. Open it the first time</h2>
+<p>macOS will say it <em>cannot verify the developer</em>. That is expected — Mise is free
+and is not signed with a paid Apple certificate.</p>
+<p><strong>Right-click Mise in Applications → Open → Open.</strong></p>
+<p>You only do this once. After that it opens normally.</p>
+<blockquote>
+<p>Why: Apple charges $99/year for the certificate that removes this warning.
+Mise is free and self-hosted, so it does not pay it. The warning means
+"unsigned", not "unsafe" — the source is public and you can build it yourself.</p>
+</blockquote>
+<h2 id="3-decide-which-computer-runs-the-restaurant">3. Decide which computer runs the restaurant</h2>
+<p>One machine holds the menu, the orders and the takings. Everything else joins it.
+Pick the one that stays switched on during service — usually the back-office
+computer.</p>
+<p>On that machine, choose <strong>Run the restaurant on this computer</strong>. Mise starts its
+own server and shows you an address like <code>http://192.168.0.209:8090</code>.</p>
+<p><strong>Write that address down.</strong> Tablets and the kitchen screen need it.</p>
+<p>macOS may ask whether Mise can accept incoming network connections. Say yes —
+that is how the tablets reach it.</p>
+<h2 id="4-set-up-the-restaurant">4. Set up the restaurant</h2>
+<p>The first run walks through three steps: what the place is called, what it
+charges, and who owns it. Then you are signed in.</p>
+<h2 id="5-add-the-other-devices">5. Add the other devices</h2>
+<p>On each tablet or kitchen screen, open Mise and type the address from step 3 —
+not "run on this computer". They join the machine that is hosting.</p>
+<p>Everything must be on the same wi-fi.</p>
+<h2 id="where-your-data-lives">Where your data lives</h2>
+<p><code>~/Library/Application Support/com.devshakib.mise/server/pb_data</code></p>
+<p>On the host machine only. Nothing is sent anywhere. Updating Mise never touches
+it. Back it up by copying that folder while Mise is closed.</p>
+<h2 id="if-something-is-wrong">If something is wrong</h2>
+<p><strong>The tablets cannot find it.</strong> Check they are on the same wi-fi, and that macOS
+is allowing incoming connections for Mise (System Settings → Network → Firewall).</p>
+<p><strong>"The server did not come up in time."</strong> Something else may be using port 8090.
+Quit it and reopen Mise.</p>
+<p><strong>You want to start over.</strong> Quit Mise and delete the folder above. The next
+launch behaves like a fresh install.</p>
+      <div class="doc-links">
+        <a href="https://github.com/thewoldaa/mise-kal/blob/main/docs/install-macos.md">View source on GitHub</a>
+        <a href="../demo/">Interactive demo</a>
+        <a href="./">All documentation</a>
+      </div>
+    </article>
+  </div>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <p class="mb-0">
+        Mise-Kal &middot; MIT licensed &middot; A derivative of
+        <a href="https://github.com/devShakib015/mise">Mise</a>
+      </p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../">Home</a>
+      <a href="../demo/">Demo</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+      <a href="https://github.com/thewoldaa/mise-kal/releases">Releases</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

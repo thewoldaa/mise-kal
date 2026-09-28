@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security — Mise-Kal</title>
+<meta name="description" content="The threat model, the guarantees the code keeps, and how to report a vulnerability.">
+<meta name="theme-color" content="#0b0f10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  /* Documentation pages are a narrower measure than the landing page: body
+     text reads badly past about 75 characters, and these pages are mostly
+     prose. */
+  .doc-layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: var(--space-48);
+    align-items: start;
+    padding: var(--space-32) 0 var(--space-96);
+  }
+  @media (max-width: 900px) {
+    .doc-layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-24); }
+    .doc-nav { position: static !important; }
+  }
+  .doc-nav {
+    position: sticky;
+    top: 84px;
+    font-size: 13px;
+  }
+  .doc-nav p {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin: 0 0 var(--space-12);
+  }
+  .doc-nav ul { list-style: none; margin: 0; padding: 0; }
+  .doc-nav li { margin: 0; }
+  .doc-nav a {
+    display: block;
+    padding: 5px 0;
+    color: var(--text-secondary);
+    border-left: 2px solid transparent;
+    padding-left: 10px;
+    margin-left: -12px;
+  }
+  .doc-nav a:hover { color: var(--text); text-decoration: none; }
+  .doc-nav a[aria-current='page'] {
+    color: var(--text);
+    border-left-color: var(--ember);
+  }
+
+  .doc {
+    max-width: 76ch;
+    min-width: 0;
+  }
+  .doc h1 {
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    margin-bottom: var(--space-24);
+  }
+  .doc h2 {
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+  }
+  .doc h3 { margin-top: var(--space-32); }
+  .doc ul, .doc ol { padding-left: 22px; }
+  .doc li { margin: var(--space-4) 0; }
+  .doc blockquote {
+    margin: var(--space-24) 0;
+    padding: var(--space-4) 0 var(--space-4) var(--space-16);
+    border-left: 3px solid var(--border-strong);
+    color: var(--text-secondary);
+  }
+  .doc blockquote p { margin: 0; }
+  .doc hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: var(--space-48) 0;
+  }
+  .doc table { margin: var(--space-24) 0; }
+  .doc img { margin: var(--space-16) 0; }
+  .doc-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-16);
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span>Mise-Kal</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="../demo/">Demo</a>
+      <a href="./" aria-current='page'>Documentation</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+  <div class="doc-layout">
+    <nav class="doc-nav" aria-label="Documentation">
+      <p>Contents</p>
+      <ul>
+        <li><a href="owner-guide.html">Owner guide</a></li>
+        <li><a href="developing.html">Developer guide</a></li>
+        <li><a href="architecture.html">Architecture</a></li>
+        <li><a href="install-macos.html">Installing on macOS</a></li>
+        <li><a href="install-windows.html">Installing on Windows</a></li>
+        <li><a href="testing.html">Testing</a></li>
+        <li><a href="README.html">Project overview</a></li>
+        <li><a href="CONTRIBUTING.html">Contributing</a></li>
+        <li><a href="SECURITY.html" aria-current='page'>Security</a></li>
+        <li><a href="CHANGELOG.html">Changelog</a></li>
+        <li><a href="AGENTS.html">Working in this repository</a></li>
+      </ul>
+    </nav>
+    <article class="doc">
+<h2 id="reporting-a-vulnerability">Reporting a vulnerability</h2>
+<p>Open a private security advisory on GitHub:</p>
+<pre><code>https://github.com/thewoldaa/mise-kal/security/advisories/new
+</code></pre>
+<p>Please do not open a public issue for a vulnerability. Include what you did, what
+happened, and what you expected — enough for someone else to reproduce it.</p>
+<p>There is no bug bounty. This is a free, self-hosted project maintained in the
+open; reports are handled as time allows, but they are taken seriously.</p>
+<h2 id="what-is-in-scope">What is in scope</h2>
+<p>Mise-Kal is a POS that runs on a restaurant's own network. The threat model that
+matters is:</p>
+<ul>
+<li><strong>A tampered client.</strong> A tablet on the restaurant's wi-fi must not be able to
+  change what a bill costs, mark a bill paid, or read another table's data.</li>
+<li><strong>A guest on the wi-fi.</strong> Someone who scans a table QR code must reach exactly
+  the three public guest routes and nothing else.</li>
+<li><strong>A staff member overstepping their role.</strong> A manager must not be able to
+  seize an owner's account.</li>
+<li><strong>Data at rest.</strong> The restaurant's sales data must not be readable by someone
+  who should not have it.</li>
+</ul>
+<p>Out of scope: anything requiring physical access to the server machine, and
+anything requiring an already-compromised operating system. If the host is
+compromised, no application-level control survives.</p>
+<h2 id="the-guarantees-the-code-is-built-to-keep">The guarantees the code is built to keep</h2>
+<p>These are enforced in <code>server/pb_hooks/</code> and covered by tests. A report that
+shows one of them failing is a real finding.</p>
+<table>
+<thead>
+<tr>
+<th>Guarantee</th>
+<th>Where</th>
+<th>Test</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>All money is computed server-side; a forged total is overwritten</td>
+<td><code>pb_hooks/lib_money.js</code></td>
+<td><code>smoke</code> — "Client cannot forge a total"</td>
+</tr>
+<tr>
+<td>A guest's order is priced from the database, never from the request</td>
+<td><code>pb_hooks/guest.pb.js</code></td>
+<td><code>guest</code> — "priced from the database"</td>
+</tr>
+<tr>
+<td>Guests reach only the public routes; all collections stay staff-only</td>
+<td><code>pb_hooks/routes.pb.js</code></td>
+<td><code>guest</code> — "collections stay staff-only"</td>
+</tr>
+<tr>
+<td>A manager cannot reset an owner's PIN</td>
+<td><code>pb_hooks/staff.pb.js</code></td>
+<td><code>staff</code> — "manager cannot reset an owner"</td>
+</tr>
+<tr>
+<td>The venue can never be left without an active owner</td>
+<td><code>pb_hooks/lib_staff.js</code></td>
+<td><code>staff</code> — "cannot be demoted/switched off/deleted"</td>
+</tr>
+<tr>
+<td>Bootstrap can never run twice</td>
+<td><code>pb_hooks/lib_setup.js</code></td>
+<td><code>setup</code></td>
+</tr>
+<tr>
+<td>Money cannot be taken against a cancelled bill</td>
+<td><code>pb_hooks/orders.pb.js</code></td>
+<td><code>payments</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="public-repository-hygiene">Public repository hygiene</h2>
+<p>Mise-Kal is developed in a private workspace and published publicly. Keeping
+private material out is treated as a security property, not a tidiness
+preference.</p>
+<p><strong>Never committed:</strong></p>
+<ul>
+<li>API keys, tokens, passwords, private keys, connection strings</li>
+<li><code>.env</code> files with real values — <code>.env.example</code> is the committed template</li>
+<li>Personal agent instructions, memory files or private prompts</li>
+<li>Machine-specific configuration</li>
+<li>Any file naming a real person's private information</li>
+</ul>
+<p><strong>How this is enforced:</strong></p>
+<pre><code class="language-bash">.harness/scripts/security-check.sh            # tracked files
+.harness/scripts/security-check.sh --all      # also untracked
+.harness/scripts/security-check.sh --history  # also committed history
+</code></pre>
+<p>It runs in CI on every push and fails the build on a finding. <code>.gitignore</code> is
+the first line of defence; this script is the backstop, because a <code>.gitignore</code>
+does nothing about a file already tracked before the pattern existed, or a
+secret pasted into a tracked file's body.</p>
+<p><strong>If a secret is committed by accident:</strong> rotate it. Deleting the commit or
+force-pushing does not un-leak it — the value is in history, in any clone, and
+possibly already fetched by automated scrapers. Rotation is the only fix that
+actually works.</p>
+<h2 id="operational-guidance-for-a-restaurant">Operational guidance for a restaurant</h2>
+<p>The server is meant to run on the restaurant's own LAN. Two things follow:</p>
+<ul>
+<li><strong>Do not expose the server to the internet.</strong> Table-side ordering works over
+  the LAN by design. Publishing the server to the internet trades away the
+  offline guarantee and the zero-cost guarantee at the same time. If remote
+  access is ever needed, it is a deliberate decision with a tunnel or VPN in
+  front, not a port forward.</li>
+<li><strong>Change the default credentials.</strong> A fresh install creates an owner account.
+  A POS with a known PIN on an open network is an open till.</li>
+</ul>
+<h2 id="supported-versions">Supported versions</h2>
+<p>The project is pre-1.0 and moving. Security fixes land on <code>main</code>; there are no
+backport branches. Run the latest <code>main</code> if you need a fix.</p>
+<h2 id="acknowledgements">Acknowledgements</h2>
+<p>Upstream <strong>Mise</strong> by K M Shahriar Hossain established the security posture this
+project inherits — in particular the rule that money is only ever computed
+server-side. See <a href="https://github.com/devShakib015/mise">https://github.com/devShakib015/mise</a>.</p>
+      <div class="doc-links">
+        <a href="https://github.com/thewoldaa/mise-kal/blob/main/SECURITY.md">View source on GitHub</a>
+        <a href="../demo/">Interactive demo</a>
+        <a href="./">All documentation</a>
+      </div>
+    </article>
+  </div>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <p class="mb-0">
+        Mise-Kal &middot; MIT licensed &middot; A derivative of
+        <a href="https://github.com/devShakib015/mise">Mise</a>
+      </p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../">Home</a>
+      <a href="../demo/">Demo</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+      <a href="https://github.com/thewoldaa/mise-kal/releases">Releases</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>

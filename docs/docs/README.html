@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project overview — Mise-Kal</title>
+<meta name="description" content="What Mise-Kal is, what it does, and how to run it.">
+<meta name="theme-color" content="#0b0f10">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/site.css">
+<style>
+  /* Documentation pages are a narrower measure than the landing page: body
+     text reads badly past about 75 characters, and these pages are mostly
+     prose. */
+  .doc-layout {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: var(--space-48);
+    align-items: start;
+    padding: var(--space-32) 0 var(--space-96);
+  }
+  @media (max-width: 900px) {
+    .doc-layout { grid-template-columns: minmax(0, 1fr); gap: var(--space-24); }
+    .doc-nav { position: static !important; }
+  }
+  .doc-nav {
+    position: sticky;
+    top: 84px;
+    font-size: 13px;
+  }
+  .doc-nav p {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin: 0 0 var(--space-12);
+  }
+  .doc-nav ul { list-style: none; margin: 0; padding: 0; }
+  .doc-nav li { margin: 0; }
+  .doc-nav a {
+    display: block;
+    padding: 5px 0;
+    color: var(--text-secondary);
+    border-left: 2px solid transparent;
+    padding-left: 10px;
+    margin-left: -12px;
+  }
+  .doc-nav a:hover { color: var(--text); text-decoration: none; }
+  .doc-nav a[aria-current='page'] {
+    color: var(--text);
+    border-left-color: var(--ember);
+  }
+
+  .doc {
+    max-width: 76ch;
+    min-width: 0;
+  }
+  .doc h1 {
+    font-size: clamp(1.7rem, 4vw, 2.3rem);
+    margin-bottom: var(--space-24);
+  }
+  .doc h2 {
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+  }
+  .doc h3 { margin-top: var(--space-32); }
+  .doc ul, .doc ol { padding-left: 22px; }
+  .doc li { margin: var(--space-4) 0; }
+  .doc blockquote {
+    margin: var(--space-24) 0;
+    padding: var(--space-4) 0 var(--space-4) var(--space-16);
+    border-left: 3px solid var(--border-strong);
+    color: var(--text-secondary);
+  }
+  .doc blockquote p { margin: 0; }
+  .doc hr {
+    border: 0;
+    border-top: 1px solid var(--border);
+    margin: var(--space-48) 0;
+  }
+  .doc table { margin: var(--space-24) 0; }
+  .doc img { margin: var(--space-16) 0; }
+  .doc-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-16);
+    margin-top: var(--space-48);
+    padding-top: var(--space-24);
+    border-top: 1px solid var(--border);
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="../">
+      <span class="brand-mark" aria-hidden="true">M</span>
+      <span>Mise-Kal</span>
+    </a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="../demo/">Demo</a>
+      <a href="./" aria-current='page'>Documentation</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="wrap">
+  <div class="doc-layout">
+    <nav class="doc-nav" aria-label="Documentation">
+      <p>Contents</p>
+      <ul>
+        <li><a href="owner-guide.html">Owner guide</a></li>
+        <li><a href="developing.html">Developer guide</a></li>
+        <li><a href="architecture.html">Architecture</a></li>
+        <li><a href="install-macos.html">Installing on macOS</a></li>
+        <li><a href="install-windows.html">Installing on Windows</a></li>
+        <li><a href="testing.html">Testing</a></li>
+        <li><a href="README.html" aria-current='page'>Project overview</a></li>
+        <li><a href="CONTRIBUTING.html">Contributing</a></li>
+        <li><a href="SECURITY.html">Security</a></li>
+        <li><a href="CHANGELOG.html">Changelog</a></li>
+        <li><a href="AGENTS.html">Working in this repository</a></li>
+      </ul>
+    </nav>
+    <article class="doc">
+<div align="center">
+
+# Mise-Kal
+
+**A self-hosted restaurant management system.**
+
+Point of sale, kitchen display, and back-office management in one application,
+running on the restaurant's own hardware. No cloud account, no subscription, no
+telemetry.
+
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/thewoldaa/mise-kal?label=release&color=blue)](https://github.com/thewoldaa/mise-kal/releases)
+[![Tests](https://img.shields.io/badge/tests-175%20passing-brightgreen.svg)](#testing)
+[![Flutter](https://img.shields.io/badge/Flutter-3.47.5-02569B.svg)](https://flutter.dev)
+[![PocketBase](https://img.shields.io/badge/PocketBase-0.40.1-000000.svg)](https://pocketbase.io)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux%20%7C%20Android%20%7C%20iOS-lightgrey.svg)](#installation)
+[![Status](https://img.shields.io/badge/status-pre--1.0-orange.svg)](#roadmap)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
+</div>
+
+<hr />
+<p>Because the server runs on-site, the POS continues to take orders when the
+internet goes down. For a restaurant, that matters more than almost any other
+property of the system.</p>
+<p>Mise-Kal is a derivative of <a href="https://github.com/devShakib015/mise">Mise</a>,
+developed independently as a long-term project.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>License</strong></td>
+<td>MIT</td>
+</tr>
+<tr>
+<td><strong>Platform</strong></td>
+<td>Windows, macOS, Linux, Android, iOS</td>
+</tr>
+<tr>
+<td><strong>Backend</strong></td>
+<td>PocketBase 0.40.1 (single binary)</td>
+</tr>
+<tr>
+<td><strong>Application</strong></td>
+<td>Flutter 3.47.5</td>
+</tr>
+<tr>
+<td><strong>Tests</strong></td>
+<td>101 backend checks, 74 Dart tests</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>Pre-1.0, active development</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="table-of-contents">Table of contents</h2>
+<ul>
+<li><a href="#capabilities">Capabilities</a></li>
+<li><a href="#design-invariants">Design invariants</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#installation">Installation</a></li>
+<li><a href="#development">Development</a></li>
+<li><a href="#testing">Testing</a></li>
+<li><a href="#repository-layout">Repository layout</a></li>
+<li><a href="#roadmap">Roadmap</a></li>
+<li><a href="#contributing">Contributing</a></li>
+<li><a href="#security">Security</a></li>
+<li><a href="#acknowledgements">Acknowledgements</a></li>
+</ul>
+<hr />
+<h2 id="capabilities">Capabilities</h2>
+<h3 id="point-of-sale">Point of sale</h3>
+<p>Floor plan with live bill totals per table. Order taking with modifiers,
+kitchen notes, and quantities. Send-to-kitchen in one action. Partial payments
+accumulating to settlement. Discounts by percentage or amount, each with a
+reason and each written to the audit log. Voids are recorded rather than
+silently deleted.</p>
+<p>The till keeps working when the network drops: adding to a bill is queued to
+disk and drains automatically when the server answers again.</p>
+<h3 id="kitchen-display">Kitchen display</h3>
+<p>Tickets appear the moment the till fires them, sized to read from across a
+kitchen. Tapping an item walks it through queued, cooking, ready. Timers count
+from when the ticket was fired and the card ages neutral to amber to red against
+a ten-minute target. A bill's status is derived server-side so every terminal
+agrees on it.</p>
+<h3 id="management">Management</h3>
+<p>Menu with categories, photographs, tags, preparation times, modifier groups, and
+a sold-out toggle. Tables grouped into zones. Staff accounts with five roles,
+each described in plain language rather than by permission flags; a manager can
+reset a forgotten PIN without anyone opening the admin dashboard. Sales broken
+down by item, by who served it, and by hour, with CSV export.</p>
+<h3 id="table-side-ordering">Table-side ordering</h3>
+<p>A guest scans the QR code on their table and orders from their own phone. It is
+a web page, not an application to install. It runs on the same server and port,
+so nothing is exposed to the internet and there is no second process to manage.</p>
+<p>Guests reach exactly three public routes; all fourteen collections remain
+staff-only. No price is ever taken from the request. Their items land on the
+table's bill unsent, and a waiter fires them.</p>
+<h3 id="hardware">Hardware</h3>
+<p>Network thermal printers over TCP 9100 using ESC/POS, which is what virtually
+every restaurant printer already speaks, with no driver to install. A printer is
+an address and a paper width. Receipts and kitchen tickets, with a PDF fallback.</p>
+<hr />
+<h2 id="design-invariants">Design invariants</h2>
+<p>These are not style preferences. Each is enforced in code and covered by a test.
+Breaking one silently is how a restaurant loses money.</p>
+<h3 id="money-is-only-ever-computed-on-the-server">Money is only ever computed on the server</h3>
+<p><code>server/pb_hooks/lib_money.js</code> recomputes every order's totals on write. A client
+that PATCHes a forged total has it overwritten.</p>
+<p>A point-of-sale system must never let a client decide what a bill costs. The
+tablet is on the restaurant's wi-fi and could be anything.</p>
+<p><em>Test:</em> <code>smoke</code>, "Client cannot forge a total".</p>
+<h3 id="menu-names-and-prices-are-snapshotted-onto-order-lines">Menu names and prices are snapshotted onto order lines</h3>
+<p>When an item is added to an order, its name and unit price are copied onto the
+line. The line does not reference the menu item for pricing.</p>
+<p>Editing tomorrow's menu must never rewrite yesterday's bill.</p>
+<h3 id="takings-are-counted-by-when-a-bill-closed">Takings are counted by when a bill closed</h3>
+<p>Reports and shifts key on <code>closed_at</code>, not <code>created_at</code>.</p>
+<p>A table seated before a shift began and settled during it is that shift's
+takings. Keying on creation credits the money to the wrong session and leaves
+the drawer looking short.</p>
+<h3 id="ageing-and-status-use-separate-visual-channels">Ageing and status use separate visual channels</h3>
+<p>On the kitchen display, a ticket's border and timer carry how long it has been
+waiting. Its dots and chips carry what state each item is in.</p>
+<p>Merging them makes a late ticket full of cooking items unreadable: the two
+meanings fight each other. A red frame with blue dots reads correctly at a
+glance.</p>
+<hr />
+<h2 id="architecture">Architecture</h2>
+<pre><code>+-------------------------------------------------------------------------+
+|                          RESTAURANT LAN                                 |
+|                                                                         |
+|   +-------------------+                    +------------------------+   |
+|   |  Flutter app      |                    |  Guest phone           |   |
+|   |                   |                    |                        |   |
+|   |  POS shell        |                    |  QR code -&gt; web page   |   |
+|   |  KDS shell        |                    |  3 public routes only  |   |
+|   |  Manager shell    |                    |  no price from request |   |
+|   +---------+---------+                    +-----------+------------+   |
+|             |                                          |                |
+|             |  HTTP (LAN only)                         |                |
+|             +------------------+   +-------------------+                |
+|                                |   |                                    |
+|                                v   v                                    |
+|              +---------------------------------------------+            |
+|              |  PocketBase (single binary, on-site)        |            |
+|              |                                             |            |
+|              |  +----------------+  +-------------------+  |            |
+|              |  |  Migrations    |  |  Hooks            |  |            |
+|              |  |                |  |                   |  |            |
+|              |  |  the schema    |  |  order numbering  |  |            |
+|              |  |  version       |  |  ALL MONEY MATH   |  |            |
+|              |  |  controlled    |  |  role guards      |  |            |
+|              |  |                |  |  audit log        |  |            |
+|              |  +----------------+  +-------------------+  |            |
+|              |                                             |            |
+|              |  +----------------+  +-------------------+  |            |
+|              |  |  SQLite        |  |  Realtime subs    |  |            |
+|              |  +----------------+  +-------------------+  |            |
+|              +---------------------------------------------+            |
+|                                                                         |
+|   +-------------------+                                                 |
+|   |  Thermal printer  |&lt;-------- ESC/POS over TCP 9100 -----------------+|
+|   |  receipt / pass   |                                                 |
+|   +-------------------+                                                 |
++-------------------------------------------------------------------------+
+</code></pre>
+<h3 id="request-path-for-one-order">Request path for one order</h3>
+<pre><code>  Waiter taps a menu item
+          |
+          v
+  +-----------------+     optimistic local line
+  |  POS shell      |----------------------------&gt;  shown immediately
+  +--------+--------+
+           |
+           |  create order_items record
+           v
+  +-----------------+     recompute line total,
+  |  lib_money.js   |     then recompute the bill,
+  |  (server hook)  |     then persist
+  +--------+--------+
+           |
+           |  after-success hook
+           v
+  +-----------------+     realtime subscription
+  |  KDS shell      |&lt;----------------------------  ticket appears
+  +-----------------+                                no refresh, no polling
+</code></pre>
+<h3 id="offline-behaviour">Offline behaviour</h3>
+<pre><code>  Network up        Network down              Network restored
+  ----------        ------------              ----------------
+  write sent   --&gt;  write queued to disk  --&gt; queue drains,
+  to server         (addLine only)            oldest first,
+                                             stops at first failure
+                                             so ordering survives
+</code></pre>
+<p>Opening a bill and settling one deliberately do <strong>not</strong> work offline. Opening a
+bill needs a number the server assigns, and settling one needs a total only the
+server computes. Settling against a made-up number is how a restaurant loses
+money.</p>
+<hr />
+<h2 id="installation">Installation</h2>
+<h3 id="requirements">Requirements</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Version</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flutter</td>
+<td>3.47 or later</td>
+<td>For running from source or building</td>
+</tr>
+<tr>
+<td>Git Bash</td>
+<td>Any recent</td>
+<td>Windows only; every script is POSIX shell</td>
+</tr>
+<tr>
+<td>Developer Mode</td>
+<td>Enabled</td>
+<td>Windows build only; Flutter needs symlinks for plugins</td>
+</tr>
+</tbody>
+</table>
+<p>PocketBase is downloaded on demand. There is no database to install and no cloud
+account to create.</p>
+<h3 id="running-from-source">Running from source</h3>
+<pre><code class="language-bash">git clone https://github.com/thewoldaa/mise-kal.git
+cd mise-kal
+
+# Terminal 1 - the server
+./server/scripts/dev.sh
+
+# Terminal 2 - the application
+cd app &amp;&amp; flutter run -d windows
+</code></pre>
+<p>The first run fetches the pinned PocketBase into <code>server/bin/</code> and applies the
+schema migrations. The admin interface is then at <code>http://127.0.0.1:8090/_/</code>.</p>
+<p>On first launch, point the application at <code>127.0.0.1:8090</code>. The <code>-d macos</code>,
+<code>-d linux</code> and <code>-d chrome</code> targets work as well.</p>
+<h3 id="building-for-windows">Building for Windows</h3>
+<pre><code class="language-bash">installer/windows/build_windows.sh
+</code></pre>
+<p>Produces a runnable build at <code>app/build/windows/x64/runner/Release/Mise.exe</code>
+with PocketBase staged into it, so the application starts its own server on
+first run.</p>
+<p>Developer Mode must be enabled once, as an administrator:</p>
+<pre><code>start ms-settings:developers
+</code></pre>
+<p>The script checks for this before doing anything and explains the fix rather
+than failing with Flutter's message, which does not name the prerequisite.</p>
+<h3 id="building-for-macos">Building for macOS</h3>
+<pre><code class="language-bash">./installer/macos/build_dmg.sh
+</code></pre>
+<p>Produces a DMG. It is unsigned unless <code>CODESIGN_IDENTITY</code> is set; users open it
+from the right-click menu once. See <a href="install-macos.html">docs/install-macos.md</a>.</p>
+<hr />
+<h2 id="development">Development</h2>
+<h3 id="setup">Setup</h3>
+<pre><code class="language-bash"># One-time: fetch PocketBase and jq into the harness cache
+.harness/scripts/setup-tools.sh
+
+# Verify the machine can run everything
+.harness/scripts/worktree.sh doctor
+</code></pre>
+<h3 id="working-in-an-isolated-worktree">Working in an isolated worktree</h3>
+<pre><code class="language-bash">.harness/scripts/worktree.sh create --agent &lt;name&gt; --task &lt;task-id&gt;
+cd .harness/worktrees/&lt;name&gt;
+# ... inspect, plan, implement, test ...
+.harness/scripts/test.sh --agent &lt;name&gt; --all
+git commit -m &quot;feat(scope): what changed and why&quot;
+.harness/scripts/worktree.sh report --agent &lt;name&gt; --task &lt;task-id&gt; --summary &quot;...&quot;
+</code></pre>
+<p>Each agent receives its own git worktree, branch, reserved port block, and
+scratch directory. Nothing is shared except git's object store, which git
+already makes safe for concurrent use.</p>
+<h3 id="the-wave-model">The wave model</h3>
+<pre><code>  Wave 1    agent A: task 1     agent B: task 2     agent C: task 3
+                  \                   |                   /
+                   +------ integrate into main ----------+
+  Wave 2    agent D: reads the result of Wave 1, builds on it
+</code></pre>
+<p>Integration refuses to start from a dirty <code>main</code>, runs a trial merge to detect
+conflicts before anything lands, merges each branch as its own attributable
+commit, runs the full suite on the merged result, and verifies that each branch
+is genuinely an ancestor of <code>main</code> afterwards.</p>
+<pre><code class="language-bash">.harness/scripts/wave.sh open wave-1 &quot;Phase 1 stabilisation&quot;
+.harness/scripts/wave.sh add  wave-1 --agent alice --task t-001
+.harness/scripts/wave.sh integrate wave-1 --dry-run   # conflict check only
+.harness/scripts/wave.sh integrate wave-1             # merge and verify
+.harness/scripts/wave.sh close wave-1
+</code></pre>
+<p>See <a href="https://github.com/thewoldaa/mise-kal/blob/main/.harness/README.md"><code>.harness/README.md</code></a> for the full manual.</p>
+<hr />
+<h2 id="testing">Testing</h2>
+<pre><code class="language-bash">.harness/scripts/test.sh --agent &lt;name&gt; --all          # everything
+.harness/scripts/test.sh --agent &lt;name&gt; --suite smoke  # one backend suite
+.harness/scripts/test.sh --agent &lt;name&gt; --app          # Dart tests only
+</code></pre>
+<h3 id="backend-suites">Backend suites</h3>
+<p>Each spins up a throwaway database on its own port and tears it down afterwards.
+None of them touch real data.</p>
+<table>
+<thead>
+<tr>
+<th>Suite</th>
+<th>Covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>smoke</code></td>
+<td>Order numbering, modifier pricing, tax and service charge, voids, table release, forged totals</td>
+</tr>
+<tr>
+<td><code>setup</code></td>
+<td>First-run endpoints, and that bootstrap can never run twice</td>
+</tr>
+<tr>
+<td><code>kitchen</code></td>
+<td>A bill's status following its lines, and the guards on bills not in service</td>
+</tr>
+<tr>
+<td><code>payments</code></td>
+<td>Part payments, settlement, discounts, refusing money against a cancelled bill</td>
+</tr>
+<tr>
+<td><code>staff</code></td>
+<td>PIN resets, privilege guards, and that a venue cannot lose its last owner</td>
+</tr>
+<tr>
+<td><code>guest</code></td>
+<td>Table-side ordering: menu visibility, server-side pricing, route isolation</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dart-tests">Dart tests</h3>
+<p>Printing, reporting, the offline queue, and localization. The offline queue
+tests use a fake PocketBase speaking HTTP on a loopback socket rather than a
+mock object, because what matters is that a real <code>ClientException</code> with
+<code>statusCode == 0</code> comes back out of the SDK. That distinction is what
+<code>isNetworkFailure</code> keys on to decide between keeping a write for retry and
+dropping it as refused.</p>
+<h3 id="why-the-harness-patches-the-suites">Why the harness patches the suites</h3>
+<p>Upstream's suites were written for a single developer on one machine. Three
+things in them break under concurrency, and all three were confirmed by reading
+the scripts:</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>What happens</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hardcoded ports 8091-8098</td>
+<td>Two agents on the same suite fight over a port; one gets a connection refused that looks like a product bug</td>
+<td>Each agent gets a reserved block</td>
+</tr>
+<tr>
+<td>Literal <code>/tmp/g.json</code></td>
+<td>Git Bash does not honour <code>TMPDIR</code> for a literal <code>/tmp</code> path, so agents overwrite each other's responses</td>
+<td>Scratch paths are rewritten per agent</td>
+</tr>
+<tr>
+<td><code>pkill -f "pocketbase serve --dir=..."</code></td>
+<td><code>pkill -f</code> matches command lines as strings; every agent's server has identical relative arguments, so one agent's cleanup kills another's server mid-suite</td>
+<td>The server's PID is captured and only that process is killed</td>
+</tr>
+</tbody>
+</table>
+<p>The harness generates a patched copy at run time and leaves the originals
+untouched, so upstream stays mergeable. It asserts on every substitution, so an
+upstream restructure fails loudly rather than silently running an unisolated
+suite.</p>
+<hr />
+<h2 id="repository-layout">Repository layout</h2>
+<pre><code>mise-kal/
+├── PLAN.md                  Design contract inherited from upstream
+├── README.md                This file
+├── CONTRIBUTING.md          Workflow contract
+├── SECURITY.md              Threat model and the guarantees the code keeps
+├── AGENTS.md                How an AI agent works in this repository
+├── LICENSE                  MIT, with the upstream copyright preserved
+├── .env.example             Configuration template, no values
+│
+├── .harness/                Multi-agent development harness
+│   ├── README.md            Operating manual
+│   ├── scripts/             worktree, wave, test, integrate, cleanup, security
+│   ├── tasks/               Task definitions with front matter
+│   └── waves/               Wave manifests
+│
+├── server/                  PocketBase: schema and all business rules
+│   ├── VERSION              Pinned PocketBase version
+│   ├── pb_migrations/       The schema, version-controlled
+│   ├── pb_hooks/            Rules that cannot live on a client
+│   ├── pb_public/           The guest-facing page
+│   ├── scripts/             Dev server and six test suites
+│   └── fetch_pocketbase.sh  Downloads the pinned binary
+│
+├── app/                     Flutter: one binary, three role-based shells
+│   ├── lib/core/            Design system, discovery, printing, reporting
+│   ├── lib/data/            Models, repositories, offline queue
+│   ├── lib/features/        setup, auth, pos, kds, manager
+│   ├── lib/l10n/            Indonesian and English translations
+│   └── test/                Dart tests
+│
+├── installer/               Packaging, per platform
+└── docs/                    Owner guide, developer guide, architecture
+</code></pre>
+<hr />
+<h2 id="roadmap">Roadmap</h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Focus</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Stabilise the implementation, tests, and installer</td>
+<td>In progress</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Indonesian localization</td>
+<td>In progress</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Payment and QRIS integration layer</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>4</td>
+<td>WhatsApp and business notifications</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Inventory and stock control</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Multi-branch support</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Owner dashboard</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Backup and sync architecture</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Analytics and AI-assisted business insights</td>
+<td>Planned</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Production hardening</td>
+<td>Planned</td>
+</tr>
+</tbody>
+</table>
+<p>Task definitions with acceptance criteria live in
+<a href=".harness/tasks/"><code>.harness/tasks/</code></a>.</p>
+<hr />
+<h2 id="contributing">Contributing</h2>
+<p>Read <a href="CONTRIBUTING.html">CONTRIBUTING.md</a> first. The short version:</p>
+<pre><code>inspect -&gt; plan -&gt; implement -&gt; test -&gt; commit -&gt; report
+</code></pre>
+<ul>
+<li>Never commit to <code>main</code>; work on <code>agent/&lt;name&gt;/&lt;task&gt;</code></li>
+<li>Run the suites before committing</li>
+<li>Use conventional commits, and explain why rather than what</li>
+<li>Never delete a working upstream feature to simplify an implementation</li>
+<li>Never commit credentials; this repository is public</li>
+</ul>
+<hr />
+<h2 id="security">Security</h2>
+<p>The threat model, the guarantees the code is built to keep, and the test that
+proves each one are in <a href="SECURITY.html">SECURITY.md</a>.</p>
+<p>Report a vulnerability through a
+<a href="https://github.com/thewoldaa/mise-kal/security/advisories/new">private security advisory</a>,
+not a public issue.</p>
+<hr />
+<h2 id="acknowledgements">Acknowledgements</h2>
+<p>Mise-Kal is built on <a href="https://github.com/devShakib015/mise">Mise</a> by
+<strong>K M Shahriar Hossain</strong>, which established the security posture and design
+decisions this project inherits, in particular the rule that money is only ever
+computed server-side.</p>
+<p>The MIT license is retained unchanged and the upstream copyright notice is
+preserved in <a href="LICENSE">LICENSE</a>. Upstream remains configured as a git remote so
+improvements can be taken deliberately:</p>
+<pre><code class="language-bash">git fetch upstream
+git log --oneline main..upstream/main     # what upstream has that we do not
+git merge upstream/main                   # when it is worth taking
+</code></pre>
+<hr />
+<h2 id="license">License</h2>
+<p>MIT. Use it, change it, run it in your restaurant, sell services around it.
+Keep the copyright notice. See <a href="LICENSE">LICENSE</a>.</p>
+      <div class="doc-links">
+        <a href="https://github.com/thewoldaa/mise-kal/blob/main/README.md">View source on GitHub</a>
+        <a href="../demo/">Interactive demo</a>
+        <a href="./">All documentation</a>
+      </div>
+    </article>
+  </div>
+</div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div>
+      <p class="mb-0">
+        Mise-Kal &middot; MIT licensed &middot; A derivative of
+        <a href="https://github.com/devShakib015/mise">Mise</a>
+      </p>
+    </div>
+    <nav class="footer-links" aria-label="Footer">
+      <a href="../">Home</a>
+      <a href="../demo/">Demo</a>
+      <a href="https://github.com/thewoldaa/mise-kal">GitHub</a>
+      <a href="https://github.com/thewoldaa/mise-kal/releases">Releases</a>
+    </nav>
+  </div>
+</footer>
+
+</body>
+</html>
