@@ -1,193 +1,309 @@
+<div align="center">
+
 # Mise-Kal
 
-A free, self-hosted restaurant management system — POS, kitchen display, menu
-management and sales reports, running on the restaurant's own hardware.
+**Sistem manajemen restoran yang di-host sendiri — kasir, layar dapur, dan manajemen dalam satu perangkat lunak.**
 
-**Mise-Kal is a derivative of [Mise](https://github.com/devShakib015/mise)**,
-forked and developed independently as a long-term project. It keeps everything
-that makes Mise good — the offline-first design, the server-side money rules,
-the bundled-server installer — and aims it at a modular, testable, maintainable
-architecture for continued development.
+Gratis selamanya · Tanpa lisensi · Tanpa langganan · Tanpa telemetri · Data tetap di mesin Anda
 
-Free forever. No licence key, no account, no subscription, no telemetry, no
-paid tier. The restaurant's data lives on the restaurant's machine.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux%20%7C%20Android%20%7C%20iOS-blue)]()
+[![Tests](https://img.shields.io/badge/tests-155%20passing-brightgreen)]()
+[![Flutter](https://img.shields.io/badge/Flutter-3.47.5-02569B?logo=flutter)](https://flutter.dev)
+[![PocketBase](https://img.shields.io/badge/PocketBase-0.40.1-000000)](https://pocketbase.io)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-Because the server runs on-site, **the POS keeps taking orders when the internet
-goes down** — which for a restaurant matters more than almost anything else.
+[Fitur](#fitur) · [Instalasi](#instalasi) · [Pengembangan](#pengembangan) · [Arsitektur](#arsitektur) · [Roadmap](#roadmap)
+
+</div>
 
 ---
 
-## Relationship to upstream
+## Apa ini
 
-| | |
+Mise-Kal adalah turunan dari **[Mise](https://github.com/devShakib015/mise)**, dikembangkan
+secara independen sebagai proyek jangka panjang. Sistem ini menjalankan seluruh operasional
+restoran di perangkat milik restoran itu sendiri — tanpa server cloud, tanpa akun, tanpa
+biaya bulanan.
+
+Karena servernya berjalan di lokasi, **kasir tetap bisa menerima pesanan saat internet mati.**
+Untuk restoran, itu lebih penting daripada hampir semua hal lain.
+
+> **Status:** pra-1.0, pengembangan aktif. Enam suite backend (101 pemeriksaan) dan
+> 63 tes Dart lulus di Windows. Lokalisasi Indonesia sedang dikerjakan.
+
+---
+
+## Fitur
+
+<table>
+<tr><td width="50%" valign="top">
+
+### 🧾 Kasir (POS)
+- Denah meja dengan total bon langsung
+- Pesan-antar ke dapur sekali sentuh
+- Modifier, catatan dapur, jumlah
+- Pembayaran sebagian dan pelunasan
+- Diskon dengan alasan, tercatat di audit
+- **Bekerja saat internet mati** — antrian lokal
+
+</td><td width="50%" valign="top">
+
+### 👨‍🍳 Layar Dapur (KDS)
+- Pesanan muncul seketika, tanpa refresh
+- Ketuk item: antre → dimasak → siap
+- Timer menua: netral → kuning → merah
+- Warna status dan warna umur **terpisah**, jadi tiket telat tetap terbaca
+
+</td></tr>
+<tr><td valign="top">
+
+### 📊 Manajemen
+- Menu: kategori, foto, modifier, stok habis
+- Meja dan zona
+- Staf: lima peran, reset PIN oleh manajer
+- Laporan: per item, per pelayan, per jam
+- Ekspor CSV untuk pembukuan
+
+</td><td valign="top">
+
+### 🖨️ Perangkat Keras
+- Printer termal ESC/POS lewat TCP 9100
+- Tanpa driver — hanya alamat dan lebar kertas
+- Struk dan tiket dapur
+- Fallback PDF
+
+</td></tr>
+</table>
+
+### 📱 Pesanan dari Meja
+
+Tamu memindai QR di mejanya dan memesan dari ponsel sendiri — halaman web, bukan aplikasi.
+Hanya tiga rute publik yang terbuka; empat belas koleksi lainnya tetap khusus staf.
+**Tidak ada harga yang datang dari permintaan** — semuanya diambil dari basis data.
+Pesanan tamu masuk ke bon meja dalam keadaan **belum dikirim**; pelayan yang meneruskan,
+sehingga orang asing di wi-fi tidak bisa menaruh makanan di pass.
+
+---
+
+## Empat aturan yang dijaga kode
+
+Ini bukan preferensi gaya. Masing-masing ditegakkan di kode dan diuji.
+
+| Aturan | Kenapa |
 |---|---|
-| **Upstream** | [devShakib015/mise](https://github.com/devShakib015/mise) |
-| **Upstream licence** | MIT, © 2026 K M Shahriar Hossain |
-| **This repository** | a standalone project, not a GitHub fork |
-| **Forked at** | upstream `main` @ `c56d1c3` |
-
-Mise-Kal is the source of truth for its own development. Upstream is kept as a
-git remote so improvements can be pulled in deliberately:
-
-```bash
-git fetch upstream
-git log --oneline main..upstream/main     # what upstream has that we do not
-git merge upstream/main                    # when it is worth taking
-```
-
-The upstream copyright notice is preserved in [LICENSE](LICENSE), as the MIT
-licence requires. Mise-Kal's own changes are additionally recorded there.
-
-### What Mise-Kal changes
-
-**1. An isolated multi-agent worktree harness (`.harness/`).**
-The largest addition. Several sub-agents work in parallel, each in its own git
-worktree, with its own branch, its own reserved port block and its own scratch
-directory — so two agents can never touch each other's files. Work is integrated
-in controlled waves rather than by merging by hand. See
-[`.harness/README.md`](.harness/README.md).
-
-**2. The test suites now run on Windows.**
-Upstream's suites were written for a single developer on macOS. Three things in
-them break under concurrency, and one breaks on Windows at all:
-
-- hardcoded ports 8091–8098;
-- shared scratch files in a literal `/tmp` (Git Bash does not honour `TMPDIR`
-  for a literal path, so these genuinely collide);
-- `pkill -f "pocketbase serve --dir=./pb_test_data"`, which matches by command
-  line and therefore kills a sibling agent's server mid-suite.
-
-The harness patches a copy of each suite at run time — with an absolute server
-path, a per-agent port, a per-agent data directory and PID-based cleanup —
-instead of editing the originals, so upstream stays mergeable. All 101 backend
-checks and 54 Dart tests pass on Windows.
-
-**3. `.gitattributes`.**
-On Windows, git's default `core.autocrlf=true` rewrites every `.sh` file to
-CRLF, and bash then fails on `set -euo pipefail` before running a single line.
-Line endings are now pinned in the repository rather than left to each
-developer's git config.
-
-**4. Public/private separation.**
-The repository carries project instructions and templates. Personal agent
-instructions, memory, credentials and machine-specific configuration are
-git-ignored, with a script that fails the build if any of them are ever tracked.
-See [SECURITY.md](SECURITY.md).
-
-**5. Development roadmap.**
-Upstream's plan stops at packaging. Mise-Kal continues with Indonesian
-localization, QRIS payments, WhatsApp notifications, inventory, multi-branch,
-an owner dashboard, backup/sync and analytics — in that order, one wave at a
-time. See the task index at [`.harness/tasks/`](.harness/tasks/).
+| **Uang hanya dihitung di server** | Kasir tidak boleh membiarkan klien yang dimanipulasi menentukan harga bon. Total palsu ditimpa. |
+| **Nama dan harga menu di-snapshot ke baris pesanan** | Mengubah menu besok tidak boleh menulis ulang bon kemarin. |
+| **Pendapatan dihitung saat bon ditutup**, bukan saat dibuka | Meja yang duduk sebelum shift berganti dan dibayar saat shift berjalan adalah pendapatan shift itu. |
+| **Warna umur dan warna status terpisah** | Menggabungkannya membuat tiket telat yang penuh item dimasak jadi tidak terbaca. |
 
 ---
 
 ## Stack
 
-| Layer | Choice |
-|---|---|
-| Backend | [PocketBase](https://pocketbase.io) — one binary: database, auth, realtime, file storage |
-| Apps | Flutter — one binary, three role-based shells (POS / KDS / Manager) |
-| Printing | ESC/POS over TCP 9100, with PDF fallback |
+| Lapisan | Pilihan | Alasan |
+|---|---|---|
+| Backend | [PocketBase](https://pocketbase.io) 0.40.1 | Satu biner: basis data, auth, realtime, penyimpanan berkas, UI admin |
+| Aplikasi | Flutter 3.47.5 | Satu biner, tiga shell berbasis peran (POS / KDS / Manajer) |
+| Basis data | SQLite (via PocketBase) | Tidak ada yang perlu dipasang |
+| Cetak | ESC/POS lewat TCP 9100 | Yang dipakai hampir semua printer restoran |
 
-## Running it locally
+---
+
+## Instalasi
+
+### Menjalankan dari sumber
+
+Butuh **Flutter 3.47+** dan **Git Bash** (Windows) atau shell POSIX. Tidak ada yang lain —
+PocketBase diunduh otomatis.
 
 ```bash
+git clone https://github.com/thewoldaa/mise-kal.git
+cd mise-kal
+
+# Terminal 1 — server
 ./server/scripts/dev.sh
+
+# Terminal 2 — aplikasi
+cd app && flutter run -d windows    # atau -d macos / -d linux
 ```
 
-First run downloads the pinned PocketBase version into `server/bin/` and applies
-the schema migrations. The admin UI is then at <http://127.0.0.1:8090/_/>.
+Saat pertama dibuka, arahkan aplikasi ke `127.0.0.1:8090`.
 
-Then, in a second terminal:
+### Membangun untuk Windows
 
 ```bash
-cd app && flutter run -d windows
+installer/windows/build_windows.sh
 ```
 
-`-d macos`, `-d linux` and `-d chrome` work too. On first launch, point the app
-at `127.0.0.1:8090`.
+> **Prasyarat:** Developer Mode harus aktif (Flutter butuh symlink untuk plugin native).
+> Sekali saja, sebagai administrator: `start ms-settings:developers`
+> Script akan memeriksa ini lebih dulu dan menjelaskan perbaikannya.
 
-## Tests
-
-Seven suites. Each backend suite spins up a throwaway database on its own port
-and tears it down afterwards; none of them touch your real data.
+### Membangun untuk macOS
 
 ```bash
-# Everything, with per-agent isolation
-.harness/scripts/test.sh --agent local --all
-
-# One backend suite
-.harness/scripts/test.sh --agent local --suite smoke
-
-# Dart tests only
-.harness/scripts/test.sh --agent local --app
+./installer/macos/build_dmg.sh
 ```
 
-Or the suites directly, one at a time:
+Menghasilkan DMG. Tidak ditandatangani kecuali `CODESIGN_IDENTITY` diatur — pengguna
+membukanya lewat klik-kanan pertama kali, dan itu didokumentasikan di
+[docs/install-macos.md](docs/install-macos.md).
+
+---
+
+## Pengembangan
 
 ```bash
-for s in smoke setup kitchen payments staff guest; do ./server/scripts/${s}_test.sh; done
-cd app && flutter test
+# Sekali saja: unduh PocketBase dan jq ke cache
+.harness/scripts/setup-tools.sh
+.harness/scripts/worktree.sh doctor
+
+# Buat worktree terisolasi untuk pekerjaan Anda
+.harness/scripts/worktree.sh create --agent namaku --task t-001
+
+# Jalankan semua suite
+.harness/scripts/test.sh --agent namaku --all
 ```
 
-- `smoke` — order numbering, modifier pricing, tax and service charge, voids,
-  table release, and that a forged total is overwritten
-- `setup` — the first-run endpoints, and that bootstrap can never run twice
-- `kitchen` — a bill's status following its lines, and the guards that stop it
-  touching bills which are not in service
-- `payments` — part payments, settlement, discounts, and refusing money against
-  a cancelled bill
-- `staff` — resetting a forgotten PIN, and the guards that stop a manager
-  seizing an owner's account or the venue losing its last owner
-- `guest` — table-side ordering: that a guest sees only the menu, that no price
-  comes from the request, and that a stranger cannot put food on the pass
+### Harness multi-agent
 
-## Installing it
+Beberapa sub-agent dapat bekerja **bersamaan tanpa saling menimpa**. Setiap agent
+mendapat worktree git sendiri, branch sendiri, blok port sendiri, dan direktori scratch
+sendiri. Tidak ada yang dibagi kecuali object store git.
 
-macOS installs from a DMG; see [docs/install-macos.md](docs/install-macos.md).
-A Windows installer is planned — see
-[`.harness/tasks/t-030-windows-installer.md`](.harness/tasks/t-030-windows-installer.md).
+Pekerjaan diintegrasikan dalam **gelombang** terkontrol:
 
-## Working on Mise-Kal
+```
+Gelombang 1   alpha: tugas A    beta: tugas B    gamma: tugas C
+                    \                |                /
+                     +---- integrasi ke main ------+
+Gelombang 2   delta: membaca hasil Gelombang 1
+```
 
-Start with [CONTRIBUTING.md](CONTRIBUTING.md). The short version:
+Integrasi menolak mulai dari `main` yang kotor, menjalankan merge percobaan untuk
+mendeteksi konflik **sebelum** apa pun mendarat, menjalankan seluruh suite pada hasil
+merge, lalu memverifikasi setiap branch benar-benar menjadi leluhur `main`.
+
+Selengkapnya di [`.harness/README.md`](.harness/README.md).
+
+### Tes
 
 ```bash
-.harness/scripts/setup-tools.sh                     # PocketBase + jq into cache
-.harness/scripts/worktree.sh create --agent myname  # isolated worktree
-cd .harness/worktrees/myname
-# ... work ...
-.harness/scripts/test.sh --agent myname --all
-git commit -m "feat(scope): ..."
+.harness/scripts/test.sh --agent namaku --all       # semuanya
+.harness/scripts/test.sh --agent namaku --suite smoke
+.harness/scripts/test.sh --agent namaku --app
 ```
 
-Architecture, the four rules the code leans on, and the things that will bite
-you are in [docs/developing.md](docs/developing.md).
+| Suite | Cakupan |
+|---|---|
+| `smoke` | Penomoran pesanan, harga modifier, pajak/layanan, void, total palsu |
+| `setup` | Endpoint pertama-kali, bootstrap tidak bisa jalan dua kali |
+| `kitchen` | Status bon mengikuti barisnya |
+| `payments` | Pembayaran sebagian, pelunasan, diskon |
+| `staff` | Reset PIN, penjagaan hak akses, restoran tidak bisa kehilangan pemilik terakhir |
+| `guest` | Pesanan dari meja: harga dari basis data, isolasi rute |
+| `app` | Dart: cetak, laporan, antrian offline, lokalisasi |
 
-## How it is put together
+**101 + 63 = 164 pemeriksaan.**
 
-`server/pb_migrations/` is the schema, in version control, so a fresh install is
-reproducible. `server/pb_hooks/` holds the rules that cannot live on the client:
-order numbering and **all money math**. A point-of-sale system must never let a
-client tell the server what a bill costs, so every total is recomputed
-server-side on write and a forged total is simply overwritten.
+---
 
-Menu names and prices are snapshotted onto each order line. Editing tomorrow's
-menu must never rewrite yesterday's bill.
+## Arsitektur
 
-Two rules the whole system leans on. **Money is only ever computed on the
-server** — the app displays totals, it never adds them up. And **takings are
-counted by when a bill closed**, not when it was opened, so a table seated
-before a shift began and settled during it belongs to that shift.
+```
+                    ┌─────────────────────────────────────┐
+                    │  PocketBase (satu biner, di lokasi) │
+                    │  ┌───────────────┐ ┌─────────────┐  │
+   Aplikasi Flutter │  │  migrasi      │ │   hooks     │  │
+   (POS/KDS/Manajer)│  │  skema        │ │ no. pesanan │  │
+        │           │  │               │ │ SEMUA UANG  │  │
+        │           │  └───────────────┘ │ penjagaan   │  │
+        │           │        SQLite       │ audit       │  │
+        │           │                     └─────────────┘  │
+        │           │  langganan realtime                 │
+        │           └─────────────────────────────────────┘
+        │                          ▲
+        │                          │ HTTP (LAN saja)
+   ESC/POS TCP 9100                │
+   (printer termal)      ponsel tamu (QR, peramban)
+```
 
-Receipts print over TCP 9100 from the desktop and tablet builds. A browser
-cannot open a raw socket, so the web build says so rather than failing quietly.
+Penjelasan lengkap ada di **[docs/architecture.md](docs/architecture.md)**.
 
-## Licence
+---
 
-MIT. Use it, change it, run it in your restaurant, sell services around it —
-just keep the copyright notice. See [LICENSE](LICENSE).
+## Roadmap
 
-Upstream copyright © 2026 K M Shahriar Hossain, preserved as the licence
-requires.
+| Fase | Fokus | Status |
+|---|---|---|
+| 1 | Stabilkan implementasi + tes + installer | 🔄 Berjalan |
+| 2 | Lokalisasi Indonesia | 🔄 Berjalan |
+| 3 | Lapisan integrasi pembayaran/QRIS | 📋 Direncanakan |
+| 4 | Notifikasi WhatsApp/bisnis | 📋 Direncanakan |
+| 5 | Inventaris & stok | 📋 Direncanakan |
+| 6 | Multi-cabang | 📋 Direncanakan |
+| 7 | Dasbor pemilik | 📋 Direncanakan |
+| 8 | Arsitektur backup/sinkronisasi | 📋 Direncanakan |
+| 9 | Analitik / wawasan bisnis berbantuan AI | 📋 Direncanakan |
+| 10 | Pengerasan produksi | 📋 Direncanakan |
+
+Definisi tugas ada di [`.harness/tasks/`](.harness/tasks/).
+
+---
+
+## Berkontribusi
+
+Baca **[CONTRIBUTING.md](CONTRIBUTING.md)** lebih dulu. Versi singkatnya:
+
+```
+inspeksi → rencana → implementasi → tes → commit → laporan
+```
+
+- Jangan pernah commit ke `main` — pakai branch `agent/<nama>/<tugas>`
+- Jalankan suite sebelum commit
+- Commit konvensional, isi pesan menjelaskan **kenapa**, bukan apa
+- Jangan pernah menghapus fitur upstream yang berfungsi untuk menyederhanakan
+- Jangan pernah commit kredensial — repo ini publik
+
+---
+
+## Keamanan
+
+Model ancaman, jaminan yang dijaga kode, dan tabel tes yang membuktikan masing-masing
+ada di **[SECURITY.md](SECURITY.md)**.
+
+Laporkan kerentanan lewat
+[private security advisory](https://github.com/thewoldaa/mise-kal/security/advisories/new),
+bukan issue publik.
+
+---
+
+## Menghargai proyek asal
+
+Mise-Kal berdiri di atas **[Mise](https://github.com/devShakib015/mise)** karya
+**K M Shahriar Hossain**, yang menyusun postur keamanan dan keputusan desain yang
+diwarisi proyek ini — terutama aturan bahwa uang hanya dihitung di server.
+
+Lisensi MIT dipertahankan apa adanya; notice hak cipta upstream ada di [LICENSE](LICENSE).
+Upstream tetap terpasang sebagai git remote sehingga perbaikan dapat diambil
+secara sengaja:
+
+```bash
+git fetch upstream
+git log --oneline main..upstream/main     # apa yang upstream punya, kita belum
+git merge upstream/main                    # kalau memang layak diambil
+```
+
+---
+
+## Lisensi
+
+MIT — pakai, ubah, jalankan di restoran Anda, jual layanan di sekitarnya.
+Yang penting: pertahankan notice hak cipta. Lihat [LICENSE](LICENSE).
+
+<div align="center">
+
+**Dibuat untuk restoran Indonesia** 🇮🇩
+
+</div>
