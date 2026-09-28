@@ -214,6 +214,39 @@ void main() {
       );
     });
 
+
+    test('a write added during a flush is not destroyed', () async {
+      // flush() rebuilds the queue from a snapshot taken when it started and
+      // then overwrites state with it. Anything the waiter adds while the
+      // flush is awaiting the server is not in that snapshot, so it was
+      // silently destroyed - in memory and on disk - with no error shown.
+      //
+      // This is the scenario the product promises to survive: the network
+      // comes back, the queue starts draining, and the waiter keeps taking
+      // orders on the same till.
+      final (c, q) = await queueWith([line('pending-1', qty: 1)]);
+      addTearDown(c.dispose);
+
+      // Hold the first request open so the flush is genuinely in flight.
+      server.hold = true;
+      final flushing = q.flush();
+
+      // The waiter adds a line while that request is outstanding.
+      await q.add(line('pending-added', qty: 9));
+
+      server.hold = false;
+      server.release();
+      await flushing;
+
+      final left = c.read(pendingWritesProvider);
+      expect(
+        left.map((w) => w.id),
+        contains('pending-added'),
+        reason: 'a line added mid-flush must survive the flush',
+      );
+      expect(left.single.body['qty'], 9);
+    });
+
     test('the order survives a second attempt', () async {
       final (c, q) = await queueWith([
         line('pending-1', qty: 1),

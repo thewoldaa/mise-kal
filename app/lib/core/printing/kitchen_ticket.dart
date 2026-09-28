@@ -133,7 +133,11 @@ class KitchenTicket {
 
     for (; i < all.length; i++) {
       final line = all[i];
-      final isItem = RegExp(r'^\d+ X ').hasMatch(line);
+      // The item line is indented - text() emits it as '  2 X NASI GORENG'
+      // so the quantity reads as a column. Anchoring to ^ without allowing
+      // that indent meant this never matched, so no item was ever printed
+      // double-height and the legibility the ticket is built around was lost.
+      final isItem = RegExp(r'^\s*\d+ X ').hasMatch(line);
       final isNote = line.trimLeft().startsWith('**');
 
       // Items get double height; notes get bold. Both read at a glance.

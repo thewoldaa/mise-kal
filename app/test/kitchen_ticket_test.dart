@@ -35,6 +35,23 @@ KitchenTicket build({List<OrderLine>? lines, String station = 'Kitchen'}) =>
     );
 
 void main() {
+  test('an item line is printed double-height', () {
+    // The kitchen reads this from across the room, and the item name is the
+    // part that has to carry. The builder sets double-height for any line that
+    // looks like an item, but the match was anchored to the start of the line
+    // while the line is indented, so it never fired.
+    //
+    // Asserted on the ESC/POS bytes rather than the text, because the height
+    // is a control code and does not appear in text() at all.
+    final bytes = build().escPos();
+    // 0x1D 0x21 0x01 is "double height, single width".
+    expect(
+      _contains(bytes, [0x1D, 0x21, 0x01]),
+      isTrue,
+      reason: 'item lines must be double-height so the pass can read them',
+    );
+  });
+
   test('leads with the station and the table', () {
     final out = build().text().split('\n');
     expect(out[0].trim(), 'KITCHEN');
@@ -140,6 +157,25 @@ bool _has(List<int> hay, List<int> needle) {
     if (List.generate(needle.length, (j) => hay[i + j] == needle[j]).every((x) => x)) {
       return true;
     }
+  }
+  return false;
+}
+
+/// Whether [needle] appears as a contiguous run inside [haystack].
+///
+/// The ticket's formatting is carried by ESC/POS control codes, which do not
+/// appear in text() at all, so asserting on them means searching the byte
+/// stream rather than the printed string.
+bool _contains(List<int> haystack, List<int> needle) {
+  for (var i = 0; i + needle.length <= haystack.length; i++) {
+    var hit = true;
+    for (var j = 0; j < needle.length; j++) {
+      if (haystack[i + j] != needle[j]) {
+        hit = false;
+        break;
+      }
+    }
+    if (hit) return true;
   }
   return false;
 }

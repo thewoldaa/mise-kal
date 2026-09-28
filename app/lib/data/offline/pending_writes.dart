@@ -144,11 +144,17 @@ class PendingWrites extends Notifier<List<PendingWrite>> {
       return 0;
     }
 
+    // Work from an explicit snapshot. `_persist` replaces `state` with a new
+    // list, so iterating the live field while awaiting would be reading a list
+    // that another `add()` has already moved past.
+    final snapshot = List<PendingWrite>.of(state);
+    final snapshotIds = snapshot.map((w) => w.id).toSet();
+
     final remaining = <PendingWrite>[];
     var sent = 0;
     var stopped = false;
 
-    for (final write in state) {
+    for (final write in snapshot) {
       if (stopped) {
         remaining.add(write);
         continue;
@@ -177,7 +183,18 @@ class PendingWrites extends Notifier<List<PendingWrite>> {
       }
     }
 
-    await _persist(remaining);
+    // Anything added while this flush was in flight is not in the snapshot and
+    // must not be dropped. The waiter keeps taking orders on the same till
+    // while the queue drains — that is the whole point of the queue — so the
+    // result is the writes that survived, followed by whatever arrived since.
+    //
+    // Without this the added writes were silently destroyed, in memory and on
+    // disk, with no error shown and no way for the waiter to know.
+    final addedSince = state
+        .where((w) => !snapshotIds.contains(w.id))
+        .toList(growable: false);
+
+    await _persist([...remaining, ...addedSince]);
     _flushing = false;
 
     if (sent > 0) ref.read(connectionProvider.notifier).reportSuccess();

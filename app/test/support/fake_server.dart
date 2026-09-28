@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -48,6 +49,11 @@ class FakePocketBaseServer {
   /// make these counters depend on timing the test does not control.
   int _writes = 0;
 
+  /// When true, a write request is parked until [release] is called, so a test
+  /// can act while a flush is genuinely in flight.
+  bool hold = false;
+  final List<Completer<void>> _held = [];
+
   int get port => _server.port;
 
   static Future<FakePocketBaseServer> start() async {
@@ -58,6 +64,14 @@ class FakePocketBaseServer {
   }
 
   Future<void> stop() => _server.close(force: true);
+
+  /// Lets every parked request through.
+  void release() {
+    for (final gate in _held) {
+      if (!gate.isCompleted) gate.complete();
+    }
+    _held.clear();
+  }
 
   Future<void> _handle(HttpRequest request) async {
     // The health probe the connection monitor polls. Answered before anything
@@ -72,6 +86,12 @@ class FakePocketBaseServer {
     }
 
     _writes++;
+
+    if (hold) {
+      final gate = Completer<void>();
+      _held.add(gate);
+      await gate.future;
+    }
 
     // A dropped connection: close the socket without answering.
     if (failWith is SocketException) {
