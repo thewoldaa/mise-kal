@@ -17,6 +17,10 @@ telemetry.
 [![Status](https://img.shields.io/badge/status-pre--1.0-orange.svg)](#roadmap)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
+**[Documentation](https://thewoldaa.github.io/mise-kal/docs/)** &nbsp;&middot;&nbsp;
+**[Interactive demo](https://thewoldaa.github.io/mise-kal/demo/)** &nbsp;&middot;&nbsp;
+**[Website](https://thewoldaa.github.io/mise-kal/)**
+
 </div>
 
 ---
