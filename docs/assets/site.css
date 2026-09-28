@@ -20,43 +20,50 @@
    ========================================================================== */
 
 :root {
-  /* Surfaces */
-  --bg:            #0b0f10;
-  /* The grid is red-tinted rather than neutral. It is kept very low opacity on
-     purpose: a grid behind body text competes with the text, and the rule that
-     made this readable at all was keeping the lines below the threshold where
-     the eye stops tracking them as structure. Ember is the brand hue, so the
-     lattice reads as the product's own colour rather than as decoration. */
-  --bg-grid:       rgba(232, 102, 61, 0.055);
-  --bg-grid-major: rgba(232, 102, 61, 0.095);
-  --surface:       #121819;
-  --surface-raised:#171f21;
-  --surface-sunken:#0e1314;
+  /* Surfaces.
+     Every neutral here is warm-shifted: red is the highest channel, then green,
+     then blue. That ordering is what makes the surface read as charcoal with
+     red in it rather than as teal.
+
+     The previous palette had it the other way round - #0b0f10 is R11 G15 B16 -
+     so every neutral on the site carried a green cast, including the panels and
+     the page behind the grid. A red grid drawn over a green-black page does not
+     read as red; the two cancel. Fixing the grid alone would not have been
+     enough, which is why the whole neutral ramp moved. */
+  --bg:            #0e0a09;   /* was #0b0f10 - green cast */
+  --bg-grid:       rgba(232, 102, 61, 0.075);
+  --bg-grid-major: rgba(232, 102, 61, 0.14);
+  --surface:       #17100e;
+  --surface-raised:#1f1614;
+  --surface-sunken:#120c0b;
 
   /* Glass. Panels are translucent with a backdrop blur, so the grid reads
      through them as depth rather than being hidden by an opaque slab.
      --glass and --glass-strong are two steps: the first for cards that sit on
      the page, the second for surfaces that float above content. */
-  --glass:         rgba(20, 27, 29, 0.55);
-  --glass-strong:  rgba(18, 24, 26, 0.72);
+  --glass:         rgba(26, 17, 15, 0.55);
+  --glass-strong:  rgba(22, 14, 12, 0.74);
   --glass-border:  rgba(255, 255, 255, 0.07);
-  --glass-border-strong: rgba(232, 102, 61, 0.18);
+  --glass-border-strong: rgba(232, 102, 61, 0.22);
 
   /* Borders */
-  --border:        #1e2729;
-  --border-strong: #2b3638;
+  --border:        #2b1e1b;
+  --border-strong: #3d2a25;
 
-  /* Text */
-  --text:          #e6edf3;
-  --text-secondary:#93a1a4;
-  --text-tertiary: #5f6c6f;
+  /* Text. Kept close to neutral so body copy stays readable; only the dimmest
+     step carries any warmth. --text-tertiary is used for hints and captions
+     that are small, so it is held above 4.5:1 rather than allowed to sit at the
+     3:1 that would only be acceptable for large text. */
+  --text:          #ede6e3;   /* 15.97:1 on --bg */
+  --text-secondary:#a89691;   /*  6.98:1 */
+  --text-tertiary: #8a7671;   /*  4.79:1 */
 
   /* Brand and status. Ember is identity only; never a status. */
   --ember:         #e8663d;
   --ember-dim:     #b84e2c;
   --on-ember:      #1a0d08;
 
-  --status-queued:  #7d8a8d;
+  --status-queued:  #8a7d7a;
   --status-cooking: #3b82f6;
   --status-ready:   #22c55e;
   --status-trouble: #ef4444;
@@ -574,6 +581,68 @@ pre .c { color: var(--text-tertiary); }
   gap: var(--space-16);
 }
 .footer-links a { color: var(--text-secondary); }
+
+/* --- Scrollbars ----------------------------------------------------------- */
+
+/* Two rule sets on purpose. `scrollbar-color` and `scrollbar-width` are the
+   standard properties and cover Firefox and recent Chromium; the
+   `::-webkit-scrollbar` pseudo-elements are what older Chromium and Safari
+   actually honour. Neither alone is enough, and they do not conflict.
+
+   The thumb is Ember at rest and brightens on hover, so a scrollbar reads as
+   part of the product rather than as a browser artefact. The track is the page
+   background, so the bar does not draw a stripe down the edge of a glass panel. */
+
+:root {
+  scrollbar-color: var(--border-strong) transparent;
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 999px;
+  /* A transparent border with background-clip makes the thumb visually inset
+     from the track, which is what keeps it from touching the panel edge. */
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ember-dim);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: var(--ember);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Horizontal scroll regions - the tables and the ASCII diagrams - get the same
+   treatment so a wide table does not show a default grey bar. */
+.table-scroll::-webkit-scrollbar,
+.diagram::-webkit-scrollbar,
+pre::-webkit-scrollbar {
+  height: 8px;
+}
+
+/* The demo's server console is a fixed-height scroller and needs a visible
+   thumb more than the page does, because its content changes constantly. */
+.console::-webkit-scrollbar {
+  width: 8px;
+}
 
 /* --- Utilities ------------------------------------------------------------ */
 
