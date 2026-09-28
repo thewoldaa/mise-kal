@@ -287,6 +287,7 @@ class _GroupDialogState extends ConsumerState<_GroupDialog> {
           );
       if (mounted) Navigator.of(context).pop();
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';
@@ -311,6 +312,7 @@ class _GroupDialogState extends ConsumerState<_GroupDialog> {
       await ref.read(menuRepositoryProvider).deleteModifierGroup(group.id);
       if (mounted) Navigator.of(context).pop();
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';
@@ -425,6 +427,7 @@ class _ModifierDialogState extends ConsumerState<_ModifierDialog> {
           );
       if (mounted) Navigator.of(context).pop();
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';
@@ -448,6 +451,7 @@ class _ModifierDialogState extends ConsumerState<_ModifierDialog> {
       await ref.read(menuRepositoryProvider).deleteModifier(modifier.id);
       if (mounted) Navigator.of(context).pop();
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';

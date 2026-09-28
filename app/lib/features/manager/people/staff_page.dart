@@ -270,6 +270,7 @@ class _StaffDialogState extends ConsumerState<_StaffDialog> {
       navigator.pop();
       return;
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = _friendly(err);
@@ -303,6 +304,7 @@ class _StaffDialogState extends ConsumerState<_StaffDialog> {
         _notice = '${staff.name} can sign in with the new PIN now.';
       });
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = _friendly(err);
@@ -330,6 +332,7 @@ class _StaffDialogState extends ConsumerState<_StaffDialog> {
       navigator.pop();
       return;
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = _friendly(err);

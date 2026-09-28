@@ -220,6 +220,7 @@ class _TableDialogState extends ConsumerState<_TableDialog> {
           );
       if (mounted) Navigator.of(context).pop();
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         // The label has a unique index, so a clash is the likely cause and
@@ -258,6 +259,7 @@ class _TableDialogState extends ConsumerState<_TableDialog> {
       await ref.read(serviceRepositoryProvider).deleteTable(table.id);
       if (mounted) Navigator.of(context).pop();
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';

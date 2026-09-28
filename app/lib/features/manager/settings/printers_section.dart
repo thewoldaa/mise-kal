@@ -251,6 +251,7 @@ class _PrinterDialogState extends ConsumerState<_PrinterDialog> {
           );
       if (mounted) Navigator.of(context).pop();
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';
@@ -275,6 +276,7 @@ class _PrinterDialogState extends ConsumerState<_PrinterDialog> {
       await ref.read(serviceRepositoryProvider).deletePrinter(printer.id);
       if (mounted) Navigator.of(context).pop();
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';

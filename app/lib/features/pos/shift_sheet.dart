@@ -69,6 +69,7 @@ class _OpenShiftState extends ConsumerState<_OpenShift> {
       navigator.pop();
       return;
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';
@@ -190,6 +191,7 @@ class _CloseShiftState extends ConsumerState<_CloseShift> {
       );
       return;
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';

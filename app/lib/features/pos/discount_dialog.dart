@@ -89,6 +89,7 @@ class _DiscountDialogState extends ConsumerState<_DiscountDialog> {
           );
       if (mounted) Navigator.of(context).pop();
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';

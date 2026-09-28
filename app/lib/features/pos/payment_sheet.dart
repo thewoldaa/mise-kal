@@ -94,6 +94,12 @@ class _PaymentSheetState extends ConsumerState<_PaymentSheet> {
         _reference.clear();
       });
     } catch (err) {
+      // The same guard the success path has, and for the same reason: taking a
+      // payment is a network round trip, and the cashier can close the sheet
+      // while it is in flight — walking away, or moving to the next table. A
+      // setState on a disposed State throws, which turns a recoverable payment
+      // failure into a crash at the till.
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';

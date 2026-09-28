@@ -59,6 +59,7 @@ class _SplitDialogState extends ConsumerState<_SplitDialog> {
       navigator.pop();
       return;
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';

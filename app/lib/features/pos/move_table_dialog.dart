@@ -56,6 +56,7 @@ class _MoveDialogState extends ConsumerState<_MoveDialog> {
       navigator.pop();
       return;
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';

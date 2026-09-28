@@ -519,6 +519,7 @@ class _LineActionsDialogState extends ConsumerState<_LineActionsDialog> {
       }
       if (mounted) Navigator.of(context).pop();
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';
@@ -552,6 +553,7 @@ class _LineActionsDialogState extends ConsumerState<_LineActionsDialog> {
           );
       if (mounted) Navigator.of(context).pop();
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';

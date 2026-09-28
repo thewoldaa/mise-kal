@@ -266,6 +266,7 @@ class _CategoryDialogState extends ConsumerState<_CategoryDialog> {
           );
       if (mounted) Navigator.of(context).pop();
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';
@@ -296,6 +297,7 @@ class _CategoryDialogState extends ConsumerState<_CategoryDialog> {
       await ref.read(menuRepositoryProvider).deleteCategory(category.id);
       if (mounted) Navigator.of(context).pop();
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';

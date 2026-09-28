@@ -174,6 +174,7 @@ class _ItemDialogState extends ConsumerState<_ItemDialog> {
 
       if (mounted) Navigator.of(context).pop();
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';
@@ -198,6 +199,7 @@ class _ItemDialogState extends ConsumerState<_ItemDialog> {
       await ref.read(menuRepositoryProvider).deleteMenuItem(item.id);
       if (mounted) Navigator.of(context).pop();
     } catch (err) {
+      if (!mounted) return;
       setState(() {
         _busy = false;
         _error = '$err';
