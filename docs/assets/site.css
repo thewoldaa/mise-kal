@@ -22,11 +22,25 @@
 :root {
   /* Surfaces */
   --bg:            #0b0f10;
-  --bg-grid:       rgba(255, 255, 255, 0.028);
-  --bg-grid-major: rgba(255, 255, 255, 0.045);
+  /* The grid is red-tinted rather than neutral. It is kept very low opacity on
+     purpose: a grid behind body text competes with the text, and the rule that
+     made this readable at all was keeping the lines below the threshold where
+     the eye stops tracking them as structure. Ember is the brand hue, so the
+     lattice reads as the product's own colour rather than as decoration. */
+  --bg-grid:       rgba(232, 102, 61, 0.055);
+  --bg-grid-major: rgba(232, 102, 61, 0.095);
   --surface:       #121819;
   --surface-raised:#171f21;
   --surface-sunken:#0e1314;
+
+  /* Glass. Panels are translucent with a backdrop blur, so the grid reads
+     through them as depth rather than being hidden by an opaque slab.
+     --glass and --glass-strong are two steps: the first for cards that sit on
+     the page, the second for surfaces that float above content. */
+  --glass:         rgba(20, 27, 29, 0.55);
+  --glass-strong:  rgba(18, 24, 26, 0.72);
+  --glass-border:  rgba(255, 255, 255, 0.07);
+  --glass-border-strong: rgba(232, 102, 61, 0.18);
 
   /* Borders */
   --border:        #1e2729;
@@ -91,9 +105,10 @@ html {
 body {
   margin: 0;
   background-color: var(--bg);
-  /* The grid: a fine 44px lattice with a slightly stronger line every fifth
-     cell, which gives the surface depth without becoming a distraction behind
-     body text. */
+  /* The grid: a fine 44px lattice in Ember with a stronger line every fifth
+     cell. Both opacities are deliberately low — a grid behind body text
+     competes with it, and the threshold where the eye stops reading the lines
+     as structure is around 6% on this background. */
   background-image:
     linear-gradient(var(--bg-grid) 1px, transparent 1px),
     linear-gradient(90deg, var(--bg-grid) 1px, transparent 1px),
@@ -104,6 +119,9 @@ body {
     44px 44px,
     220px 220px,
     220px 220px;
+  /* Fixed so the lattice stays put while content scrolls, which is what makes
+     the glass panels read as floating above it. */
+  background-attachment: fixed;
   color: var(--text);
   font-family: var(--font-sans);
   font-size: 16px;
@@ -151,10 +169,13 @@ section + section { border-top: 1px solid var(--border); }
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(11, 15, 16, 0.82);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
+  /* Glass rather than a solid bar, so the grid stays visible behind the
+     navigation instead of being cut off by it. The blur is what keeps the
+     links legible over content scrolling underneath. */
+  background: var(--glass-strong);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border-bottom: 1px solid var(--glass-border);
 }
 
 .site-header .wrap {
@@ -343,11 +364,28 @@ p:last-child { margin-bottom: 0; }
 .grid-3 { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
 
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
+  /* Glass. A faint top highlight plus a blur reads as a pane rather than as a
+     flat panel, which is what keeps a grid of them from looking like a table. */
+  background: var(--glass);
+  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(130%);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
   padding: var(--space-24);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: border-color 140ms ease, background-color 140ms ease;
 }
+
+/* Only cards that are links get a hover state, so a static card does not
+   advertise itself as interactive. */
+a.card:hover {
+  border-color: var(--glass-border-strong);
+  background: rgba(24, 32, 34, 0.62);
+  text-decoration: none;
+}
+
 .card h3 { margin-top: 0; }
 .card p { color: var(--text-secondary); font-size: 0.94rem; }
 .card p:last-child { margin-bottom: 0; }
@@ -432,8 +470,12 @@ pre .c { color: var(--text-tertiary); }
    rendered in a monospace block with the grid showing through, which keeps them
    legible without pretending to be vector art. */
 .diagram {
-  background: var(--surface-sunken);
-  border: 1px solid var(--border);
+  /* Also glass: the diagrams sit on the grid, and an opaque block would cut a
+     hole in it. */
+  background: rgba(14, 19, 20, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius);
   padding: var(--space-24);
   overflow-x: auto;
