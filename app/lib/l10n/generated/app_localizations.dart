@@ -332,11 +332,35 @@ abstract class AppStrings {
   /// **'Manajemen restoran'**
   String get connectSubtitle;
 
+  /// No description provided for @connectSubtitleLong.
+  ///
+  /// In id, this message translates to:
+  /// **'Arahkan perangkat ini ke komputer yang menjalankan restoran Anda.'**
+  String get connectSubtitleLong;
+
+  /// No description provided for @connectFooter.
+  ///
+  /// In id, this message translates to:
+  /// **'Gratis selamanya. Data Anda tetap di mesin Anda sendiri.'**
+  String get connectFooter;
+
+  /// No description provided for @connectServerHelper.
+  ///
+  /// In id, this message translates to:
+  /// **'Menjalankan server di komputer ini? Biarkan seperti ini.'**
+  String get connectServerHelper;
+
   /// No description provided for @connectRunOnThisComputer.
   ///
   /// In id, this message translates to:
   /// **'Jalankan restoran di komputer ini'**
   String get connectRunOnThisComputer;
+
+  /// No description provided for @connectRunOnThisComputerHint.
+  ///
+  /// In id, this message translates to:
+  /// **'Semua diatur di sini. Tablet dan layar dapur menyusul lewat wi-fi Anda.'**
+  String get connectRunOnThisComputerHint;
 
   /// No description provided for @connectScanCode.
   ///

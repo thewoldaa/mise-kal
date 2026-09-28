@@ -9,6 +9,7 @@ import '../../core/widgets/centered_panel.dart';
 import '../../core/widgets/message_banner.dart';
 import '../../core/discovery/discovery.dart';
 import '../../core/server/server_host.dart';
+import '../../l10n/generated/app_localizations.dart';
 import 'scan_to_connect.dart';
 import '../../data/session.dart';
 
@@ -74,22 +75,23 @@ class _ConnectScreenState extends ConsumerState<ConnectScreen> {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
+    final s = AppStrings.of(context)!;
 
     return CenteredPanel(
-      subtitle: 'Restaurant management',
+      subtitle: s.connectSubtitle,
       footer: Text(
-        'Free forever. Your data stays on your own machine.',
+        s.connectFooter,
         style: AppType.small.copyWith(color: p.textTertiary),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Connect to your server',
+          Text(s.connectTitle,
               style: AppType.title.copyWith(color: p.textPrimary)),
           const SizedBox(height: Space.xxs),
           Text(
-            'Point this device at the computer running your restaurant.',
+            s.connectSubtitleLong,
             style: AppType.body.copyWith(color: p.textSecondary),
           ),
           const SizedBox(height: Space.xl),
@@ -106,7 +108,7 @@ class _ConnectScreenState extends ConsumerState<ConnectScreen> {
           ],
 
           AppField(
-            label: 'Server address',
+            label: s.connectServerAddress,
             controller: _controller,
             hint: '127.0.0.1:8090',
             autofocus: true,
@@ -114,11 +116,11 @@ class _ConnectScreenState extends ConsumerState<ConnectScreen> {
             keyboardType: TextInputType.url,
             textInputAction: TextInputAction.go,
             onSubmitted: (_) => _connect(),
-            helper: 'Running the server on this computer? Leave this as it is.',
+            helper: s.connectServerHelper,
             prefix: Icon(Icons.dns_outlined, size: 18, color: p.textTertiary),
             suffix: canScanToConnect
                 ? IconButton(
-                    tooltip: 'Scan the code',
+                    tooltip: s.connectScanCode,
                     onPressed: _busy
                         ? null
                         : () async {
@@ -147,7 +149,7 @@ class _ConnectScreenState extends ConsumerState<ConnectScreen> {
                     height: 18,
                     child: CircularProgressIndicator(strokeWidth: 2.2),
                   )
-                : const Text('Connect'),
+                : Text(s.connectAction),
           ),
 
           // The other half of setup: this machine can be the server. Offered
@@ -160,7 +162,7 @@ class _ConnectScreenState extends ConsumerState<ConnectScreen> {
                 Expanded(child: Divider(color: p.border)),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: Space.sm),
-                  child: Text('or',
+                  child: Text(s.connectOr,
                       style: AppType.small.copyWith(color: p.textTertiary)),
                 ),
                 Expanded(child: Divider(color: p.border)),
@@ -170,12 +172,11 @@ class _ConnectScreenState extends ConsumerState<ConnectScreen> {
             OutlinedButton.icon(
               onPressed: _busy ? null : _host,
               icon: const Icon(Icons.dns_rounded, size: 18),
-              label: const Text('Run the restaurant on this computer'),
+              label: Text(s.connectRunOnThisComputer),
             ),
             const SizedBox(height: Space.xs),
             Text(
-              'Sets everything up here. Tablets and the kitchen screen then '
-              'join this machine over your wi-fi.',
+              s.connectRunOnThisComputerHint,
               textAlign: TextAlign.center,
               style: AppType.small.copyWith(color: p.textTertiary),
             ),
@@ -214,6 +215,7 @@ class _FoundServersState extends State<_FoundServers> {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
+    final s = AppStrings.of(context)!;
 
     return StreamBuilder<List<FoundServer>>(
       stream: _stream,
@@ -229,7 +231,7 @@ class _FoundServersState extends State<_FoundServers> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('On this network',
+            Text(s.connectOnThisNetwork,
                 style: AppType.label.copyWith(color: p.textSecondary)),
             const SizedBox(height: Space.xs),
             for (final s in found)

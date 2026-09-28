@@ -127,7 +127,23 @@ class AppStringsId extends AppStrings {
   String get connectSubtitle => 'Manajemen restoran';
 
   @override
+  String get connectSubtitleLong =>
+      'Arahkan perangkat ini ke komputer yang menjalankan restoran Anda.';
+
+  @override
+  String get connectFooter =>
+      'Gratis selamanya. Data Anda tetap di mesin Anda sendiri.';
+
+  @override
+  String get connectServerHelper =>
+      'Menjalankan server di komputer ini? Biarkan seperti ini.';
+
+  @override
   String get connectRunOnThisComputer => 'Jalankan restoran di komputer ini';
+
+  @override
+  String get connectRunOnThisComputerHint =>
+      'Semua diatur di sini. Tablet dan layar dapur menyusul lewat wi-fi Anda.';
 
   @override
   String get connectScanCode => 'Pindai kode';

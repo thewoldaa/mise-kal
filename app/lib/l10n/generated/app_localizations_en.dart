@@ -127,7 +127,23 @@ class AppStringsEn extends AppStrings {
   String get connectSubtitle => 'Restaurant management';
 
   @override
+  String get connectSubtitleLong =>
+      'Point this device at the computer running your restaurant.';
+
+  @override
+  String get connectFooter =>
+      'Free forever. Your data stays on your own machine.';
+
+  @override
+  String get connectServerHelper =>
+      'Running the server on this computer? Leave this as it is.';
+
+  @override
   String get connectRunOnThisComputer => 'Run the restaurant on this computer';
+
+  @override
+  String get connectRunOnThisComputerHint =>
+      'Sets everything up here. Tablets and the kitchen screen then join this machine over your wi-fi.';
 
   @override
   String get connectScanCode => 'Scan the code';
