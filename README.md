@@ -1,8 +1,25 @@
+<div align="center">
+
 # Mise-Kal
 
-A self-hosted restaurant management system: point of sale, kitchen display, and
-back-office management in one application. It runs on the restaurant's own
-hardware, with no cloud account, no subscription, and no telemetry.
+**A self-hosted restaurant management system.**
+
+Point of sale, kitchen display, and back-office management in one application,
+running on the restaurant's own hardware. No cloud account, no subscription, no
+telemetry.
+
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/thewoldaa/mise-kal?label=release&color=blue)](https://github.com/thewoldaa/mise-kal/releases)
+[![Tests](https://img.shields.io/badge/tests-175%20passing-brightgreen.svg)](#testing)
+[![Flutter](https://img.shields.io/badge/Flutter-3.47.5-02569B.svg)](https://flutter.dev)
+[![PocketBase](https://img.shields.io/badge/PocketBase-0.40.1-000000.svg)](https://pocketbase.io)
+[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux%20%7C%20Android%20%7C%20iOS-lightgrey.svg)](#installation)
+[![Status](https://img.shields.io/badge/status-pre--1.0-orange.svg)](#roadmap)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
+
+</div>
+
+---
 
 Because the server runs on-site, the POS continues to take orders when the
 internet goes down. For a restaurant, that matters more than almost any other
