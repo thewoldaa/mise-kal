@@ -38,8 +38,12 @@
      read as red; the two cancel. Fixing the grid alone would not have been
      enough, which is why the whole neutral ramp moved. */
   --bg:            #0e0a09;   /* was #0b0f10 - green cast */
-  --bg-grid:       rgba(232, 102, 61, 0.075);
-  --bg-grid-major: rgba(232, 102, 61, 0.14);
+  /* The grid is Ember at a much higher opacity than a neutral grid would need.
+     A red line over a near-black warm page is a small difference in the red
+     channel only, so 7.5% read as noise rather than as a grid. These values
+     were tuned by sampling the rendered pixels, not by eye. */
+  --bg-grid:       rgba(232, 102, 61, 0.20);
+  --bg-grid-major: rgba(232, 102, 61, 0.34);
   --surface:       #17100e;
   --surface-raised:#1f1614;
   --surface-sunken:#120c0b;
