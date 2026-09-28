@@ -1,8 +1,6 @@
 {
   "@@locale": "en",
-
   "appTitle": "Mise",
-
   "commonCancel": "Cancel",
   "commonDelete": "Delete",
   "commonRemove": "Remove",
@@ -33,12 +31,10 @@
   "commonAll": "All",
   "commonOn": "On",
   "commonOff": "Off",
-
   "signInTitle": "Sign in",
   "signInUsername": "Username",
   "signInPin": "PIN",
   "signInUseDifferentServer": "Use a different server",
-
   "connectTitle": "Connect to your server",
   "connectAction": "Connect",
   "connectOnThisNetwork": "On this network",
@@ -53,20 +49,22 @@
   "connectOr": "or",
   "connectScanPointAtCode": "Point at the code",
   "connectScanTypeInstead": "Type it instead",
-
   "setupTitle": "Set up your restaurant",
-
   "kdsOnThePass": "On the pass",
   "kdsNothingOnThePass": "Nothing on the pass",
   "kdsCouldNotUpdate": "Could not update: {error}",
-  "@kdsCouldNotUpdate": { "placeholders": { "error": { "type": "String" } } },
-
+  "@kdsCouldNotUpdate": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "navPos": "Till",
   "navKds": "Kitchen",
   "navManager": "Manager",
   "navSignOut": "Sign out",
   "navSwitchShell": "Switch shell",
-
   "floorTitle": "Floor",
   "floorHint": "Tap a table to open or pick up its bill.",
   "floorNoTables": "No tables set up",
@@ -74,50 +72,92 @@
   "floorOpenBill": "Open bill",
   "floorHowManyGuests": "How many guests?",
   "floorSeatTable": "Seat {label}",
-  "@floorSeatTable": { "placeholders": { "label": { "type": "String" } } },
+  "@floorSeatTable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "floorCouldNotOpen": "Could not open the table: {error}",
-  "@floorCouldNotOpen": { "placeholders": { "error": { "type": "String" } } },
+  "@floorCouldNotOpen": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "floorCouldNotStart": "Could not start the order: {error}",
-  "@floorCouldNotStart": { "placeholders": { "error": { "type": "String" } } },
+  "@floorCouldNotStart": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "floorInUse": "In use",
-
   "orderBackToFloor": "Back to the floor",
   "orderNothingHere": "Nothing in here",
   "orderMenuEmpty": "The menu is empty",
   "orderBillGone": "This bill is gone",
   "orderCouldNotAdd": "Could not add that: {error}",
-  "@orderCouldNotAdd": { "placeholders": { "error": { "type": "String" } } },
+  "@orderCouldNotAdd": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "orderSoldOut": "86",
   "orderAddToBill": "Add to bill",
   "orderNoteForKitchen": "Note for the kitchen",
   "orderUpTo": "up to {count}",
-  "@orderUpTo": { "placeholders": { "count": { "type": "int" } } },
-
+  "@orderUpTo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "moveBillTitle": "Move bill #{number}",
-  "@moveBillTitle": { "placeholders": { "number": { "type": "String" } } },
+  "@moveBillTitle": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
   "moveBillNowhere": "There is nowhere else to move it to.",
   "moveBillWhereTo": "Where to?",
-
   "discountTitle": "Discount",
   "discountAmountOff": "Amount off",
   "discountNewSubtotal": "New subtotal",
   "discountReasonHint": "Service and tax are worked out from this.",
   "discountClear": "Clear",
-
   "paymentTitle": "How are they paying?",
   "paymentCashReceived": "Cash received",
   "paymentChangeDue": "Change due",
   "paymentPaid": "Paid",
   "paymentTake": "Take {amount}",
-  "@paymentTake": { "placeholders": { "amount": { "type": "String" } } },
+  "@paymentTake": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "paymentTakenSoFar": "Taken so far",
   "paymentRemovePayment": "Remove this payment",
   "paymentReceipt": "Receipt",
-
   "receiptTitle": "Receipt",
   "receiptPrintTo": "Print to {printer}",
-  "@receiptPrintTo": { "placeholders": { "printer": { "type": "String" } } },
-
+  "@receiptPrintTo": {
+    "placeholders": {
+      "printer": {
+        "type": "String"
+      }
+    }
+  },
   "shiftCloseTitle": "Close your shift",
   "shiftCashInDrawer": "Cash in the drawer",
   "shiftCashTaken": "Cash taken",
@@ -126,13 +166,11 @@
   "shiftShouldBeInDrawer": "Should be in the drawer",
   "shiftHereIsWhat": "Here is what it came to.",
   "shiftClosed": "Shift closed",
-
   "summaryTakings": "Takings",
   "summaryHowItAddsUp": "How it adds up",
   "summaryHowItWasPaid": "How it was paid",
   "summaryTheDrawer": "The drawer",
   "summaryCancelled": "Cancelled",
-
   "menuItemsTitle": "Items",
   "menuItemsSubtitle": "Everything you sell, and what it costs.",
   "menuItemsNew": "New item",
@@ -140,7 +178,6 @@
   "menuItemsNoMatch": "Nothing matches",
   "menuItemsAddFirst": "Add your first item",
   "menuItemsAddCategoryFirst": "Add a category first",
-
   "menuCategoriesTitle": "Categories",
   "menuCategoriesSubtitle": "Sections of your menu. Their order is the order on the till.",
   "menuCategoriesNew": "New category",
@@ -152,12 +189,10 @@
   "menuCategoriesVisible": "Visible on the till",
   "menuCategoriesStation": "Who makes it",
   "menuCategoriesStationHint": "Dockets for this section print at that station.",
-
   "menuItemOnTheMenu": "On the menu",
   "menuItemInStock": "In stock",
   "menuItemCode": "Item code",
   "menuItemPrepTime": "Prep time",
-
   "modifiersTitle": "Modifiers",
   "modifiersSubtitle": "Choices you can attach to items. Define once, reuse everywhere.",
   "modifiersNewGroup": "New group",
@@ -170,7 +205,6 @@
   "modifiersMaxSelectable": "Most that can be picked",
   "modifiersPriceChange": "Price change",
   "modifiersOffered": "Offered",
-
   "tablesTitle": "Tables",
   "tablesSubtitle": "Your floor. Group them into zones if the room has sections.",
   "tablesNew": "New table",
@@ -183,8 +217,13 @@
   "tablesCodes": "Table codes",
   "tablesCodesNone": "No tables in use yet.",
   "tablesDeleteConfirm": "Delete {label}?",
-  "@tablesDeleteConfirm": { "placeholders": { "label": { "type": "String" } } },
-
+  "@tablesDeleteConfirm": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "staffTitle": "Staff",
   "staffSubtitle": "Who can sign in, and what they are allowed to do.",
   "staffAddSomeone": "Add someone",
@@ -195,11 +234,22 @@
   "staffCannotDisableSelf": "You cannot switch off your own account.",
   "staffGiveNewPin": "Give them a new PIN",
   "staffNewPinFor": "New PIN for {name}",
-  "@staffNewPinFor": { "placeholders": { "name": { "type": "String" } } },
+  "@staffNewPinFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "staffSetPin": "Set PIN",
   "staffRemoveConfirm": "Remove {name}?",
-  "@staffRemoveConfirm": { "placeholders": { "name": { "type": "String" } } },
-
+  "@staffRemoveConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "reportsTitle": "Reports",
   "reportsSubtitle": "What each day came to.",
   "reportsWhatSold": "What sold",
@@ -208,12 +258,16 @@
   "reportsExportCsv": "Export CSV",
   "reportsSaved": "Report saved.",
   "reportsCouldNotSave": "Could not save: {error}",
-  "@reportsCouldNotSave": { "placeholders": { "error": { "type": "String" } } },
-
+  "@reportsCouldNotSave": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "activityTitle": "Activity",
   "activitySubtitle": "Discounts, voids and cancellations, with a name against each.",
   "activityMoneyLeavingOnly": "Money leaving only",
-
   "settingsTitle": "Settings",
   "settingsRestaurant": "Restaurant",
   "settingsRestaurantHint": "How your restaurant identifies itself and what it charges.",
@@ -232,14 +286,20 @@
   "settingsSignOut": "Sign out",
   "settingsDisconnect": "Disconnect",
   "settingsDisconnectConfirm": "Disconnect this device?",
-
   "printerNew": "Add a printer",
   "printerPaperWidth": "Paper width",
   "printerWhatItPrints": "What it prints",
   "printerInUse": "In use",
   "printerRemoveConfirm": "Remove {name}?",
-  "@printerRemoveConfirm": { "placeholders": { "name": { "type": "String" } } },
-
+  "@printerRemoveConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "guestScanTitle": "Scan to order",
-  "guestMenuTitle": "Menu"
+  "guestMenuTitle": "Menu",
+  "signInErrorNoUsername": "Enter your username.",
+  "signInErrorShortPin": "Your PIN is at least 4 digits."
 }

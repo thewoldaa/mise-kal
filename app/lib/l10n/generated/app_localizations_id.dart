@@ -655,4 +655,10 @@ class AppStringsId extends AppStrings {
 
   @override
   String get guestMenuTitle => 'Menu';
+
+  @override
+  String get signInErrorNoUsername => 'Masukkan nama pengguna Anda.';
+
+  @override
+  String get signInErrorShortPin => 'PIN Anda minimal 4 angka.';
 }

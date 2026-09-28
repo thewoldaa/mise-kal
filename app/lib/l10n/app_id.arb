@@ -1,9 +1,9 @@
 {
   "@@locale": "id",
-
   "appTitle": "Mise",
-  "@appTitle": { "description": "Nama produk. Jangan diterjemahkan." },
-
+  "@appTitle": {
+    "description": "Nama produk. Jangan diterjemahkan."
+  },
   "commonCancel": "Batal",
   "commonDelete": "Hapus",
   "commonRemove": "Singkirkan",
@@ -34,12 +34,10 @@
   "commonAll": "Semua",
   "commonOn": "Aktif",
   "commonOff": "Mati",
-
   "signInTitle": "Masuk",
   "signInUsername": "Nama pengguna",
   "signInPin": "PIN",
   "signInUseDifferentServer": "Ganti server",
-
   "connectTitle": "Sambungkan ke server Anda",
   "connectAction": "Sambungkan",
   "connectOnThisNetwork": "Di jaringan ini",
@@ -54,20 +52,22 @@
   "connectOr": "atau",
   "connectScanPointAtCode": "Arahkan ke kode",
   "connectScanTypeInstead": "Ketik manual",
-
   "setupTitle": "Siapkan restoran Anda",
-
   "kdsOnThePass": "Di pass",
   "kdsNothingOnThePass": "Pass kosong",
   "kdsCouldNotUpdate": "Tidak bisa memperbarui: {error}",
-  "@kdsCouldNotUpdate": { "placeholders": { "error": { "type": "String" } } },
-
+  "@kdsCouldNotUpdate": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "navPos": "Kasir",
   "navKds": "Dapur",
   "navManager": "Manajer",
   "navSignOut": "Keluar",
   "navSwitchShell": "Ganti tampilan",
-
   "floorTitle": "Lantai",
   "floorHint": "Ketuk meja untuk membuka atau melanjutkan bonnya.",
   "floorNoTables": "Belum ada meja",
@@ -75,50 +75,92 @@
   "floorOpenBill": "Bon terbuka",
   "floorHowManyGuests": "Berapa tamu?",
   "floorSeatTable": "Dudukkan {label}",
-  "@floorSeatTable": { "placeholders": { "label": { "type": "String" } } },
+  "@floorSeatTable": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "floorCouldNotOpen": "Tidak bisa membuka meja: {error}",
-  "@floorCouldNotOpen": { "placeholders": { "error": { "type": "String" } } },
+  "@floorCouldNotOpen": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "floorCouldNotStart": "Tidak bisa memulai pesanan: {error}",
-  "@floorCouldNotStart": { "placeholders": { "error": { "type": "String" } } },
+  "@floorCouldNotStart": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "floorInUse": "Terpakai",
-
   "orderBackToFloor": "Kembali ke lantai",
   "orderNothingHere": "Belum ada isi",
   "orderMenuEmpty": "Menu masih kosong",
   "orderBillGone": "Bon ini sudah tidak ada",
   "orderCouldNotAdd": "Tidak bisa menambah: {error}",
-  "@orderCouldNotAdd": { "placeholders": { "error": { "type": "String" } } },
+  "@orderCouldNotAdd": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "orderSoldOut": "Habis",
   "orderAddToBill": "Tambahkan ke bon",
   "orderNoteForKitchen": "Catatan untuk dapur",
   "orderUpTo": "maksimal {count}",
-  "@orderUpTo": { "placeholders": { "count": { "type": "int" } } },
-
+  "@orderUpTo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "moveBillTitle": "Pindahkan bon #{number}",
-  "@moveBillTitle": { "placeholders": { "number": { "type": "String" } } },
+  "@moveBillTitle": {
+    "placeholders": {
+      "number": {
+        "type": "String"
+      }
+    }
+  },
   "moveBillNowhere": "Tidak ada tujuan lain.",
   "moveBillWhereTo": "Ke mana?",
-
   "discountTitle": "Diskon",
   "discountAmountOff": "Potongan jumlah",
   "discountNewSubtotal": "Subtotal baru",
   "discountReasonHint": "Layanan dan pajak dihitung dari angka ini.",
   "discountClear": "Hapus",
-
   "paymentTitle": "Bagaimana mereka membayar?",
   "paymentCashReceived": "Uang diterima",
   "paymentChangeDue": "Kembalian",
   "paymentPaid": "Sudah dibayar",
   "paymentTake": "Terima {amount}",
-  "@paymentTake": { "placeholders": { "amount": { "type": "String" } } },
+  "@paymentTake": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "paymentTakenSoFar": "Sudah diterima",
   "paymentRemovePayment": "Hapus pembayaran ini",
   "paymentReceipt": "Struk",
-
   "receiptTitle": "Struk",
   "receiptPrintTo": "Cetak ke {printer}",
-  "@receiptPrintTo": { "placeholders": { "printer": { "type": "String" } } },
-
+  "@receiptPrintTo": {
+    "placeholders": {
+      "printer": {
+        "type": "String"
+      }
+    }
+  },
   "shiftCloseTitle": "Tutup shift Anda",
   "shiftCashInDrawer": "Uang di laci",
   "shiftCashTaken": "Uang masuk",
@@ -127,13 +169,11 @@
   "shiftShouldBeInDrawer": "Seharusnya ada di laci",
   "shiftHereIsWhat": "Berikut hasilnya.",
   "shiftClosed": "Shift ditutup",
-
   "summaryTakings": "Pendapatan",
   "summaryHowItAddsUp": "Rincian",
   "summaryHowItWasPaid": "Cara pembayaran",
   "summaryTheDrawer": "Laci",
   "summaryCancelled": "Dibatalkan",
-
   "menuItemsTitle": "Menu",
   "menuItemsSubtitle": "Semua yang Anda jual, dan harganya.",
   "menuItemsNew": "Menu baru",
@@ -141,7 +181,6 @@
   "menuItemsNoMatch": "Tidak ada yang cocok",
   "menuItemsAddFirst": "Tambahkan menu pertama",
   "menuItemsAddCategoryFirst": "Tambahkan kategori dulu",
-
   "menuCategoriesTitle": "Kategori",
   "menuCategoriesSubtitle": "Bagian-bagian menu Anda. Urutannya mengikuti urutan di kasir.",
   "menuCategoriesNew": "Kategori baru",
@@ -153,12 +192,10 @@
   "menuCategoriesVisible": "Tampil di kasir",
   "menuCategoriesStation": "Siapa yang membuat",
   "menuCategoriesStationHint": "Bon dari bagian ini dicetak di stasiun tersebut.",
-
   "menuItemOnTheMenu": "Ada di menu",
   "menuItemInStock": "Stok tersedia",
   "menuItemCode": "Kode menu",
   "menuItemPrepTime": "Waktu siap",
-
   "modifiersTitle": "Pilihan tambahan",
   "modifiersSubtitle": "Pilihan yang bisa ditempel ke menu. Tentukan sekali, pakai berulang.",
   "modifiersNewGroup": "Grup baru",
@@ -171,7 +208,6 @@
   "modifiersMaxSelectable": "Maksimal yang bisa dipilih",
   "modifiersPriceChange": "Perubahan harga",
   "modifiersOffered": "Ditawarkan",
-
   "tablesTitle": "Meja",
   "tablesSubtitle": "Denah Anda. Kelompokkan per zona kalau ruangannya bersekat.",
   "tablesNew": "Meja baru",
@@ -184,8 +220,13 @@
   "tablesCodes": "Kode meja",
   "tablesCodesNone": "Belum ada meja yang dipakai.",
   "tablesDeleteConfirm": "Hapus {label}?",
-  "@tablesDeleteConfirm": { "placeholders": { "label": { "type": "String" } } },
-
+  "@tablesDeleteConfirm": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
   "staffTitle": "Staf",
   "staffSubtitle": "Siapa yang bisa masuk, dan apa yang boleh mereka lakukan.",
   "staffAddSomeone": "Tambah orang",
@@ -196,11 +237,22 @@
   "staffCannotDisableSelf": "Anda tidak bisa menonaktifkan akun sendiri.",
   "staffGiveNewPin": "Beri PIN baru",
   "staffNewPinFor": "PIN baru untuk {name}",
-  "@staffNewPinFor": { "placeholders": { "name": { "type": "String" } } },
+  "@staffNewPinFor": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "staffSetPin": "Simpan PIN",
   "staffRemoveConfirm": "Keluarkan {name}?",
-  "@staffRemoveConfirm": { "placeholders": { "name": { "type": "String" } } },
-
+  "@staffRemoveConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "reportsTitle": "Laporan",
   "reportsSubtitle": "Hasil penjualan tiap hari.",
   "reportsWhatSold": "Yang terjual",
@@ -209,12 +261,16 @@
   "reportsExportCsv": "Ekspor CSV",
   "reportsSaved": "Laporan tersimpan.",
   "reportsCouldNotSave": "Tidak bisa menyimpan: {error}",
-  "@reportsCouldNotSave": { "placeholders": { "error": { "type": "String" } } },
-
+  "@reportsCouldNotSave": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
   "activityTitle": "Aktivitas",
   "activitySubtitle": "Diskon, pembatalan, dan void — lengkap dengan namanya.",
   "activityMoneyLeavingOnly": "Hanya uang keluar",
-
   "settingsTitle": "Pengaturan",
   "settingsRestaurant": "Restoran",
   "settingsRestaurantHint": "Identitas restoran Anda dan biaya yang dikenakan.",
@@ -233,14 +289,20 @@
   "settingsSignOut": "Keluar",
   "settingsDisconnect": "Putuskan",
   "settingsDisconnectConfirm": "Putuskan perangkat ini?",
-
   "printerNew": "Tambah printer",
   "printerPaperWidth": "Lebar kertas",
   "printerWhatItPrints": "Fungsi cetak",
   "printerInUse": "Terpakai",
   "printerRemoveConfirm": "Hapus {name}?",
-  "@printerRemoveConfirm": { "placeholders": { "name": { "type": "String" } } },
-
+  "@printerRemoveConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "guestScanTitle": "Pindai untuk memesan",
-  "guestMenuTitle": "Menu"
+  "guestMenuTitle": "Menu",
+  "signInErrorNoUsername": "Masukkan nama pengguna Anda.",
+  "signInErrorShortPin": "PIN Anda minimal 4 angka."
 }

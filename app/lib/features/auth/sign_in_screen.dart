@@ -9,6 +9,7 @@ import '../../core/widgets/app_field.dart';
 import '../../core/widgets/centered_panel.dart';
 import '../../core/widgets/message_banner.dart';
 import '../../data/session.dart';
+import '../../l10n/generated/app_localizations.dart';
 
 /// Staff sign-in. The PIN goes in on a keypad rather than a text field — at a
 /// terminal mid-service nobody wants a software keyboard covering the screen.
@@ -50,13 +51,14 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
 
   Future<void> _submit() async {
     if (_busy) return;
+    final s = AppStrings.of(context)!;
 
     if (_username.text.trim().isEmpty) {
-      setState(() => _error = 'Enter your username.');
+      setState(() => _error = s.signInErrorNoUsername);
       return;
     }
     if (_pin.length < 4) {
-      setState(() => _error = 'Your PIN is at least 4 digits.');
+      setState(() => _error = s.signInErrorShortPin);
       return;
     }
 
@@ -79,6 +81,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     final p = context.palette;
+    final s = AppStrings.of(context)!;
 
     return CenteredPanel(
       maxWidth: 400,
@@ -87,7 +90,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
         onPressed: _busy
             ? null
             : () => ref.read(sessionProvider.notifier).forgetServer(),
-        child: const Text('Use a different server'),
+        child: Text(s.signInUseDifferentServer),
       ),
       child: Focus(
         autofocus: true,
@@ -114,11 +117,11 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Sign in', style: AppType.title.copyWith(color: p.textPrimary)),
+            Text(s.signInTitle, style: AppType.title.copyWith(color: p.textPrimary)),
             const SizedBox(height: Space.lg),
 
             AppField(
-              label: 'Username',
+              label: s.signInUsername,
               controller: _username,
               hint: 'shakib',
               enabled: !_busy,
@@ -129,7 +132,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
             ),
 
             const SizedBox(height: Space.lg),
-            Text('PIN', style: AppType.label.copyWith(color: p.textSecondary)),
+            Text(s.signInPin, style: AppType.label.copyWith(color: p.textSecondary)),
             const SizedBox(height: Space.sm),
             _PinDots(length: _pin.length, max: _maxPin),
 

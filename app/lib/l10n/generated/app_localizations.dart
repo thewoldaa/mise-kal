@@ -1309,6 +1309,18 @@ abstract class AppStrings {
   /// In id, this message translates to:
   /// **'Menu'**
   String get guestMenuTitle;
+
+  /// No description provided for @signInErrorNoUsername.
+  ///
+  /// In id, this message translates to:
+  /// **'Masukkan nama pengguna Anda.'**
+  String get signInErrorNoUsername;
+
+  /// No description provided for @signInErrorShortPin.
+  ///
+  /// In id, this message translates to:
+  /// **'PIN Anda minimal 4 angka.'**
+  String get signInErrorShortPin;
 }
 
 class _AppStringsDelegate extends LocalizationsDelegate<AppStrings> {
