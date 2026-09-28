@@ -139,7 +139,61 @@ and this project adheres to <a href="https://semver.org/spec/v2.0.0.html">Semant
 <p>Mise-Kal forked from <a href="https://github.com/devShakib015/mise">Mise</a> at upstream
 <code>main</code> commit <code>c56d1c3</code>. Versions before <code>0.1.0</code> are upstream's; Mise-Kal's own
 history starts at <code>0.1.0</code>.</p>
-<h2 id="unreleased"><a href="https://github.com/thewoldaa/mise-kal/compare/v0.1.0...HEAD">Unreleased</a></h2>
+<h2 id="011-2026-09-28"><a href="https://github.com/thewoldaa/mise-kal/releases/tag/v0.1.1">0.1.1</a> - 2026-09-28</h2>
+<h3 id="added">Added</h3>
+<p><strong>Documentation site and interactive demo</strong></p>
+<p>GitHub Pages serving <code>docs/</code>: a landing page, an interactive demo, and a hub
+for every document. <code>docs/build_site.py</code> generates the pages from the markdown
+sources rather than hand-maintaining a second copy, and rewrites links so one
+source serves both GitHub and the site.</p>
+<p>The demo reimplements the product's logic in the browser so the four rules can
+be watched rather than taken on faith: a forged total is recomputed and
+discarded with both numbers logged, firing and settling are refused while the
+network is down, queued writes drain in order, and a kitchen ticket ages on its
+border while status stays on the dots. Its money arithmetic mirrors
+<code>lib_money.js</code> including the order of operations and the tax-inclusive branch.</p>
+<p><strong>Documentation</strong></p>
+<ul>
+<li><code>docs/testing.md</code> - the seven suites, and why the harness patches upstream's
+  tests at run time rather than editing them</li>
+<li><code>docs/install-windows.md</code> - building on Windows, and the Developer Mode
+  prerequisite Flutter's own error message does not name</li>
+</ul>
+<h3 id="fixed">Fixed</h3>
+<ul>
+<li><strong><code>setState</code> in a <code>catch</code> with no mounted guard, in 22 places.</strong> Every one of
+  these awaits a network call and then writes state on failure. If the widget is
+  disposed while the request is in flight - the cashier closes the sheet, the
+  manager navigates away - the <code>setState</code> throws, turning a recoverable failure
+  into a crash. The success path in each already had the guard; the catch path
+  did not, which is why it went unnoticed.</li>
+</ul>
+<p>Found in <code>payment_sheet</code>, <code>shift_sheet</code>, <code>ticket_panel</code>, <code>discount_dialog</code>,
+  <code>move_table_dialog</code>, <code>split_bill_dialog</code>, <code>tables_page</code>, <code>categories_page</code>,
+  <code>item_dialog</code>, <code>modifiers_page</code>, <code>staff_page</code>, and <code>printers_section</code>.</p>
+<p>The regression test proves the failure on a minimal reproduction and then
+  scans the source for the pattern, so a 23rd occurrence fails the suite instead
+  of shipping.</p>
+<h3 id="changed">Changed</h3>
+<ul>
+<li>
+<p><strong>The repository is now a proper GitHub fork</strong> of <code>devShakib015/mise</code>. It was
+  standalone, which is legal under MIT and kept the copyright notice, but it
+  lost the visible "forked from" link and the fork network graph. History
+  already descended from upstream <code>c56d1c3</code>, so the change was a fast-forward
+  with no rewrite.</p>
+</li>
+<li>
+<p>The site's grid is Ember-tinted and its panels are glass. The grid is held at
+  5.5% and 9.5% opacity on purpose: a grid behind body text competes with it,
+  and the threshold where the eye stops reading the lines as structure is around
+  6% on this background.</p>
+</li>
+</ul>
+<h3 id="tests">Tests</h3>
+<p>177 total: 101 backend checks, 76 Dart tests. The Dart side gained the mounted
+guard scan and the offline queue's first <code>flush()</code> coverage.</p>
+<h2 id="unreleased"><a href="https://github.com/thewoldaa/mise-kal/compare/v0.1.1...HEAD">Unreleased</a></h2>
 <h3 id="planned">Planned</h3>
 <ul>
 <li>Indonesian localization across the POS, KDS, and Manager shells (Phase 2)</li>
@@ -150,7 +204,7 @@ history starts at <code>0.1.0</code>.</p>
 <p>The first Mise-Kal release. Everything here is infrastructure and correctness:
 no product features were added, because stabilising the existing system and
 making it testable comes before building on top of it.</p>
-<h3 id="added">Added</h3>
+<h3 id="added_1">Added</h3>
 <p><strong>Multi-agent worktree harness</strong> (<code>.harness/</code>)</p>
 <p>An isolated git worktree, branch, reserved port block, and scratch directory per
 agent, so several can work in parallel without touching each other's files.
@@ -183,7 +237,7 @@ generated Dart is committed so tests and CI need no codegen step.</p>
 <p>Produces a runnable Windows build with PocketBase staged in. Checks for
 Developer Mode first and explains the fix, because Flutter's own failure for
 that prerequisite does not name it.</p>
-<h3 id="fixed">Fixed</h3>
+<h3 id="fixed_1">Fixed</h3>
 <ul>
 <li>
 <p><strong>Connection monitor could write to a disposed provider.</strong> The health poll
@@ -206,7 +260,7 @@ that prerequisite does not name it.</p>
   excluded from all git text processing.</p>
 </li>
 </ul>
-<h3 id="changed">Changed</h3>
+<h3 id="changed_1">Changed</h3>
 <ul>
 <li>
 <p>Test suites run on Windows. Three things in upstream's suites break under
@@ -224,7 +278,7 @@ that prerequisite does not name it.</p>
   are git-ignored, with a scanner that fails the build if any of it is tracked.</p>
 </li>
 </ul>
-<h3 id="tests">Tests</h3>
+<h3 id="tests_1">Tests</h3>
 <p>101 backend checks across six suites, 74 Dart tests. The offline queue's
 <code>flush()</code> gained 11 tests, having had none despite being the feature the product
 leans on.</p>

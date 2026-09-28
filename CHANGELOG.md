@@ -9,6 +9,66 @@ Mise-Kal forked from [Mise](https://github.com/devShakib015/mise) at upstream
 `main` commit `c56d1c3`. Versions before `0.1.0` are upstream's; Mise-Kal's own
 history starts at `0.1.0`.
 
+## [0.1.1] - 2026-09-28
+
+### Added
+
+**Documentation site and interactive demo**
+
+GitHub Pages serving `docs/`: a landing page, an interactive demo, and a hub
+for every document. `docs/build_site.py` generates the pages from the markdown
+sources rather than hand-maintaining a second copy, and rewrites links so one
+source serves both GitHub and the site.
+
+The demo reimplements the product's logic in the browser so the four rules can
+be watched rather than taken on faith: a forged total is recomputed and
+discarded with both numbers logged, firing and settling are refused while the
+network is down, queued writes drain in order, and a kitchen ticket ages on its
+border while status stays on the dots. Its money arithmetic mirrors
+`lib_money.js` including the order of operations and the tax-inclusive branch.
+
+**Documentation**
+
+- `docs/testing.md` - the seven suites, and why the harness patches upstream's
+  tests at run time rather than editing them
+- `docs/install-windows.md` - building on Windows, and the Developer Mode
+  prerequisite Flutter's own error message does not name
+
+### Fixed
+
+- **`setState` in a `catch` with no mounted guard, in 22 places.** Every one of
+  these awaits a network call and then writes state on failure. If the widget is
+  disposed while the request is in flight - the cashier closes the sheet, the
+  manager navigates away - the `setState` throws, turning a recoverable failure
+  into a crash. The success path in each already had the guard; the catch path
+  did not, which is why it went unnoticed.
+
+  Found in `payment_sheet`, `shift_sheet`, `ticket_panel`, `discount_dialog`,
+  `move_table_dialog`, `split_bill_dialog`, `tables_page`, `categories_page`,
+  `item_dialog`, `modifiers_page`, `staff_page`, and `printers_section`.
+
+  The regression test proves the failure on a minimal reproduction and then
+  scans the source for the pattern, so a 23rd occurrence fails the suite instead
+  of shipping.
+
+### Changed
+
+- **The repository is now a proper GitHub fork** of `devShakib015/mise`. It was
+  standalone, which is legal under MIT and kept the copyright notice, but it
+  lost the visible "forked from" link and the fork network graph. History
+  already descended from upstream `c56d1c3`, so the change was a fast-forward
+  with no rewrite.
+
+- The site's grid is Ember-tinted and its panels are glass. The grid is held at
+  5.5% and 9.5% opacity on purpose: a grid behind body text competes with it,
+  and the threshold where the eye stops reading the lines as structure is around
+  6% on this background.
+
+### Tests
+
+177 total: 101 backend checks, 76 Dart tests. The Dart side gained the mounted
+guard scan and the offline queue's first `flush()` coverage.
+
 ## [Unreleased]
 
 ### Planned
@@ -107,5 +167,6 @@ leans on.
 Mise-Kal is a derivative work. The MIT license is retained unchanged and the
 upstream copyright notice is preserved in `LICENSE`.
 
-[Unreleased]: https://github.com/thewoldaa/mise-kal/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/thewoldaa/mise-kal/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/thewoldaa/mise-kal/releases/tag/v0.1.1
 [0.1.0]: https://github.com/thewoldaa/mise-kal/releases/tag/v0.1.0
